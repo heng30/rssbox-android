@@ -9,15 +9,15 @@ export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
     default-font-family: Theme.default-font-family;
     width: Theme.default-width;
-    // height: Theme.default-height;
-    background: Theme.basic-black-color;
+    height: Theme.default-height;
+    background: Theme.base-background-dark;
     icon: @image-url("./images/icon.png");
     title: "rssbox";
 
     init => { }
 
     Rectangle {
-        background: Theme.base-background;
+        background: Theme.base-background-light;
         panel := Panel { }
     }
 

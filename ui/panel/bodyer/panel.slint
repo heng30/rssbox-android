@@ -2,9 +2,13 @@ import { Theme } from "../../theme.slint";
 import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
+import { Rss } from "./rss.slint";
+import { Add } from "./add.slint";
+import { Setting } from "./setting.slint";
 
 export component Bodyer inherits Rectangle {
-    height: Theme.footer-height;
-    background: pink;
+    Rss {}
+    Add {}
+    Setting {}
 }
 

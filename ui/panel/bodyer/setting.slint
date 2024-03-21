@@ -1,0 +1,34 @@
+import { Theme, Icons } from "../../theme.slint";
+import { Store, TabIndex } from "../../store.slint";
+import { Logic } from "../../logic.slint";
+import { IconBtn, Label } from "../../base/widget.slint";
+
+component Head inherits Rectangle {
+    height: Theme.header-height;
+
+    HorizontalLayout {
+        IconBtn {
+            background: Colors.transparent;
+            icon: Icons.back;
+            text: Logic.tr("设置");
+
+            clicked => {
+                // TODO
+                debug("xxx");
+            }
+        }
+    }
+}
+
+component Body inherits Rectangle {
+    background: green;
+}
+
+export component Setting inherits VerticalLayout {
+    visible: TabIndex.Setting == Store.current-tab-index;
+    spacing: Theme.spacing;
+
+    head := Head {}
+    body := Body {}
+}
+

@@ -1,0 +1,42 @@
+import { Theme } from "../theme.slint";
+
+export component TabBtn inherits Rectangle {
+    in-out property icon <=> img.source;
+    in-out property colorize <=> img.colorize;
+    in-out property icon-width <=> img.width;
+    in-out property icon-rotation-angle <=> img.rotation-angle;
+    in-out property text <=> txt.text;
+
+    callback clicked <=> touch.clicked;
+
+    in-out property<color> bg-color: transparent;
+    in-out property<color> bg-pressed-color: Theme.pressed-color;
+
+    background: touch.pressed ? bg-pressed-color : bg-color;
+
+    animate background {
+        duration: Theme.default-animate-duration;
+        easing: ease-in-out;
+    }
+
+    VerticalLayout {
+        padding: 1px;
+        HorizontalLayout {
+            alignment: center;
+            img := Image {
+                width: Theme.icon-size;
+                colorize: Theme.basic-black-color;
+            }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            txt :=  Text {
+                font-size: Theme.default-font-size * 0.6;
+                color: root.colorize;
+            }
+        }
+    }
+
+    touch := TouchArea { }
+}

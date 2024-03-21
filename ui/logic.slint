@@ -8,5 +8,10 @@ export global Logic {
 
     callback setting-cancel();
     callback setting-ok(SettingDialogConfig);
+
+    pure callback tr(string) -> string;
+    tr(text) => {
+        return text;
+    }
 }
 

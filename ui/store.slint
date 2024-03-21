@@ -1,4 +1,8 @@
-import { Translator, Translation} from "./translator.slint";
+export enum TabIndex {
+    Rss,
+    Add,
+    Setting,
+}
 
 export struct MessageItem {
     text: string,
@@ -16,8 +20,6 @@ export struct OkCancelDialogSetting {
 export struct SettingUI {
     font-size: string,
     font-family: string,
-    win-width: string,
-    win-height: string,
     language: string,
 }
 
@@ -41,16 +43,17 @@ export struct AboutDialog {
 }
 
 export global Store  {
+    out property<TabIndex> current-tab-index: TabIndex.Setting;
+
     in-out property<MessageItem> message;
     in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
+    in-out property<bool> is-cn:  setting-dialog-config.ui.language == "cn";
 
     in-out property<SettingDialogConfig> setting-dialog-config: {
         show: false,
         ui: {
-            font-size: "18",
+            font-size: "16",
             font-family: "SourceHanSerifCN",
-            win-width: "650",
-            win-height: "550",
             language: "cn",
         },
         proxy: {
@@ -66,8 +69,6 @@ export global Store  {
         text: "Based on Slint-UI. Copyright 2022-2030 The Heng30 Company Ltd. All rights reserved. The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.",
         sponsor: "0xf1199999751b1a3A74590adBf95401D19AB30014",
     };
-
-    in-out property<Translation> translator: Translator.translation(setting-dialog-config.ui.language == "cn");
 
     in-out property<{show: bool, text-cn: string, text-en: string}> help-dialog: {
         show: false,
@@ -85,4 +86,11 @@ export global Store  {
             + "\nNote:\n"
             + "  1. Use blockstream API to broadcast transation, fetch UTXO and other on chain information.\n",
     };
+
+
+    public function switch-tab(tab-index: TabIndex) {
+        current-tab-index = tab-index;
+    }
 }
+
+

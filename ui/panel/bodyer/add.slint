@@ -1,0 +1,22 @@
+import { Theme } from "../../theme.slint";
+import { Store, TabIndex } from "../../store.slint";
+import { Logic } from "../../logic.slint";
+
+component Head inherits Rectangle {
+    height: Theme.header-height;
+    background: black;
+}
+
+component Body inherits Rectangle {
+    background: red;
+}
+
+export component Add inherits VerticalLayout {
+    visible: TabIndex.Add == Store.current-tab-index;
+    spacing: Theme.spacing;
+
+    head := Head {}
+    body := Body {}
+}
+
+

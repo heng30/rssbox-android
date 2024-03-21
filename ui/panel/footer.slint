@@ -1,10 +1,39 @@
-import { Theme } from "../theme.slint";
-import { Store } from "../store.slint";
+import { Theme, Icons } from "../theme.slint";
+import { Store, TabIndex } from "../store.slint";
 import { Logic } from "../logic.slint";
-import { Util } from "../util.slint";
+import { TabBtn } from "../base/widget.slint";
 
 export component Footer inherits Rectangle {
     height: Theme.footer-height;
-    background: red;
+
+    HorizontalLayout {
+        TabBtn {
+            icon: Icons.rss-fill;
+            text: Logic.tr("订阅");
+
+            clicked => {
+                Store.switch-tab(TabIndex.Rss);
+            }
+        }
+
+        TabBtn {
+            icon: Icons.add-fill;
+            text: Logic.tr("添加");
+
+            clicked => {
+                Store.switch-tab(TabIndex.Add);
+            }
+        }
+
+        TabBtn {
+            icon: Icons.setting-fill;
+            text: Logic.tr("设置");
+
+            clicked => {
+                Store.switch-tab(TabIndex.Setting);
+            }
+        }
+    }
+
 }
 

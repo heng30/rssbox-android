@@ -33,4 +33,4 @@ clean:
 	cargo clean
 
 slint-view:
-	slint-viewer --style fluent --auto-reload -I rssbox/ui ./rssbox/ui/appwindow.slint
+	slint-viewer --style fluent --auto-reload -I ui ./ui/appwindow.slint
