@@ -10,23 +10,24 @@ mod logic;
 mod util;
 mod version;
 
+use anyhow::Result;
 use logic::{clipboard, message};
 
-use anyhow::Result;
-use chrono::Local;
-use env_logger::fmt::Color as LColor;
-use std::io::Write;
-
+#[cfg(not(target_os = "android"))]
 fn init_logger() {
+    use chrono::Local;
+    use env_logger::fmt::Color;
+    use std::io::Write;
+
     env_logger::builder()
         .format(|buf, record| {
             let ts = Local::now().format("%Y-%m-%d %H:%M:%S");
             let mut level_style = buf.style();
             match record.level() {
                 log::Level::Warn | log::Level::Error => {
-                    level_style.set_color(LColor::Red).set_bold(true)
+                    level_style.set_color(Color::Red).set_bold(true)
                 }
-                _ => level_style.set_color(LColor::Blue).set_bold(true),
+                _ => level_style.set_color(Color::Blue).set_bold(true),
             };
 
             writeln!(
@@ -47,10 +48,22 @@ fn init_logger() {
         .init();
 }
 
-async fn ui_before() -> Result<()> {
+#[cfg(target_os = "android")]
+fn init_logger() {
+    android_logger::init_once(
+        android_logger::Config::default()
+            .with_max_level(log::LevelFilter::Trace)
+            .with_filter(
+                android_logger::FilterBuilder::new()
+                    .filter_level(log::LevelFilter::Debug)
+                    .build(),
+            ),
+    );
+}
+
+fn ui_before() {
     init_logger();
     config::init();
-    Ok(())
 }
 
 fn ui_after(ui: &AppWindow) {
@@ -61,26 +74,28 @@ fn ui_after(ui: &AppWindow) {
 
 #[cfg(not(target_os = "android"))]
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() {
     log::debug!("start...");
 
-    ui_before().await?;
-    let ui = AppWindow::new()?;
+    ui_before();
+    let ui = AppWindow::new().unwrap();
     ui_after(&ui);
     ui.run().unwrap();
 
     log::debug!("exit...");
-    Ok(())
 }
 
 #[cfg(target_os = "android")]
 #[no_mangle]
 #[tokio::main]
 async fn android_main(app: slint::android::AndroidApp) {
-    slint::android::init(app).unwrap();
+    log::debug!("start...");
 
-    ui_before().await.unwrap();
+    slint::android::init(app).unwrap();
+    ui_before();
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
     ui.run().unwrap();
+
+    log::debug!("exit...");
 }

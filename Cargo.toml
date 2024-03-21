@@ -8,30 +8,31 @@ crate-type = ["cdylib"]
 
 [dependencies]
 log = "0.4"
-env_logger = "0.10"
 chrono = "0.4"
 anyhow = "1.0"
-serde_json = "1.0"
-lazy_static = "1.4"
 clipboard = "0.5"
 webbrowser = "0.8"
+serde_json = "1.0"
+lazy_static = "1.4"
 
 uuid = { version = "1.6", features = ["v4"] }
 tokio = {version = "1.35", features = ["full"]}
 serde = { version = "1.0", features = ["serde_derive"] }
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
+slint = "1.5"
+env_logger = "0.10"
 platform-dirs = "0.3"
 reqwest = { version = "0.11", features = ["json", "socks"]}
-slint = { version = "1.5", features = ["backend-android-activity-05"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
-reqwest = { version = "0.11", features = ["rustls-tls", "native-tls-vendored",  "json", "socks"]}
+android_logger = "0.13"
 slint = { version = "1.5", features = ["backend-android-activity-05"] }
+reqwest = { version = "0.11", features = ["rustls-tls", "native-tls-vendored",  "json", "socks"]}
 
 [build-dependencies]
-slint-build = "1.5"
 cmd_lib = "1.9"
+slint-build = "1.5"
 
 [target.'cfg(target_os = "windows")'.build-dependencies]
 embed-resource = "2.4"
