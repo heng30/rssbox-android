@@ -9,7 +9,7 @@ export component Footer inherits Rectangle {
     HorizontalLayout {
         TabBtn {
             icon: Icons.rss-fill;
-            text: Logic.tr("订阅");
+            text: Logic.tr(Store.is-cn, "订阅");
 
             clicked => {
                 Store.switch-tab(TabIndex.Rss);
@@ -18,7 +18,7 @@ export component Footer inherits Rectangle {
 
         TabBtn {
             icon: Icons.add-fill;
-            text: Logic.tr("添加");
+            text: Logic.tr(Store.is-cn, "添加");
 
             clicked => {
                 Store.switch-tab(TabIndex.Add);
@@ -27,7 +27,7 @@ export component Footer inherits Rectangle {
 
         TabBtn {
             icon: Icons.setting-fill;
-            text: Logic.tr("设置");
+            text: Logic.tr(Store.is-cn, "设置");
 
             clicked => {
                 Store.switch-tab(TabIndex.Setting);

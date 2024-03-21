@@ -22,7 +22,7 @@ export component IconBtn inherits Rectangle {
     }
 
     hbox := HorizontalLayout {
-        spacing: text != "" ? Theme.spacing * 2 : 0px;
+        spacing: txt.visible ? Theme.spacing * 2 : 0px;
 
         img := Image {
             width: Theme.icon-size;
@@ -31,6 +31,8 @@ export component IconBtn inherits Rectangle {
 
         txt := Label {
             visible: text != "";
+            width: self.visible ? self.preferred-width : 0px;
+            color: img.colorize;
         }
     }
 

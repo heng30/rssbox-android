@@ -25,7 +25,7 @@ export component TabBtn inherits Rectangle {
             alignment: center;
             img := Image {
                 width: Theme.icon-size;
-                colorize: Theme.basic-black-color;
+                colorize: Theme.icon-color;
             }
         }
 
@@ -33,7 +33,7 @@ export component TabBtn inherits Rectangle {
             alignment: center;
             txt :=  Text {
                 font-size: Theme.default-font-size * 0.6;
-                color: root.colorize;
+                color: img.colorize;
             }
         }
     }

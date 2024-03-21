@@ -1,6 +1,7 @@
 #!/bin/bash
 
-build-evn=SLINT_STYLE=fluent
+# build-evn=SLINT_STYLE=fluent
+build-evn=SLINT_STYLE=material
 run-evn=RUST_LOG=error,warn,info,debug,sqlx=off,reqwest=off
 
 all: build-release
@@ -33,4 +34,4 @@ clean:
 	cargo clean
 
 slint-view:
-	slint-viewer --style fluent --auto-reload -I ui ./ui/appwindow.slint
+	slint-viewer --style material --auto-reload -I ui ./ui/appwindow.slint

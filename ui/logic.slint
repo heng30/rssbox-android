@@ -1,6 +1,18 @@
-import { SettingDialogConfig, Store } from "./store.slint";
+import { RssConfig, RssEntry, SettingDialogConfig } from "./store.slint";
 
 export global Logic {
+    callback new-rss(RssConfig);
+    callback save-rss(string, RssConfig);
+    callback delete-rss(string);
+    callback switch-rss(string, string);
+    callback toggle-rss-mark(int, string);
+    callback sync-rss(string);
+
+    callback remove-entry(string, string);
+    callback remove-all-entry(string);
+    callback set-read-entry(string, string);
+    callback open-url(string);
+
     callback clean-cache();
     callback copy-to-clipboard(string);
     callback show-message(string, string);
@@ -9,9 +21,15 @@ export global Logic {
     callback setting-cancel();
     callback setting-ok(SettingDialogConfig);
 
-    pure callback tr(string) -> string;
-    tr(text) => {
+    pure callback tr(bool, string) -> string;
+    tr(is-cn, text) => {
         return text;
     }
+
+    pure callback unread-counts([RssEntry], int, bool) -> int;
+    unread-counts(entrys, counts, flag) => { return entrys.length; }
+
+    pure callback get-update-time(string, bool) -> string;
+    get-update-time(suuid) => { return "2023-09-14 19:11"; }
 }
 

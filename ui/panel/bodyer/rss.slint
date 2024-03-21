@@ -1,22 +1,263 @@
-import { Theme } from "../../theme.slint";
+import { ListView } from "std-widgets.slint";
+import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex } from "../../store.slint";
 import { Logic } from "../../logic.slint";
+import { IconBtn, Tag, NoMessageImg, CenterLayout } from "../../base/widget.slint";
+import { Theme } from "../../theme.slint";
 
 component Head inherits Rectangle {
+    callback clicked <=> icon.clicked;
+    callback scroll-to-top <=> ta.clicked;
+
     height: Theme.header-height;
-    background: green;
+
+    HorizontalLayout {
+        x: Theme.padding;
+
+        icon := IconBtn {
+            background: Colors.transparent;
+            icon: Icons.list;
+            text: Logic.tr(Store.is-cn, "订阅");
+        }
+
+        ta := TouchArea { }
+    }
+}
+
+
+component ListItem inherits Rectangle {
+    private property<length> item-height: 40px;
+    private property<color> selected-item-color: Theme.brand-color.darker(30%);
+
+    callback switch-rss();
+
+    Flickable {
+        viewport-height: Store.rss-lists.length * root.item-height;
+
+        for data[index] in Store.rss-lists : VerticalLayout {
+            y: index * item-height;
+            height: root.item-height;
+
+            Rectangle {
+                touch := TouchArea {
+                    clicked => {
+                        Logic.switch-rss(Store.current-rss-uuid, data.uuid);
+                        root.switch-rss();
+                    }
+                }
+
+                HorizontalLayout {
+                    padding-left: Theme.padding;
+
+                    VerticalLayout {
+                        alignment: center;
+                        height: root.item-height;
+                        padding-right: Theme.padding * 2;
+
+                        Rectangle {
+                            width: 3px;
+                            height: 60%;
+                            border-radius: 2px;
+                            background: data.uuid == Store.current-rss-uuid ?  root.selected-item-color : Colors.transparent;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Theme.spacing * 2;
+
+                        VerticalLayout {
+                            alignment: center;
+                            Image {
+                                source: Store.icon-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icon-dialog-setting.icons.length - 1))];
+                                colorize: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
+                                width: Theme.enlarge-font-size * 1.2;
+                            }
+                        }
+
+                        name-txt := Text {
+                            color: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
+                            text: data.name;
+                            font-size: Theme.enlarge-font-size;
+                            overflow: elide;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        alignment: end;
+                        spacing: Theme.spacing;
+                        padding-left: Theme.padding;
+
+                        VerticalLayout {
+                            property<int> unread-counts: Logic.unread-counts(data.entry, data.entry.length, data.unread-counts-flag);
+
+                            visible: self.unread-counts > 0;
+                            alignment: center;
+                            height: root.item-height;
+                            unread-tag := Tag {
+                                text: parent.unread-counts;
+                                text-color: Theme.danger-color;
+                                background: Colors.transparent;
+                            }
+                        }
+
+                        VerticalLayout {
+                            alignment: center;
+                            IconBtn {
+                                icon: Icons.star ;
+                                colorize: data.is-mark ? Theme.mark-color : Theme.unmark-color;
+                                clicked => {
+                                    Logic.toggle-rss-mark(index, data.uuid);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+component RssList inherits Rectangle {
+    in-out property <bool> is-show-list : false;
+
+    rect := Rectangle {
+        animate width {
+            duration: Theme.default-animate-duration;
+            easing: ease-in-out;
+        }
+
+        x: 0px;
+        width: root.is-show-list ? 70% : 0%;
+        background: Theme.light-fill-color;
+
+        ListItem { switch-rss => { root.is-show-list = false; } }
+    }
+
+    TouchArea {
+        x: rect.width;
+        width: root.width - rect.width;
+        visible: root.is-show-list;
+        clicked => { root.is-show-list = false; }
+    }
+}
+
+export component Entry inherits Rectangle {
+    in-out property title <=> title-txt.text;
+    in-out property pub-date-text <=> pub-date-txt.text;
+    in-out property<string> summary;
+    in-out property<string> author;
+    in-out property<string> tag-text;
+    in-out property<bool> is-read: false;
+    in-out property<string> uuid;
+    in-out property<string> suuid;
+    in-out property<string> url;
+
+    background: Theme.light-fill-color;
+    border-radius: Theme.border-radius;
+
+    drop-shadow-blur: Theme.padding * 4;
+    drop-shadow-color: Theme.dark-fill-color;
+
+    VerticalLayout {
+        padding: Theme.padding * 2;
+        spacing: Theme.spacing * 2;
+
+        title-txt := Text {
+            wrap: word-wrap;
+            color: touch.pressed ? Theme.link-text-color : (root.is-read ? Theme.have-read-text-color : Theme.primary-text-color);
+
+            touch := TouchArea {
+                clicked => {
+                    Logic.set-read-entry(Store.current-rss-uuid, root.uuid);
+                    Logic.open-url(root.url);
+                }
+            }
+        }
+
+        if root.summary != "" : Text {
+            font-size: Theme.default-font-size - 2px;
+            height: parent.visible ? self.preferred-height : 0px;
+            color: root.is-read ? Theme.have-read-text-color : Theme.regular-text-color;
+            wrap: word-wrap;
+            text: root.summary;
+        }
+
+        HorizontalLayout {
+            alignment: end;
+            spacing: Theme.padding * 4;
+
+            author-txt := Text {
+                visible: root.author != "";
+                font-size: Theme.default-font-size - 4px;
+                color: Theme.secondary-text-color;
+                text: Logic.tr(Store.is-cn, "作者") + root.author;
+            }
+
+            pub-date-txt := Text {
+                font-size: Theme.default-font-size - 4px;
+                color: Theme.secondary-text-color;
+            }
+        }
+    }
+}
+
+export component EntryList inherits Rectangle {
+    clip: true;
+
+    public function scroll-to-top()  {
+        lv.viewport-y = 0;
+    }
+
+    if Store.rss-entry.length <= 0 : CenterLayout {
+        NoMessageImg {
+            width: root.width * 0.6;
+            text: Logic.tr(Store.is-cn, "没有消息");
+        }
+    }
+
+    lv := ListView {
+        x: 0px;
+        width: root.width + Theme.scroll-width;
+
+        for item[index] in Store.rss-entry : VerticalLayout {
+            padding: Theme.padding / 2;
+
+            Entry {
+                uuid: item.uuid;
+                suuid: item.suuid;
+                title: item.title;
+                author: item.author;
+                summary: item.summary;
+                tag-text: item.tags;
+                pub-date-text: item.pub-date;
+                is-read: item.is-read;
+                url: item.url;
+            }
+        }
+    }
 }
 
 component Body inherits Rectangle {
-    background: pink;
-}
+    in-out property is-show-rsslist <=> rsslist.is-show-list;
 
+    public function entrylist-scroll-to-top() {
+        entrylist.scroll-to-top();
+    }
+
+    entrylist := EntryList {}
+    rsslist := RssList { }
+}
 
 export component Rss inherits VerticalLayout {
     visible: TabIndex.Rss == Store.current-tab-index;
-    spacing: Theme.spacing;
 
-    head := Head {}
-    body := Body {}
+    head := Head {
+        clicked => { body.is-show-rsslist = !body.is-show-rsslist; }
+        scroll-to-top => { body.entrylist-scroll-to-top(); }
+    }
+
+    body := Body { }
 }
 

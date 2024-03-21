@@ -34,7 +34,7 @@ export global Theme  {
     out property<color> info-color: #909399;
     out property<color> discovery-color: #6E5DC6;
     out property<color> mark-color: Theme.warning-color;
-    out property<color> unmark-color: Colors.white;
+    out property<color> unmark-color: Theme.dark-fill-color;
 
     out property<color> basic-black-color: #000000;
     out property<color> basic-white-color: #FFFFFF;
@@ -50,7 +50,7 @@ export global Theme  {
     out property<color> placeholder-text-color: #A8ABB2;
     out property<color> disabled-text-color: #C0C4CC;
 
-    out property<color> icon-color: #333333;
+    out property<color> icon-color: #515151;
     out property<color> brand-border-color: #005FB8;
     out property<color> base-border-color: #DCDFE6;
     out property<color> darker-border-color: #CDD0D6;
@@ -64,8 +64,11 @@ export global Theme  {
     out property<color> light-fill-color: base-fill-color.brighter(5%);
     out property<color> lighter-fill-color: light-fill-color.brighter(10%);
 
+    out property<color> have-read-text-color: #606060;
     out property<color> link-text-color: #005FB8.darker(10%);
     out property<color> avatar-color: primary-text-color.brighter(50%);
+
+    out property<[color]> tag-colors: [#CCE0FF, #BAF3DB, #C1F0F5, #DFD8FD, #FFD2CC, #FDD0EC, #D3F1A7, #DCDFE4];
 }
 
 export global Icons  {
@@ -73,4 +76,8 @@ export global Icons  {
     out property<image> setting-fill: @image-url("./images/setting-fill.svg");
     out property<image> add-fill: @image-url("./images/add-fill.svg");
     out property<image> back: @image-url("./images/back.svg");
+    out property<image> list: @image-url("./images/list.svg");
+    out property<image> star: @image-url("./images/star.svg");
+    out property<image> no-message: @image-url("./images/no-message.svg");
+    out property<image> no-data: @image-url("./images/no-data.svg");
 }

@@ -3,6 +3,46 @@ export enum TabIndex {
     Add,
     Setting,
 }
+export struct RssEntry {
+    uuid: string,
+    url: string,
+    title: string,
+    pub-date: string,
+    tags: string,
+    author: string,
+    summary: string,
+
+    suuid: string,
+    is-read: bool,
+}
+
+export struct RssList {
+    uuid: string,
+    name: string,
+    url: string,
+    use-proxy: bool,
+    icon-index: int,
+    feed_format: string,
+    update-time: string,
+    is-mark: bool,
+    entry: [RssEntry],
+
+    unread-counts-flag: bool,
+}
+
+export struct RssConfig {
+    uuid: string,
+    name: string,
+    url: string,
+    use-proxy: bool,
+    icon-index: int,
+    feed_format: string,
+}
+
+export struct IconDialogSetting {
+    show: bool,
+    icons: [image],
+}
 
 export struct MessageItem {
     text: string,
@@ -43,7 +83,63 @@ export struct AboutDialog {
 }
 
 export global Store  {
-    out property<TabIndex> current-tab-index: TabIndex.Setting;
+    out property<TabIndex> current-tab-index: TabIndex.Rss;
+
+    in-out property<[RssEntry]> rss-entry: [
+        {
+            uuid: "42342e2jkfjk",
+            url: "https://www.zhihu.com/rss",
+            pub-date: "2023-10-22 23:12:34",
+            tags: "rust",
+            is-read: false,
+            author: "hello",
+            title: "Actors may modify their own private state, but can only affect each other indirectly through messaging (removing the need for lock-based synchronization).",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
+        },
+        {
+            uuid: "xx2342jkfjk",
+            url: "https://bing.com",
+            pub-date: "2023-11-12 13:12:34",
+            tags: "slint-ui, rust",
+            is-read: true,
+            title: "hello world",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
+        },
+        {
+            uuid: "2342jkfjk",
+            url: "http://azure.com",
+            pub-date: "2023-11-12 13:12:34",
+            is-read: true,
+            title: "hello rust",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
+        },
+        {
+            uuid: "2342jkfjk",
+            url: "http://azure.com",
+            pub-date: "2023-11-12 13:12:34",
+            is-read: true,
+            title: "hello rust",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
+        }
+    ];
+
+    in-out property<string> current-rss-uuid: rss-lists[0].uuid;
+    in-out property<[RssList]> rss-lists: [
+        {
+            uuid: "uuid-1",
+            is-mark: true,
+            use_proxy: false,
+            icon-index: 0,
+            name: "测试-1",
+        },
+        {
+            uuid: "uuid-2",
+            is-mark: false,
+            use_proxy: false,
+            icon-index: 0,
+            name: "测试-2",
+        },
+    ];
 
     in-out property<MessageItem> message;
     in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
@@ -87,6 +183,35 @@ export global Store  {
             + "  1. Use blockstream API to broadcast transation, fetch UTXO and other on chain information.\n",
     };
 
+    in-out property<IconDialogSetting> icon-dialog-setting: {
+        show: false,
+        icons : [
+            @image-url("./icons/1.svg"), @image-url("./icons/2.svg"),
+            @image-url("./icons/3.svg"), @image-url("./icons/4.svg"),
+            @image-url("./icons/5.svg"), @image-url("./icons/6.svg"),
+            @image-url("./icons/7.svg"), @image-url("./icons/8.svg"),
+            @image-url("./icons/9.svg"), @image-url("./icons/10.svg"),
+            @image-url("./icons/11.svg"), @image-url("./icons/12.svg"),
+            @image-url("./icons/13.svg"), @image-url("./icons/14.svg"),
+            @image-url("./icons/15.svg"), @image-url("./icons/16.svg"),
+            @image-url("./icons/17.svg"), @image-url("./icons/18.svg"),
+            @image-url("./icons/19.svg"), @image-url("./icons/20.svg"),
+            @image-url("./icons/21.svg"), @image-url("./icons/22.svg"),
+            @image-url("./icons/23.svg"), @image-url("./icons/24.svg"),
+            @image-url("./icons/25.svg"), @image-url("./icons/26.svg"),
+            @image-url("./icons/27.svg"), @image-url("./icons/28.svg"),
+            @image-url("./icons/29.svg"), @image-url("./icons/30.svg"),
+            @image-url("./icons/31.svg"), @image-url("./icons/32.svg"),
+            @image-url("./icons/33.svg"), @image-url("./icons/34.svg"),
+            @image-url("./icons/35.svg"), @image-url("./icons/36.svg"),
+            @image-url("./icons/37.svg"), @image-url("./icons/38.svg"),
+            @image-url("./icons/39.svg"), @image-url("./icons/40.svg"),
+            @image-url("./icons/41.svg"), @image-url("./icons/42.svg"),
+            @image-url("./icons/43.svg"), @image-url("./icons/44.svg"),
+            @image-url("./icons/45.svg"), @image-url("./icons/46.svg"),
+            @image-url("./icons/47.svg"), @image-url("./icons/48.svg"),
+        ],
+    };
 
     public function switch-tab(tab-index: TabIndex) {
         current-tab-index = tab-index;
