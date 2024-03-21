@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { Logic } from "../logic.slint";
+import { Store } from "../store.slint";
+import { Header } from "./header.slint";
+import { Bodyer } from "./bodyer/panel.slint";
+import { Footer } from "./footer.slint";
+
+export component Panel inherits VerticalLayout {
+    padding: Theme.padding;
+    spacing: Theme.spacing;
+
+    header := Header {}
+    bodyer := Bodyer {
+        height: parent.height - header.height - footer.height - parent.spacing * 2 - parent.padding * 2;
+    }
+    footer := Footer {}
+}
+

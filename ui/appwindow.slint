@@ -1,0 +1,61 @@
+import { Theme } from "./theme.slint";
+import { Logic } from "./logic.slint";
+import { Store } from "./store.slint";
+import { Util } from "./util.slint";
+import { Panel } from "./panel/panel.slint";
+import { Message } from "./base/message.slint";
+
+export component AppWindow inherits Window {
+    default-font-size: Theme.default-font-size;
+    default-font-family: Theme.default-font-family;
+    // width: Theme.default-width;
+    // height: Theme.default-height;
+    background: Theme.base-background;
+    icon: @image-url("./images/icon.png");
+    title: "rssbox";
+
+    init => { }
+
+    fscope := FocusScope {
+        property <bool> is-ctrl-pressed: false;
+        key-pressed(event) => {
+            if (event.text == Key.Control) {
+                is-ctrl-pressed = true;
+            } else if (event.text == Key.Escape) {
+                modal.hide();
+            }
+
+            if (is-ctrl-pressed) {
+                if (event.text == ",") { }
+            }
+            accept
+        }
+
+        key-released(event) => {
+            if (event.text == Key.Control) {
+                is-ctrl-pressed = false;
+            }
+            accept
+        }
+
+        HorizontalLayout {
+            panel := Panel { }
+        }
+
+        modal := Rectangle {
+            function hide() { }
+        }
+
+        msg := Message {
+            x: root.width / 2 - self.width / 2;
+            y: 50px;
+            text: Store.message.text;
+            type: Store.message.text-type;
+            clicked => {
+                Logic.copy-to-clipboard(self.text);
+            }
+        }
+    }
+}
+
+export { Util, Logic, Store }

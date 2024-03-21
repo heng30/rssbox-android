@@ -1,0 +1,74 @@
+import { Store } from "./store.slint";
+import "./fonts/monospace.ttf";
+import "./fonts/FiraCode-Regular.ttf";
+import "./fonts/SourceHanSerifCN.ttf";
+
+export global Theme  {
+    out property<length> padding: 4px;
+    out property<length> spacing: 4px;
+    out property<length> header-height: 35px;
+    out property<length> footer-height: 35px;
+    out property<length> balance-height: 100px;
+    out property<length> border-radius: 4px;
+    out property<length> scroll-width: 12px;
+    out property<length> dialog-max-width: 600px;
+
+    in-out property<length> default-width: Store.setting-dialog-config.ui.win-width.to-float() * 1px;
+    in-out property<length> default-height: Store.setting-dialog-config.ui.win-height.to-float() * 1px;
+    in-out property<length> default-font-size: Store.setting-dialog-config.ui.font-size.to-float() * 1px;
+    in-out property<length> enlarge-font-size: default-font-size + 1px;
+    in-out property<length> body-font-size: default-font-size + 2px;
+    in-out property<length> code-font-size: default-font-size + 2px;
+    in-out property<length> title4-font-size: default-font-size + 2px;
+    in-out property<length> title3-font-size: default-font-size + 4px;
+    in-out property<length> title2-font-size: default-font-size + 6px;
+    in-out property<length> title1-font-size: default-font-size + 8px;
+
+    in-out property<string> default-font-family: Store.setting-dialog-config.ui.font-family;
+    in-out property<string> code-font-family: "FiraCode";
+
+    out property<length> icon-size: 24px;
+    out property<length> avatar-size: 32px;
+    out property<length> default-label-width: 150px;
+    out property<duration> default-animate-duration: 200ms;
+
+    out property<color> brand-color: #409EFF;
+    out property<color> success-color: #67C23A;
+    out property<color> warning-color: #E6A23C;
+    out property<color> danger-color: #F56C6C;
+    out property<color> info-color: #909399;
+    out property<color> discovery-color: #6E5DC6;
+    out property<color> mark-color: Theme.warning-color;
+    out property<color> unmark-color: Colors.white;
+
+    out property<color> basic-black-color: #000000;
+    out property<color> basic-white-color: #FFFFFF;
+    out property<color> base-background: #FFFFFF;
+
+    out property<color> hover-color: Colors.lightgray;
+    out property<color> hover-color-dark: hover-color.darker(15%);
+    out property<color> label-hover-color: darker-fill-color;
+    in-out property<color> code-background: dark-fill-color;
+
+    out property<color> primary-text-color: #202123;
+    out property<color> regular-text-color: primary-text-color.brighter(50%);
+    out property<color> secondary-text-color: primary-text-color.brighter(100%);
+    out property<color> placeholder-text-color: #A8ABB2;
+    out property<color> disabled-text-color: #C0C4CC;
+
+    out property<color> brand-border-color: #005FB8;
+    out property<color> base-border-color: #DCDFE6;
+    out property<color> darker-border-color: #CDD0D6;
+    out property<color> dark-border-color: #D4D7DE;
+    out property<color> light-border-color: #E4E7ED;
+    out property<color> lighter-border-color: #EBEEF5;
+
+    out property<color> base-fill-color: #E8F2FD;
+    out property<color> dark-fill-color: base-fill-color.darker(5%);
+    out property<color> darker-fill-color: dark-fill-color.darker(5%);
+    out property<color> light-fill-color: base-fill-color.brighter(5%);
+    out property<color> lighter-fill-color: light-fill-color.brighter(10%);
+
+    out property<color> link-text-color: #005FB8.darker(10%);
+    out property<color> avatar-color: primary-text-color.brighter(50%);
+}
