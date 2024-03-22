@@ -11,10 +11,12 @@ export global Logic {
     update-time-rss => { return "10-33 12:09:45"; }
 
     callback sync-rss(string); // suuid
-
-    callback remove-entry(string, string);
-    callback remove-all-entrys(string);
-    callback set-read-entry(string, string);
+    callback favorite-entry(string, string); // suuid, uuid
+    callback remove-entry(string, string); // suuid, uuid
+    callback remove-all-entrys(string); // suuid
+    callback remove-favorite-entry(string); // uuid
+    callback remove-all-favorite-entrys();
+    callback set-read-entry(string, string); // suuid, uuid
     callback open-url(string);
 
     callback clean-cache();

@@ -35,20 +35,6 @@ component Head inherits Rectangle {
         HorizontalLayout {
             spacing: Theme.padding * 3;
 
-             CenterLayout {
-                remove-all-icon := IconBtn {
-                    icon: Icons.delete;
-
-                    clicked => {
-                        Store.ok-cancel-dialog-setting.title-type = "warning";
-                        Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
-                        Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除");
-                        Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-entrys";
-                        Store.ok-cancel-dialog-setting.handle-uuid = Store.current-rss-uuid;
-                    }
-                }
-            }
-
             CenterLayout {
                 refresh-icon := IconBtn {
                     icon: Icons.refresh;
@@ -57,10 +43,23 @@ component Head inherits Rectangle {
                     clicked => { Logic.sync-rss(Store.current-rss-uuid); }
                 }
             }
+
+             CenterLayout {
+                remove-all-icon := IconBtn {
+                    icon: Icons.delete;
+
+                    clicked => {
+                        Store.ok-cancel-dialog-setting.title-type = "warning";
+                        Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                        Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
+                        Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-entrys";
+                        Store.ok-cancel-dialog-setting.handle-uuid = Store.current-rss-uuid;
+                    }
+                }
+            }
         }
     }
 }
-
 
 component RssListItems inherits Rectangle {
     private property<length> item-height: 40px;
@@ -267,12 +266,24 @@ export component EntryList inherits Rectangle {
         width: root.width + Theme.scroll-width;
 
         for item[index] in Store.rss-entry : rect := Rectangle {
-            private property<length> max-move-pixels-up-bound: self.width * 0.06;
-            private property<length> max-move-pixels-low-bound: self.width * 0.03;
+            private property<length> max-move-pixels-up-bound: self.width * 0.04;
+            private property<length> max-move-pixels-low-bound: self.width * 0.02;
             private property<bool> is-show-opt: false;
             private property<bool> is-hide-opt: true;
 
             // x: -opt.width - Theme.padding;
+
+            public function show-opt() {
+                rect.x = -opt.width - Theme.padding;
+                rect.is-show-opt = true;
+                rect.is-hide-opt = false;
+            }
+
+            public function hide-opt() {
+                rect.x = 0;
+                rect.is-hide-opt = true;
+                rect.is-show-opt = false;
+            }
 
             animate x {
                 duration: Theme.default-animate-duration;
@@ -289,17 +300,13 @@ export component EntryList inherits Rectangle {
 
                     if (!rect.is-show-opt) {
                         if (self.pressed-x - self.mouse-x > parent.max-move-pixels-up-bound) {
-                            rect.x = -opt.width - Theme.padding;
-                            rect.is-show-opt = true;
-                            rect.is-hide-opt = false;
+                            rect.show-opt();
                         }
                     }
 
                     if (!rect.is-hide-opt) {
                         if (self.mouse-x - self.pressed-x > parent.max-move-pixels-up-bound) {
-                            rect.x = 0;
-                            rect.is-hide-opt = true;
-                            rect.is-show-opt = false;
+                            hide-opt();
                         }
                     }
                 }
@@ -329,30 +336,39 @@ export component EntryList inherits Rectangle {
 
             opt := VerticalLayout {
                 x: entry-vbox.width + Theme.padding;
-                spacing: Theme.spacing / 2;
                 width: 50px;
-                height: entry-vbox.height - entry-vbox.padding * 2;
+                height: entry-vbox.height - entry-vbox.padding * 2 - Theme.padding;
                 alignment: center;
 
                 Rectangle {
                     height: 50%;
-                    background: Theme.danger-color;
                     IconBtn {
                         width: 100%;
                         height: 100%;
-                        icon: Icons.delete;
+                        icon: Icons.star;
                         border-radius: 0;
+                        colorize: Theme.mark-color;
+
+                        clicked => {
+                            rect.hide-opt();
+                            Logic.favorite-entry(Store.current-rss-uuid, item.uuid);
+                        }
                     }
                 }
 
                 Rectangle {
                     height: 50%;
-                    background: Theme.info-color;
                     IconBtn {
                         width: 100%;
                         height: 100%;
-                        icon: Icons.cancel;
+                        icon: Icons.delete;
                         border-radius: 0;
+                        colorize: Theme.danger-color;
+
+                        clicked => {
+                            rect.hide-opt();
+                            Logic.remove-entry(Store.current-rss-uuid, item.uuid);
+                        }
                     }
                 }
             }

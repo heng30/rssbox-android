@@ -1,8 +1,10 @@
 export enum TabIndex {
     Rss,
     Add,
+    Favorite,
     Setting,
 }
+
 export struct RssEntry {
     uuid: string,
     url: string,
@@ -83,7 +85,7 @@ export struct AboutDialog {
 }
 
 export global Store  {
-    out property<TabIndex> current-tab-index: TabIndex.Rss;
+    out property<TabIndex> current-tab-index: TabIndex.Add;
 
     in-out property<[RssEntry]> rss-entry: [
         {
@@ -145,6 +147,29 @@ export global Store  {
             use_proxy: false,
             icon-index: 0,
             name: "测试-2",
+        },
+    ];
+
+    in-out property<[RssEntry]> rss-favorite-entry: [
+        {
+            uuid: "42342e2jkfjk",
+            url: "https://www.zhihu.com/rss",
+            pub-date: "2023-10-22 23:12:34",
+            tags: "rust",
+            is-read: false,
+            author: "hello",
+            title: "Actors may modify their",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
+        },
+        {
+            uuid: "42342e2jkfjk",
+            url: "https://www.zhihu.com/rss",
+            pub-date: "2023-10-22 23:12:34",
+            tags: "rust",
+            is-read: false,
+            author: "hello",
+            title: "收藏测试-1",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
         },
     ];
 

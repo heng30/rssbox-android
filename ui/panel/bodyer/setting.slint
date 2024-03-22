@@ -6,11 +6,16 @@ import { IconBtn, Label } from "../../base/widgets.slint";
 component Head inherits Rectangle {
     height: Theme.header-height;
 
-    IconBtn {
-        x: Theme.padding;
-        background: Colors.transparent;
-        icon: Icons.setting-fill;
-        text: Logic.tr(Store.is-cn, "设置");
+    HorizontalLayout {
+        alignment: start;
+        padding-left: Theme.padding;
+        padding-right: Theme.padding;
+
+        IconBtn {
+            background: Colors.transparent;
+            icon: Icons.setting-fill;
+            text: Logic.tr(Store.is-cn, "设置");
+        }
     }
 }
 

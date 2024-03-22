@@ -26,19 +26,14 @@ export component AppWindow inherits Window {
 
         if oc-dialog.visible : Blanket { }
 
-        oc-dialog := OkCancelDialog {
-            width: root.width * 0.8;
-        }
+        oc-dialog := OkCancelDialog { width: root.width * 0.8; }
     }
 
     msg := Message {
-        x: root.width / 2 - self.width / 2;
-        y: 50px;
+        x: root.width / 2 - self.width / 2; y: 50px;
         text: Store.message.text;
         type: Store.message.text-type;
-        clicked => {
-            Logic.copy-to-clipboard(self.text);
-        }
+        clicked => { Logic.copy-to-clipboard(self.text); }
     }
 }
 

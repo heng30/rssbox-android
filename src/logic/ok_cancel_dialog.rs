@@ -12,6 +12,10 @@ pub fn init(ui: &AppWindow) {
                     ui.global::<Logic>()
                         .invoke_remove_all_entrys(handle_uuid);
                 }
+                "remove-rss-all-favorite-entrys" => {
+                    ui.global::<Logic>()
+                        .invoke_remove_all_favorite_entrys();
+                }
                 _ => (),
             }
         });

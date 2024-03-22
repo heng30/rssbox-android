@@ -3,8 +3,7 @@ import { Store } from "../store.slint";
 import { Logic } from "../logic.slint";
 import { IconBtn } from "./icon-btn.slint";
 import { CenterLayout } from "./center-layout.slint";
-
-import { Button } from "std-widgets.slint";
+import { Btn } from "./btn.slint";
 
 export component Dialog inherits Rectangle {
     in-out property title <=> txt.text;
@@ -53,7 +52,7 @@ export component Dialog inherits Rectangle {
             spacing: Theme.spacing * 8;
             padding: Theme.padding * 2;
 
-            cancel-btn := Button {
+            cancel-btn := Btn {
                 width: 120px;
                 text: Logic.tr(Store.is-cn, "取消");
                 icon: Icons.cancel;
@@ -61,7 +60,7 @@ export component Dialog inherits Rectangle {
                 clicked => { root.cancel-clicked(); }
             }
 
-            Button {
+            Btn {
                 width: 120px;
                 text: Logic.tr(Store.is-cn, "确认");
                 icon: Icons.success-fill;

@@ -25,25 +25,27 @@ pub fn tr(text: &str) -> String {
     items.insert("下载成功", "Download success");
     items.insert("下载失败", "Download failed");
     items.insert("加载失败", "Load failed");
-    items.insert("密码错误", "Password Invalid");
+    items.insert("密码错误", "Password invalid");
     items.insert("正在重试...", "Retrying...");
     items.insert("正在下载...", "Downloading...");
     items.insert("创建账户成功", "Create account success");
     items.insert("创建账户失败", "Create account failed");
     items.insert("密码错误", "Wrong password");
     items.insert("修改密码成功", "Change password success");
-    items.insert("组记词错误", "Mnemonic is wrong");
-    items.insert("恢复账户失败", "Recover account failed");
-    items.insert("切换网络成功", "Switch network success");
     items.insert("非法输入", "Invalid input");
-    items.insert("生成交易失败", "Generate transaction failed");
-    items.insert("发送交易成功", "Send transaction success");
-    items.insert("发送交易失败", "Send transaction failed");
-    items.insert("非法交易", "Invalid transaction");
+    items.insert("是否删除全部？", "Delete all entrys or not?");
     items.insert("刷新...", "Flush...");
-    items.insert("在线", "Online");
-    items.insert("正忙", "Busy");
-    items.insert("空闲", "Idle");
+
+    items.insert("没有订阅", "No Rss");
+
+    items.insert("警告", "Warning");
+    items.insert("订阅", "Rss");
+    items.insert("收藏夹", "Favorite");
+    items.insert("添加", "Add");
+    items.insert("设置", "Setting");
+
+    items.insert("没有数据", "No Data");
+    items.insert("没有消息", "No Message");
 
     if let Some(txt) = items.get(text) {
         return txt.to_string();

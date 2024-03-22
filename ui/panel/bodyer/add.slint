@@ -1,14 +1,292 @@
-import { Theme } from "../../theme.slint";
-import { Store, TabIndex } from "../../store.slint";
+import { Theme, Icons } from "../../theme.slint";
+import { Store, TabIndex, RssConfig } from "../../store.slint";
 import { Logic } from "../../logic.slint";
+import { Btn, IconBtn, NoMessageImg, Label } from "../../base/widgets.slint";
+import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
+
+enum BtnIndex {
+    New,
+    Edit,
+    Delete,
+}
 
 component Head inherits Rectangle {
     height: Theme.header-height;
-    background: black;
+
+    HorizontalLayout {
+        alignment: start;
+        padding-left: Theme.padding;
+        padding-right: Theme.padding;
+
+        IconBtn {
+            icon-width: Theme.icon-size * 0.7;
+            background: Colors.transparent;
+            icon: Icons.add-fill;
+            text: Logic.tr(Store.is-cn, "添加");
+        }
+    }
 }
 
+component RssList inherits Rectangle {
+    private property<length> item-height: 40px;
+    private property<color> selected-item-color: Theme.dark-fill-color;
+    out property<string> current-uuid;
+
+    if Store.rss-lists.length == 0 : Rectangle {
+        NoMessageImg {
+            width: parent.width * 0.6;
+            text: Logic.tr(Store.is-cn, "没有订阅");
+        }
+    }
+
+    Flickable {
+        viewport-height: Store.rss-lists.length * root.item-height;
+
+        for data[index] in Store.rss-lists : Rectangle {
+            y: index * item-height;
+            height: root.item-height;
+
+            background: data.uuid == root.current-uuid ? root.selected-item-color : Colors.transparent;
+
+            touch := TouchArea {
+                clicked => { root.current-uuid = data.uuid; }
+            }
+
+            HorizontalLayout {
+                padding-left: Theme.padding * 2;
+
+                HorizontalLayout {
+                    spacing: Theme.spacing * 2;
+
+                    VerticalLayout {
+                        alignment: center;
+                        IconBtn {
+                            icon: Store.icon-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icon-dialog-setting.icons.length - 1))];
+                            width: Theme.icon-size * 1.2;
+                            background: Colors.transparent;
+                        }
+                    }
+
+                    Label {
+                        text: data.name;
+                        overflow: elide;
+                    }
+                }
+
+                HorizontalLayout {
+                    alignment: end;
+                    spacing: Theme.spacing * 2;
+                    padding-right: Theme.padding;
+
+                    VerticalLayout {
+                        alignment: center;
+                        IconBtn {
+                            icon: Icons.star;
+                            colorize: data.is-mark ? Theme.mark-color : Theme.unmark-color;
+                            clicked => { Logic.toggle-rss-mark(index, data.uuid); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+component RssListBtns inherits HorizontalLayout {
+    in property<string> current-uuid;
+    private property <length> btn-width: 100px;
+
+    alignment: center;
+    spacing: Theme.spacing * 4;
+    padding: Theme.padding * 4;
+
+    callback current-btn-index(BtnIndex);
+
+    IconBtn {
+        width: root.btn-width; height: 40px;
+        text: Logic.tr(Store.is-cn, "新建");
+        icon: Icons.add-fill;
+        icon-width: Theme.icon-size * 0.8;
+        border-radius: self.height / 2;
+        bg-color: Theme.success-color.darker(10%);
+        bg-pressed-color: self.bg-color.darker(30%);
+        colorize: Theme.basic-white-color;
+
+        clicked => { current-btn-index(BtnIndex.New); }
+    }
+
+    IconBtn {
+        width: root.btn-width;
+        text: Logic.tr(Store.is-cn, "编辑");
+        icon: Icons.edit;
+        border-radius: self.height / 2;
+        bg-color: Theme.info-color;
+        bg-pressed-color: self.bg-color.darker(30%);
+        colorize: self.bg-pressed-color.darker(50%);
+
+        clicked => { current-btn-index(BtnIndex.Edit); }
+    }
+
+    IconBtn {
+        width: root.btn-width;
+        text: Logic.tr(Store.is-cn, "删除");
+        icon: Icons.delete;
+        border-radius: self.height / 2;
+        bg-color: Theme.danger-color;
+        bg-pressed-color: self.bg-color.darker(30%);
+        colorize: self.bg-pressed-color.darker(50%);
+
+        clicked => {
+            current-btn-index(BtnIndex.Delete);
+            Logic.delete-rss(root.current-uuid);
+        }
+    }
+
+}
+
+
+component AddEdit inherits Rectangle {
+    property<length> text-width: Theme.default-label-width;
+    in-out property<int> icon-index: 0;
+
+    public function set(config: RssConfig) {
+        // line-edit-name.text = Store.rss-name(config.uuid, config.name);
+        line-edit-url.text = config.url;
+        use-proxy-checkbox.checked = config.use-proxy;
+        root.icon-index = config.icon-index;
+
+        feed-format-combobox.current-value = config.feed-format;
+        if (config.feed-format == "") {
+            feed-format-combobox.current-value = feed-format-combobox.model[0];
+        }
+    }
+
+    rect := Rectangle {
+        VerticalLayout {
+            padding: Theme.padding;
+            spacing: Theme.spacing * 2;
+
+            HorizontalLayout {
+                txt-name := Label {
+                    width: root.text-width;
+                    // text: Store.translator.rss-dialog-name;
+                }
+
+                line-edit-name := LineEdit {
+                    // placeholder-text: Store.translator.rss-dialog-name-placeholder;
+                }
+
+                VerticalLayout {
+                    alignment: center;
+                    padding-left: Theme.padding;
+                    rss-icon := IconBtn {
+                        icon: Store.icon-dialog-setting.icons[Math.max(0, Math.min(root.icon-index, Store.icon-dialog-setting.icons.length - 1))];
+                        clicked => {
+                            Store.icon-dialog-setting.show = true;
+                        }
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                txt-url := Label {
+                    width: root.text-width;
+                    // text: Store.translator.rss-dialog-url;
+                }
+
+                line-edit-url := LineEdit {
+                    // placeholder-text: Store.translator.rss-dialog-url-placeholder;
+                    enabled: line-edit-name.enabled;
+                }
+            }
+
+            HorizontalLayout {
+                Label {
+                    width: root.text-width;
+                    // text: Store.translator.rss-dialog-feed-format;
+                }
+
+                feed-format-combobox := ComboBox {
+                    enabled: line-edit-name.enabled;
+                    model: ["RSS", "ATOM"];
+                    current-value: self.model[0];
+                }
+            }
+
+
+            HorizontalLayout {
+                HorizontalLayout {
+                    use-proxy-checkbox := CheckBox {
+                        // text: self.checked ? Store.translator.rss-dialog-used-proxy : Store.translator.rss-dialog-unused-proxy;
+                        enabled: line-edit-name.enabled;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+component AddEditBtns inherits HorizontalLayout {
+    private property <length> btn-width: 100px;
+
+    alignment: center;
+    spacing: Theme.spacing * 8;
+    padding: Theme.padding * 4;
+
+    callback clicked();
+
+    IconBtn {
+        width: root.btn-width; height: 40px;
+        text: Logic.tr(Store.is-cn, "取消");
+        icon: Icons.delete;
+        icon-width: Theme.icon-size;
+        border-radius: self.height / 2;
+        bg-color: Theme.info-color;
+        bg-pressed-color: self.bg-color.darker(30%);
+        colorize: self.bg-pressed-color.darker(50%);
+
+        clicked => { root.clicked(); }
+    }
+
+    IconBtn {
+        width: root.btn-width;
+        text: Logic.tr(Store.is-cn, "确定");
+        icon: Icons.success-fill;
+        border-radius: self.height / 2;
+        bg-color: Theme.success-color.darker(20%);
+        bg-pressed-color: self.bg-color.darker(30%);
+        colorize: Theme.basic-white-color;
+
+        clicked => { root.clicked(); }
+    }
+}
+
+
 component Body inherits Rectangle {
-    background: red;
+    rsslist-vbox := VerticalLayout {
+        rsslist := RssList { }
+
+        RssListBtns {
+            current-uuid: rsslist.current-uuid;
+
+            current-btn-index(index) => {
+                if (index == BtnIndex.New || index == BtnIndex.Edit) {
+                    rsslist-vbox.visible = false;
+                }
+            }
+        }
+    }
+
+    ae-vbox := VerticalLayout {
+        visible: !rsslist-vbox.visible;
+        ae := AddEdit {}
+
+        AddEditBtns {
+            clicked => { rsslist-vbox.visible = true; }
+        }
+    }
 }
 
 export component Add inherits VerticalLayout {

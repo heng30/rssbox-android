@@ -1,0 +1,226 @@
+import { ListView } from "std-widgets.slint";
+import { Theme, Icons } from "../../theme.slint";
+import { Store, TabIndex } from "../../store.slint";
+import { Logic } from "../../logic.slint";
+import { IconBtn, Label, Tag, Link, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { Theme } from "../../theme.slint";
+
+component Head inherits Rectangle {
+    callback clicked <=> open-icon.clicked;
+    callback scroll-to-top <=> ta.clicked;
+
+    height: Theme.header-height;
+
+    HorizontalLayout {
+        padding-left: Theme.padding;
+        padding-right: Theme.padding;
+
+        HorizontalLayout {
+            spacing: Theme.spacing * 2;
+            open-icon := IconBtn {
+                background: Colors.transparent;
+                icon: Icons.favorite-fill;
+                text: Logic.tr(Store.is-cn, "收藏夹");
+            }
+        }
+
+        ta := TouchArea { }
+
+        HorizontalLayout {
+            spacing: Theme.padding * 3;
+
+             CenterLayout {
+                remove-all-icon := IconBtn {
+                    icon: Icons.delete;
+
+                    clicked => {
+                        Store.ok-cancel-dialog-setting.title-type = "warning";
+                        Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                        Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
+                        Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-favorite-entrys";
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+export component Entry inherits Rectangle {
+    in-out property title <=> title-txt.text;
+    in-out property pub-date-text <=> pub-date-txt.text;
+    in-out property<string> summary;
+    in-out property<string> author;
+    in-out property<string> tag-text;
+    in-out property<string> uuid;
+    in-out property<string> suuid;
+    in-out property<string> url;
+
+    background: Theme.light-fill-color;
+    border-radius: Theme.border-radius;
+
+    drop-shadow-blur: Theme.padding * 4;
+    drop-shadow-color: Theme.dark-fill-color;
+
+    VerticalLayout {
+        padding: Theme.padding * 2;
+        spacing: Theme.spacing * 2;
+
+        title-txt := Link {
+            clicked => {
+                Logic.open-url(root.url);
+            }
+        }
+
+        if root.summary != "" : Text {
+            font-size: Theme.default-font-size - 1px;
+            color: Theme.regular-text-color;
+            wrap: word-wrap;
+            text: root.summary;
+        }
+
+        HorizontalLayout {
+            alignment: end;
+            spacing: Theme.padding * 4;
+
+            author-txt := Text {
+                visible: root.author != "";
+                font-size: Theme.default-font-size - 4px;
+                color: Theme.secondary-text-color;
+                text: "Author: " + root.author;
+            }
+
+            pub-date-txt := Text {
+                font-size: Theme.default-font-size - 4px;
+                color: Theme.secondary-text-color;
+            }
+        }
+    }
+}
+
+export component EntryList inherits Rectangle {
+    clip: true;
+
+    public function scroll-to-top()  {
+        lv.viewport-y = 0;
+    }
+
+    if Store.rss-favorite-entry.length <= 0 : CenterLayout {
+        NoMessageImg {
+            width: root.width * 0.6;
+            text: Logic.tr(Store.is-cn, "没有消息");
+        }
+    }
+
+    lv := ListView {
+        x: 0px; width: root.width + Theme.scroll-width;
+
+        for item[index] in Store.rss-favorite-entry : rect := Rectangle {
+            private property<length> max-move-pixels-up-bound: self.width * 0.04;
+            private property<length> max-move-pixels-low-bound: self.width * 0.02;
+            private property<bool> is-show-opt: false;
+            private property<bool> is-hide-opt: true;
+
+            public function show-opt() {
+                rect.x = -opt.width - Theme.padding;
+                rect.is-show-opt = true;
+                rect.is-hide-opt = false;
+            }
+
+            public function hide-opt() {
+                rect.x = 0;
+                rect.is-hide-opt = true;
+                rect.is-show-opt = false;
+            }
+
+            animate x {
+                duration: Theme.default-animate-duration;
+                easing: ease-in-out;
+            }
+
+            TouchArea {
+                moved => {
+                    if (lv.enabled &&
+                        (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound ||
+                         self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
+                        lv.enabled = false;
+                    }
+
+                    if (!rect.is-show-opt) {
+                        if (self.pressed-x - self.mouse-x > parent.max-move-pixels-up-bound) {
+                            rect.show-opt();
+                        }
+                    }
+
+                    if (!rect.is-hide-opt) {
+                        if (self.mouse-x - self.pressed-x > parent.max-move-pixels-up-bound) {
+                            hide-opt();
+                        }
+                    }
+                }
+
+                pointer-event(evt) =>  {
+                    if (evt.kind == PointerEventKind.up) {
+                        lv.enabled = true;
+                    }
+                }
+            }
+
+            entry-vbox := VerticalLayout {
+                padding: Theme.padding / 2;
+
+                Entry {
+                    uuid: item.uuid;
+                    suuid: item.suuid;
+                    title: item.title;
+                    author: item.author;
+                    summary: item.summary;
+                    tag-text: item.tags;
+                    pub-date-text: item.pub-date;
+                    url: item.url;
+                }
+            }
+
+            opt := VerticalLayout {
+                x: entry-vbox.width + Theme.padding;
+                width: 50px;
+                height: entry-vbox.height - entry-vbox.padding * 2 - Theme.padding;
+                alignment: center;
+
+                Rectangle {
+                    height: 100%;
+                    IconBtn {
+                        width: 100%; height: 100%;
+                        icon: Icons.delete;
+                        border-radius: 0;
+                        colorize: Theme.danger-color;
+
+                        clicked => {
+                            rect.hide-opt();
+                            Logic.remove-favorite-entry(item.uuid);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+component Body inherits Rectangle {
+    public function entrylist-scroll-to-top() {
+        entrylist.scroll-to-top();
+    }
+
+    entrylist := EntryList {}
+}
+
+export component Favorite inherits VerticalLayout {
+    visible: TabIndex.Favorite == Store.current-tab-index;
+
+    head := Head {
+        scroll-to-top => { body.entrylist-scroll-to-top(); }
+    }
+
+    body := Body { }
+}
+
