@@ -1,0 +1,74 @@
+import { Dialog } from "./dialog.slint";
+import { Theme } from "../theme.slint";
+import { Store } from "../store.slint";
+import { Logic } from "../logic.slint";
+
+export component IconsDialog inherits Dialog {
+    visible: Store.icons-dialog-setting.show;
+    title: Logic.tr(Store.is-cn, "图标库");
+    title-bg: Theme.brand-color;
+    width: (icon-size + icon-spacing) * column-count - icon-spacing + Theme.padding * 2;
+    is-hide-btns: true;
+
+    property<length> icon-size: 60px;
+    property<length> icon-spacing: Theme.spacing;
+    property<int> column-count: 5;
+
+    callback select-index(int);
+
+    flick := Flickable {
+        height: 300px;
+        viewport-height: (icon-size + icon-spacing) * Math.ceil(Store.icons-dialog-setting.icons.length / column-count) - icon-spacing + Theme.padding * 2;
+
+        vbox := VerticalLayout {
+            padding: Theme.padding;
+
+            Rectangle {
+                for icon[index] in Store.icons-dialog-setting.icons : Rectangle {
+                    x: (icon-size + icon-spacing) * Math.mod(index, column-count);
+                    y: (icon-size + icon-spacing) * Math.floor(index / column-count);
+                    width: icon-size; height: icon-size;
+                    border-radius: Theme.border-radius;
+
+                    VerticalLayout {
+                        alignment: center;
+                        HorizontalLayout {
+                            alignment: center;
+                            Image {
+                                width: icon-size * 0.5;
+                                height: self.width;
+                                colorize: Theme.regular-text-color;
+                                source: icon;
+                            }
+                        }
+
+                        HorizontalLayout {
+                            alignment: center;
+                            Text {
+                                text: index + 1;
+                                font-size: Theme.default-font-size;
+                                color: Theme.regular-text-color;
+                            }
+                        }
+                    }
+
+                    touch := TouchArea {
+                        mouse-cursor: self.has-hover ? pointer : default;
+                        clicked => {
+                            root.select-index(index);
+                            Store.icons-dialog-setting.show = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    cancel-clicked => {
+        Store.icons-dialog-setting.show = false;
+    }
+
+    ok-clicked => {
+        Store.icons-dialog-setting.show = false;
+    }
+}

@@ -104,7 +104,7 @@ component RssListItems inherits Rectangle {
                         VerticalLayout {
                             alignment: center;
                             Image {
-                                source: Store.icon-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icon-dialog-setting.icons.length - 1))];
+                                source: Store.icons-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icons-dialog-setting.icons.length - 1))];
                                 colorize: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
                                 width: Theme.enlarge-font-size * 1.2;
                             }
@@ -270,8 +270,6 @@ export component EntryList inherits Rectangle {
             private property<length> max-move-pixels-low-bound: self.width * 0.02;
             private property<bool> is-show-opt: false;
             private property<bool> is-hide-opt: true;
-
-            // x: -opt.width - Theme.padding;
 
             public function show-opt() {
                 rect.x = -opt.width - Theme.padding;

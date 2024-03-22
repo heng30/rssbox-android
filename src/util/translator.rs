@@ -37,6 +37,16 @@ pub fn tr(text: &str) -> String {
     items.insert("刷新...", "Flush...");
 
     items.insert("没有订阅", "No Rss");
+    items.insert("Rss名称和图标", "Rss name and icon");
+    items.insert("请输入Rss名称", "Please input Rss name");
+    items.insert("Rss源地址", "Rss URL");
+    items.insert("请输入Rss源地址", "Please input Rss URL");
+    items.insert("Rss源格式", "Rss format");
+    items.insert("已经启用代理", "Enabled proxy");
+    items.insert("未启用代理", "Disable proxy");
+    items.insert("已经关注", "Star");
+    items.insert("未关注", "Not star");
+    items.insert("图标库", "Icons");
 
     items.insert("警告", "Warning");
     items.insert("订阅", "Rss");

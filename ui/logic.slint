@@ -19,6 +19,8 @@ export global Logic {
     callback set-read-entry(string, string); // suuid, uuid
     callback open-url(string);
 
+    callback get-rss-ae-setting(string) -> RssConfig; // suuid
+
     callback clean-cache();
     callback copy-to-clipboard(string);
     callback show-message(string, string);

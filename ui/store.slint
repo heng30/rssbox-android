@@ -39,6 +39,7 @@ export struct RssConfig {
     use-proxy: bool,
     icon-index: int,
     feed_format: string,
+    is-favorite: bool,
 }
 
 export struct IconDialogSetting {
@@ -215,7 +216,7 @@ export global Store  {
             + "  1. Use blockstream API to broadcast transation, fetch UTXO and other on chain information.\n",
     };
 
-    in-out property<IconDialogSetting> icon-dialog-setting: {
+    in-out property<IconDialogSetting> icons-dialog-setting: {
         show: false,
         icons : [
             @image-url("./icons/1.svg"), @image-url("./icons/2.svg"),

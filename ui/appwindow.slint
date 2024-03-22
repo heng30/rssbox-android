@@ -3,13 +3,13 @@ import { Logic } from "./logic.slint";
 import { Store } from "./store.slint";
 import { Util } from "./util.slint";
 import { Panel } from "./panel/panel.slint";
-import { Message, OkCancelDialog, Blanket } from "./base/widgets.slint";
+import { Message, IconsDialog, OkCancelDialog, Blanket } from "./base/widgets.slint";
 
 export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
     default-font-family: Theme.default-font-family;
-    // width: Theme.default-width;
-    height: Theme.default-height;
+    preferred-width: Theme.default-width;
+    preferred-height: Theme.default-height;
     background: Theme.base-background-dark;
     icon: @image-url("./images/icon.png");
     title: "rssbox";
@@ -24,9 +24,15 @@ export component AppWindow inherits Window {
     modal := Rectangle {
         function hide() { }
 
-        if oc-dialog.visible : Blanket { }
+        if oc-dialog.visible || icons-dialog.visible : Blanket {
+            clicked => { modal.hide(); }
+        }
 
-        oc-dialog := OkCancelDialog { width: root.width * 0.8; }
+        icons-dialog := IconsDialog {
+            select-index(index) => { panel.icon-index = index; }
+        }
+
+        oc-dialog := OkCancelDialog { }
     }
 
     msg := Message {

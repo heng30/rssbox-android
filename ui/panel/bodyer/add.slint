@@ -61,7 +61,7 @@ component RssList inherits Rectangle {
                     VerticalLayout {
                         alignment: center;
                         IconBtn {
-                            icon: Store.icon-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icon-dialog-setting.icons.length - 1))];
+                            icon: Store.icons-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icons-dialog-setting.icons.length - 1))];
                             width: Theme.icon-size * 1.2;
                             background: Colors.transparent;
                         }
@@ -92,7 +92,6 @@ component RssList inherits Rectangle {
     }
 }
 
-
 component RssListBtns inherits HorizontalLayout {
     in property<string> current-uuid;
     private property <length> btn-width: 100px;
@@ -121,7 +120,7 @@ component RssListBtns inherits HorizontalLayout {
         text: Logic.tr(Store.is-cn, "编辑");
         icon: Icons.edit;
         border-radius: self.height / 2;
-        bg-color: Theme.info-color;
+        bg-color: Theme.info-color.brighter(20%);
         bg-pressed-color: self.bg-color.darker(30%);
         colorize: self.bg-pressed-color.darker(50%);
 
@@ -142,18 +141,28 @@ component RssListBtns inherits HorizontalLayout {
             Logic.delete-rss(root.current-uuid);
         }
     }
-
 }
-
 
 component AddEdit inherits Rectangle {
     property<length> text-width: Theme.default-label-width;
     in-out property<int> icon-index: 0;
 
+    public function get() -> RssConfig {
+        return {
+            name: line-edit-name.text,
+            url: line-edit-url.text,
+            use-proxy: use-proxy-checkbox.checked,
+            is-favorite: favorite-checkbox.checked,
+            icon-index: root.icon-index,
+            feed-format: feed-format-combobox.current-value,
+        };
+    }
+
     public function set(config: RssConfig) {
-        // line-edit-name.text = Store.rss-name(config.uuid, config.name);
+        line-edit-name.text = config.name;
         line-edit-url.text = config.url;
         use-proxy-checkbox.checked = config.use-proxy;
+        favorite-checkbox.checked = config.is-favorite;
         root.icon-index = config.icon-index;
 
         feed-format-combobox.current-value = config.feed-format;
@@ -162,65 +171,81 @@ component AddEdit inherits Rectangle {
         }
     }
 
-    rect := Rectangle {
+    VerticalLayout {
+        alignment: start;
+        padding: Theme.padding * 2;
+        spacing: Theme.spacing * 4;
+
         VerticalLayout {
-            padding: Theme.padding;
+            alignment: start;
+            spacing: Theme.spacing;
+
+            txt-name := Label {
+                font-size: Theme.title4-font-size;
+                width: root.text-width;
+                text: Logic.tr(Store.is-cn, "Rss名称和图标");
+            }
+
+            HorizontalLayout {
+                height: txt-name.preferred-height * 1.33;
+                spacing: Theme.spacing;
+
+                line-edit-name := LineEdit {
+                    placeholder-text: Logic.tr(Store.is-cn, "请输入Rss名称");
+                }
+
+                rss-icon := IconBtn {
+                    width: self.height;
+                    icon: Store.icons-dialog-setting.icons[Math.max(0, Math.min(root.icon-index, Store.icons-dialog-setting.icons.length - 1))];
+                    clicked => { Store.icons-dialog-setting.show = true; }
+                }
+            }
+        }
+
+        VerticalLayout {
+            alignment: start;
+            spacing: Theme.spacing;
+
+            txt-url := Label {
+                font-size: Theme.title4-font-size;
+                width: root.text-width;
+                text: Logic.tr(Store.is-cn, "Rss源地址");
+            }
+
+            line-edit-url := LineEdit {
+                height: txt-url.preferred-height * 1.33;
+                placeholder-text: Logic.tr(Store.is-cn, "请输入Rss源地址");
+            }
+        }
+
+        VerticalLayout {
+            alignment: start;
+            spacing: Theme.spacing;
+
+            txt-feed-format := Label {
+                text: Logic.tr(Store.is-cn, "Rss源格式");
+            }
+
+            feed-format-combobox := ComboBox {
+                height: txt-feed-format.preferred-height * 1.33;
+                model: ["AUTO", "RSS", "ATOM"];
+                current-value: self.model[0];
+            }
+        }
+
+        HorizontalLayout {
             spacing: Theme.spacing * 2;
 
             HorizontalLayout {
-                txt-name := Label {
-                    width: root.text-width;
-                    // text: Store.translator.rss-dialog-name;
-                }
-
-                line-edit-name := LineEdit {
-                    // placeholder-text: Store.translator.rss-dialog-name-placeholder;
-                }
-
-                VerticalLayout {
-                    alignment: center;
-                    padding-left: Theme.padding;
-                    rss-icon := IconBtn {
-                        icon: Store.icon-dialog-setting.icons[Math.max(0, Math.min(root.icon-index, Store.icon-dialog-setting.icons.length - 1))];
-                        clicked => {
-                            Store.icon-dialog-setting.show = true;
-                        }
-                    }
+                width: 50%;
+                use-proxy-checkbox := CheckBox {
+                    text: self.checked ? Logic.tr(Store.is-cn, "已经启用代理") : Logic.tr(Store.is-cn, "未启用代理");
                 }
             }
 
             HorizontalLayout {
-                txt-url := Label {
-                    width: root.text-width;
-                    // text: Store.translator.rss-dialog-url;
-                }
-
-                line-edit-url := LineEdit {
-                    // placeholder-text: Store.translator.rss-dialog-url-placeholder;
-                    enabled: line-edit-name.enabled;
-                }
-            }
-
-            HorizontalLayout {
-                Label {
-                    width: root.text-width;
-                    // text: Store.translator.rss-dialog-feed-format;
-                }
-
-                feed-format-combobox := ComboBox {
-                    enabled: line-edit-name.enabled;
-                    model: ["RSS", "ATOM"];
-                    current-value: self.model[0];
-                }
-            }
-
-
-            HorizontalLayout {
-                HorizontalLayout {
-                    use-proxy-checkbox := CheckBox {
-                        // text: self.checked ? Store.translator.rss-dialog-used-proxy : Store.translator.rss-dialog-unused-proxy;
-                        enabled: line-edit-name.enabled;
-                    }
+                favorite-checkbox := CheckBox {
+                    text: self.checked ? Logic.tr(Store.is-cn, "已经关注") : Logic.tr(Store.is-cn, "未关注");
                 }
             }
         }
@@ -232,10 +257,11 @@ component AddEditBtns inherits HorizontalLayout {
     private property <length> btn-width: 100px;
 
     alignment: center;
-    spacing: Theme.spacing * 8;
+    spacing: Theme.spacing * 10;
     padding: Theme.padding * 4;
 
-    callback clicked();
+    callback cancel-clicked();
+    callback ok-clicked();
 
     IconBtn {
         width: root.btn-width; height: 40px;
@@ -243,11 +269,11 @@ component AddEditBtns inherits HorizontalLayout {
         icon: Icons.delete;
         icon-width: Theme.icon-size;
         border-radius: self.height / 2;
-        bg-color: Theme.info-color;
+        bg-color: Theme.info-color.brighter(20%);
         bg-pressed-color: self.bg-color.darker(30%);
         colorize: self.bg-pressed-color.darker(50%);
 
-        clicked => { root.clicked(); }
+        clicked => { root.cancel-clicked(); }
     }
 
     IconBtn {
@@ -259,12 +285,15 @@ component AddEditBtns inherits HorizontalLayout {
         bg-pressed-color: self.bg-color.darker(30%);
         colorize: Theme.basic-white-color;
 
-        clicked => { root.clicked(); }
+        clicked => { root.ok-clicked(); }
     }
 }
 
 
 component Body inherits Rectangle {
+    private property <BtnIndex> rss-list-btns-index;
+    in-out property icon-index <=> ae.icon-index;
+
     rsslist-vbox := VerticalLayout {
         rsslist := RssList { }
 
@@ -272,8 +301,16 @@ component Body inherits Rectangle {
             current-uuid: rsslist.current-uuid;
 
             current-btn-index(index) => {
-                if (index == BtnIndex.New || index == BtnIndex.Edit) {
+                root.rss-list-btns-index = index;
+
+                if (index == BtnIndex.New) {
                     rsslist-vbox.visible = false;
+                    ae.set({});
+                } else if (index == BtnIndex.Edit) {
+                    rsslist-vbox.visible = false;
+                    ae.set(Logic.get-rss-ae-setting(rsslist.current-uuid));
+                } else if (index == BtnIndex.Delete) {
+                    Logic.delete-rss(rsslist.current-uuid);
                 }
             }
         }
@@ -281,10 +318,25 @@ component Body inherits Rectangle {
 
     ae-vbox := VerticalLayout {
         visible: !rsslist-vbox.visible;
+        spacing: Theme.spacing * 4;
+        alignment: start;
+
         ae := AddEdit {}
 
         AddEditBtns {
-            clicked => { rsslist-vbox.visible = true; }
+            cancel-clicked => {
+                rsslist-vbox.visible = true;
+            }
+
+            ok-clicked => {
+                rsslist-vbox.visible = true;
+
+                if (root.rss-list-btns-index == BtnIndex.New) {
+                    Logic.new-rss(ae.get());
+                } else if (root.rss-list-btns-index == BtnIndex.Edit) {
+                    Logic.save-rss(rsslist.current-uuid, ae.get());
+                }
+            }
         }
     }
 }
@@ -293,8 +345,8 @@ export component Add inherits VerticalLayout {
     visible: TabIndex.Add == Store.current-tab-index;
     spacing: Theme.spacing;
 
+    in-out property icon-index <=> body.icon-index;
+
     head := Head {}
     body := Body {}
 }
-
-

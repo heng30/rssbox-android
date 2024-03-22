@@ -8,6 +8,8 @@ export component Panel inherits VerticalLayout {
     padding: Theme.padding;
     spacing: Theme.spacing;
 
+    in-out property icon-index <=> bodyer.icon-index;
+
     bodyer := Bodyer {
         height: parent.height - footer.height - parent.spacing - parent.padding;
     }
