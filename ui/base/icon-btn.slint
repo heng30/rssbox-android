@@ -6,14 +6,17 @@ export component IconBtn inherits Rectangle {
     in-out property colorize <=> img.colorize;
     in-out property icon-width <=> img.width;
     in-out property icon-rotation-angle <=> img.rotation-angle;
-    in-out property text <=> txt.text;
+    in-out property<bool> is-ltr: true;
+
+    in-out property<string> text;
+    in-out property<length> font-size: Theme.title4-font-size;
 
     callback clicked <=> touch.clicked;
 
     in-out property<color> bg-color: transparent;
     in-out property<color> bg-pressed-color: Theme.pressed-color;
 
-    width: hbox.preferred-width + Theme.padding;
+    border-radius: Theme.border-radius;
     background: touch.pressed ? bg-pressed-color : bg-color;
 
     animate background {
@@ -22,17 +25,24 @@ export component IconBtn inherits Rectangle {
     }
 
     hbox := HorizontalLayout {
-        spacing: txt.visible ? Theme.spacing * 2 : 0px;
+        spacing: Theme.spacing * 2;
+        alignment: center;
+
+        if !root.is-ltr && root.text != "" : Label {
+            color: img.colorize;
+            font-size: root.font-size;
+            text: root.text;
+        }
 
         img := Image {
             width: Theme.icon-size;
             colorize: Theme.icon-color;
         }
 
-        txt := Label {
-            visible: text != "";
-            width: self.visible ? self.preferred-width : 0px;
+        if root.is-ltr && root.text != "" : Label {
             color: img.colorize;
+            font-size: root.font-size;
+            text: root.text;
         }
     }
 

@@ -2,10 +2,12 @@ import { Theme } from "../theme.slint";
 
 export component TabBtn inherits Rectangle {
     in-out property icon <=> img.source;
-    in-out property colorize <=> img.colorize;
     in-out property icon-width <=> img.width;
     in-out property icon-rotation-angle <=> img.rotation-angle;
     in-out property text <=> txt.text;
+
+    in-out property<color> colorize: Theme.icon-color;
+    in-out property<bool> checked: false;
 
     callback clicked <=> touch.clicked;
 
@@ -25,14 +27,14 @@ export component TabBtn inherits Rectangle {
             alignment: center;
             img := Image {
                 width: Theme.icon-size;
-                colorize: Theme.icon-color;
+                colorize: root.checked ? Theme.brand-color : root.colorize;
             }
         }
 
         HorizontalLayout {
             alignment: center;
             txt :=  Text {
-                font-size: Theme.default-font-size * 0.6;
+                font-size: img.width * 0.4;
                 color: img.colorize;
             }
         }

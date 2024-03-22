@@ -1,0 +1,35 @@
+import { Dialog } from "./dialog.slint";
+import { Store } from "../store.slint";
+import { Util } from "../util.slint";
+import { Logic } from "../logic.slint";
+import { Theme } from "../theme.slint";
+
+export component OkCancelDialog inherits Dialog {
+    visible: Store.ok-cancel-dialog-setting.body-text != "";
+    title: Store.ok-cancel-dialog-setting.title-text;
+    title-bg: Util.text-color(Store.ok-cancel-dialog-setting.title-type);
+    width: 450px;
+    height: 200px;
+    background: rect.background;
+
+    rect := Rectangle {
+        background: Theme.base-background-light;
+        Text {
+            width: 100%;
+            horizontal-alignment: center;
+            color: Theme.primary-text-color;
+            text: Store.ok-cancel-dialog-setting.body-text;
+            wrap: word-wrap;
+            font-size: Theme.title4-font-size;
+        }
+    }
+
+    ok-clicked => {
+        Logic.handle-ok-cancel-dialog(Store.ok-cancel-dialog-setting.handle-type, Store.ok-cancel-dialog-setting.handle-uuid);
+        Store.ok-cancel-dialog-setting.body-text = "";
+    }
+
+    cancel-clicked => {
+        Store.ok-cancel-dialog-setting.body-text = "";
+    }
+}

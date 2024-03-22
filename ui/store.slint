@@ -102,7 +102,7 @@ export global Store  {
             pub-date: "2023-11-12 13:12:34",
             tags: "slint-ui, rust",
             is-read: true,
-            title: "hello world",
+            title: "中文测试链接",
             summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
         },
         {
@@ -112,6 +112,13 @@ export global Store  {
             is-read: true,
             title: "hello rust",
             summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
+        },
+        {
+            uuid: "2342jkfjk",
+            url: "http://azure.com",
+            pub-date: "2023-11-12 13:12:34",
+            is-read: true,
+            title: "hello rust",
         },
         {
             uuid: "2342jkfjk",
@@ -123,7 +130,7 @@ export global Store  {
         }
     ];
 
-    in-out property<string> current-rss-uuid: rss-lists[0].uuid;
+    in-out property<string> current-rss-uuid;
     in-out property<[RssList]> rss-lists: [
         {
             uuid: "uuid-1",
@@ -143,7 +150,7 @@ export global Store  {
 
     in-out property<MessageItem> message;
     in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
-    in-out property<bool> is-cn:  setting-dialog-config.ui.language == "cn";
+    in-out property<bool> is-cn: setting-dialog-config.ui.language == "cn";
 
     in-out property<SettingDialogConfig> setting-dialog-config: {
         show: false,

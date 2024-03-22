@@ -1,0 +1,74 @@
+import { Theme, Icons } from "../theme.slint";
+import { Store } from "../store.slint";
+import { Logic } from "../logic.slint";
+import { IconBtn } from "./icon-btn.slint";
+import { CenterLayout } from "./center-layout.slint";
+
+import { Button } from "std-widgets.slint";
+
+export component Dialog inherits Rectangle {
+    in-out property title <=> txt.text;
+    in-out property<color> title-bg: Theme.brand-color;
+    in-out property<bool> is-hide-btns: false;
+
+    callback cancel-clicked();
+    callback ok-clicked();
+
+    visible: false;
+    width: 800px;
+    height: vbox.preferred-height;
+    background: Theme.base-background-light;
+
+    vbox := VerticalLayout {
+        alignment: space-between;
+
+        Rectangle {
+            height: txt.preferred-height * 1.33;
+            background: root.title-bg;
+            txt := Text {
+                color: Colors.white;
+                font-size: Theme.title3-font-size;
+            }
+
+            if (is-hide-btns) : HorizontalLayout {
+                alignment: end;
+                padding-right: Theme.padding;
+                CenterLayout {
+                    IconBtn {
+                        width: Theme.icon-size;
+                        icon: Icons.close;
+                        colorize: txt.color;
+                        clicked => { root.cancel-clicked(); }
+                    }
+                }
+             }
+        }
+
+        VerticalLayout {
+            @children
+        }
+
+        if (!is-hide-btns) : HorizontalLayout {
+            alignment: center;
+            spacing: Theme.spacing * 8;
+            padding: Theme.padding * 2;
+
+            cancel-btn := Button {
+                width: 120px;
+                text: Logic.tr(Store.is-cn, "取消");
+                icon: Icons.cancel;
+                colorize-icon: true;
+                clicked => { root.cancel-clicked(); }
+            }
+
+            Button {
+                width: 120px;
+                text: Logic.tr(Store.is-cn, "确认");
+                icon: Icons.success-fill;
+                primary: true;
+                colorize-icon: true;
+                clicked => { root.ok-clicked(); }
+            }
+        }
+    }
+}

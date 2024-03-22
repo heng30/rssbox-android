@@ -1,15 +1,27 @@
 import { Theme, Icons } from "../theme.slint";
 import { Store, TabIndex } from "../store.slint";
 import { Logic } from "../logic.slint";
-import { TabBtn } from "../base/widget.slint";
+import { TabBtn, Divider } from "../base/widgets.slint";
 
 export component Footer inherits Rectangle {
+    private property <length> btn-height: self.height * 0.9;
     height: Theme.footer-height;
 
+    Divider {
+        x: 0;
+        y: 0;
+        background: Theme.lighter-border-color;
+    }
+
+
     HorizontalLayout {
+        padding-top: Theme.padding;
+
         TabBtn {
+            height: root.btn-height;
             icon: Icons.rss-fill;
             text: Logic.tr(Store.is-cn, "订阅");
+            checked: Store.current-tab-index == TabIndex.Rss;
 
             clicked => {
                 Store.switch-tab(TabIndex.Rss);
@@ -17,8 +29,10 @@ export component Footer inherits Rectangle {
         }
 
         TabBtn {
+            height: root.btn-height;
             icon: Icons.add-fill;
             text: Logic.tr(Store.is-cn, "添加");
+            checked: Store.current-tab-index == TabIndex.Add;
 
             clicked => {
                 Store.switch-tab(TabIndex.Add);
@@ -26,8 +40,10 @@ export component Footer inherits Rectangle {
         }
 
         TabBtn {
+            height: root.btn-height;
             icon: Icons.setting-fill;
             text: Logic.tr(Store.is-cn, "设置");
+            checked: Store.current-tab-index == TabIndex.Setting;
 
             clicked => {
                 Store.switch-tab(TabIndex.Setting);

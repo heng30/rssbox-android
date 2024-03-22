@@ -2,30 +2,67 @@ import { ListView } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { IconBtn, Tag, NoMessageImg, CenterLayout } from "../../base/widget.slint";
+import { IconBtn, Label, Tag, Link, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component Head inherits Rectangle {
-    callback clicked <=> icon.clicked;
+    callback clicked <=> open-icon.clicked;
     callback scroll-to-top <=> ta.clicked;
 
     height: Theme.header-height;
 
     HorizontalLayout {
-        x: Theme.padding;
+        padding-left: Theme.padding;
+        padding-right: Theme.padding;
 
-        icon := IconBtn {
-            background: Colors.transparent;
-            icon: Icons.list;
-            text: Logic.tr(Store.is-cn, "订阅");
+        HorizontalLayout {
+            spacing: Theme.spacing * 2;
+            open-icon := IconBtn {
+                background: Colors.transparent;
+                icon: Icons.list;
+                text: Logic.tr(Store.is-cn, "订阅");
+            }
+
+            Label {
+                text: Logic.update-time-rss(Store.current-rss-uuid);
+                font-size: Theme.default-font-size - 2px;
+                color: Theme.placeholder-text-color;
+            }
         }
 
         ta := TouchArea { }
+
+        HorizontalLayout {
+            spacing: Theme.padding * 3;
+
+             CenterLayout {
+                remove-all-icon := IconBtn {
+                    icon: Icons.delete;
+
+                    clicked => {
+                        Store.ok-cancel-dialog-setting.title-type = "warning";
+                        Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                        Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除");
+                        Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-entrys";
+                        Store.ok-cancel-dialog-setting.handle-uuid = Store.current-rss-uuid;
+                    }
+                }
+            }
+
+            CenterLayout {
+                refresh-icon := IconBtn {
+                    icon: Icons.refresh;
+                    icon-rotation-angle: 65deg;
+
+                    clicked => { Logic.sync-rss(Store.current-rss-uuid); }
+                }
+            }
+        }
     }
 }
 
 
-component ListItem inherits Rectangle {
+component RssListItems inherits Rectangle {
     private property<length> item-height: 40px;
     private property<color> selected-item-color: Theme.brand-color.darker(30%);
 
@@ -87,6 +124,7 @@ component ListItem inherits Rectangle {
                         alignment: end;
                         spacing: Theme.spacing;
                         padding-left: Theme.padding;
+                        padding-right: Theme.padding;
 
                         VerticalLayout {
                             property<int> unread-counts: Logic.unread-counts(data.entry, data.entry.length, data.unread-counts-flag);
@@ -106,6 +144,7 @@ component ListItem inherits Rectangle {
                             IconBtn {
                                 icon: Icons.star ;
                                 colorize: data.is-mark ? Theme.mark-color : Theme.unmark-color;
+                                border-radius: Theme.border-radius;
                                 clicked => {
                                     Logic.toggle-rss-mark(index, data.uuid);
                                 }
@@ -132,7 +171,17 @@ component RssList inherits Rectangle {
         width: root.is-show-list ? 70% : 0%;
         background: Theme.light-fill-color;
 
-        ListItem { switch-rss => { root.is-show-list = false; } }
+        RssListItems { switch-rss => { root.is-show-list = false; } }
+
+        if Store.rss-lists.length == 0 : Rectangle {
+            clip: true;
+            width: rect.width;
+
+            NoMessageImg {
+                width: parent.width * 0.8;
+                text: Logic.tr(Store.is-cn, "没有订阅");
+            }
+        }
     }
 
     TouchArea {
@@ -149,7 +198,7 @@ export component Entry inherits Rectangle {
     in-out property<string> summary;
     in-out property<string> author;
     in-out property<string> tag-text;
-    in-out property<bool> is-read: false;
+    in-out property<bool> is-read;
     in-out property<string> uuid;
     in-out property<string> suuid;
     in-out property<string> url;
@@ -164,21 +213,17 @@ export component Entry inherits Rectangle {
         padding: Theme.padding * 2;
         spacing: Theme.spacing * 2;
 
-        title-txt := Text {
-            wrap: word-wrap;
-            color: touch.pressed ? Theme.link-text-color : (root.is-read ? Theme.have-read-text-color : Theme.primary-text-color);
+        title-txt := Link {
+            is-read: root.is-read;
 
-            touch := TouchArea {
-                clicked => {
-                    Logic.set-read-entry(Store.current-rss-uuid, root.uuid);
-                    Logic.open-url(root.url);
-                }
+            clicked => {
+                Logic.set-read-entry(Store.current-rss-uuid, root.uuid);
+                Logic.open-url(root.url);
             }
         }
 
         if root.summary != "" : Text {
-            font-size: Theme.default-font-size - 2px;
-            height: parent.visible ? self.preferred-height : 0px;
+            font-size: Theme.default-font-size - 1px;
             color: root.is-read ? Theme.have-read-text-color : Theme.regular-text-color;
             wrap: word-wrap;
             text: root.summary;
@@ -192,7 +237,7 @@ export component Entry inherits Rectangle {
                 visible: root.author != "";
                 font-size: Theme.default-font-size - 4px;
                 color: Theme.secondary-text-color;
-                text: Logic.tr(Store.is-cn, "作者") + root.author;
+                text: "Author: " + root.author;
             }
 
             pub-date-txt := Text {
@@ -221,19 +266,95 @@ export component EntryList inherits Rectangle {
         x: 0px;
         width: root.width + Theme.scroll-width;
 
-        for item[index] in Store.rss-entry : VerticalLayout {
-            padding: Theme.padding / 2;
+        for item[index] in Store.rss-entry : rect := Rectangle {
+            private property<length> max-move-pixels-up-bound: self.width * 0.06;
+            private property<length> max-move-pixels-low-bound: self.width * 0.03;
+            private property<bool> is-show-opt: false;
+            private property<bool> is-hide-opt: true;
 
-            Entry {
-                uuid: item.uuid;
-                suuid: item.suuid;
-                title: item.title;
-                author: item.author;
-                summary: item.summary;
-                tag-text: item.tags;
-                pub-date-text: item.pub-date;
-                is-read: item.is-read;
-                url: item.url;
+            // x: -opt.width - Theme.padding;
+
+            animate x {
+                duration: Theme.default-animate-duration;
+                easing: ease-in-out;
+            }
+
+            TouchArea {
+                moved => {
+                    if (lv.enabled &&
+                        (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound ||
+                         self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
+                        lv.enabled = false;
+                    }
+
+                    if (!rect.is-show-opt) {
+                        if (self.pressed-x - self.mouse-x > parent.max-move-pixels-up-bound) {
+                            rect.x = -opt.width - Theme.padding;
+                            rect.is-show-opt = true;
+                            rect.is-hide-opt = false;
+                        }
+                    }
+
+                    if (!rect.is-hide-opt) {
+                        if (self.mouse-x - self.pressed-x > parent.max-move-pixels-up-bound) {
+                            rect.x = 0;
+                            rect.is-hide-opt = true;
+                            rect.is-show-opt = false;
+                        }
+                    }
+                }
+
+                pointer-event(evt) =>  {
+                    if (evt.kind == PointerEventKind.up) {
+                        lv.enabled = true;
+                    }
+                }
+            }
+
+            entry-vbox := VerticalLayout {
+                padding: Theme.padding / 2;
+
+                Entry {
+                    uuid: item.uuid;
+                    suuid: item.suuid;
+                    title: item.title;
+                    author: item.author;
+                    summary: item.summary;
+                    tag-text: item.tags;
+                    pub-date-text: item.pub-date;
+                    is-read: item.is-read;
+                    url: item.url;
+                }
+            }
+
+            opt := VerticalLayout {
+                x: entry-vbox.width + Theme.padding;
+                spacing: Theme.spacing / 2;
+                width: 50px;
+                height: entry-vbox.height - entry-vbox.padding * 2;
+                alignment: center;
+
+                Rectangle {
+                    height: 50%;
+                    background: Theme.danger-color;
+                    IconBtn {
+                        width: 100%;
+                        height: 100%;
+                        icon: Icons.delete;
+                        border-radius: 0;
+                    }
+                }
+
+                Rectangle {
+                    height: 50%;
+                    background: Theme.info-color;
+                    IconBtn {
+                        width: 100%;
+                        height: 100%;
+                        icon: Icons.cancel;
+                        border-radius: 0;
+                    }
+                }
             }
         }
     }
