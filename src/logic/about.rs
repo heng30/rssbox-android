@@ -5,7 +5,7 @@ use slint::ComponentHandle;
 pub fn init(ui: &AppWindow) {
     let mut about = ui.global::<Store>().get_about_dialog();
     about.title = slint::format!(
-        "BitBox {}",
+        "rssbox {}",
         if VERSION.is_empty() {
             "v0.0.1"
         } else {

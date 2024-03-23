@@ -2,49 +2,28 @@ import { ListView } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { IconBtn, Label, Tag, Link, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { IconBtn, Head, Label, Tag, Link, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
-component Head inherits Rectangle {
-    callback clicked <=> open-icon.clicked;
+component FHead inherits Head {
     callback scroll-to-top <=> ta.clicked;
 
-    height: Theme.header-height;
+    icon: Icons.favorite-fill;
+    title: Logic.tr(Store.is-cn, "收藏夹");
 
-    HorizontalLayout {
-        padding-left: Theme.padding;
-        padding-right: Theme.padding;
+    ta := TouchArea { }
 
-        HorizontalLayout {
-            spacing: Theme.spacing * 2;
-            open-icon := IconBtn {
-                background: Colors.transparent;
-                icon: Icons.favorite-fill;
-                text: Logic.tr(Store.is-cn, "收藏夹");
-            }
-        }
+    remove-all-icon := IconBtn {
+        icon: Icons.delete;
 
-        ta := TouchArea { }
-
-        HorizontalLayout {
-            spacing: Theme.padding * 3;
-
-             CenterLayout {
-                remove-all-icon := IconBtn {
-                    icon: Icons.delete;
-
-                    clicked => {
-                        Store.ok-cancel-dialog-setting.title-type = "warning";
-                        Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
-                        Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
-                        Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-favorite-entrys";
-                    }
-                }
-            }
+        clicked => {
+            Store.ok-cancel-dialog-setting.title-type = "warning";
+            Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+            Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
+            Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-favorite-entrys";
         }
     }
 }
-
 
 export component Entry inherits Rectangle {
     in-out property title <=> title-txt.text;
@@ -86,13 +65,13 @@ export component Entry inherits Rectangle {
             author-txt := Text {
                 visible: root.author != "";
                 font-size: Theme.default-font-size - 4px;
-                color: Theme.secondary-text-color;
-                text: "Author: " + root.author;
+                color: Theme.placeholder-text-color;
+                text: Logic.tr(Store.is-cn, "作者") + ": " + root.author;
             }
 
             pub-date-txt := Text {
                 font-size: Theme.default-font-size - 4px;
-                color: Theme.secondary-text-color;
+                color: Theme.placeholder-text-color;
             }
         }
     }
@@ -217,7 +196,7 @@ component Body inherits Rectangle {
 export component Favorite inherits VerticalLayout {
     visible: TabIndex.Favorite == Store.current-tab-index;
 
-    head := Head {
+    head := FHead {
         scroll-to-top => { body.entrylist-scroll-to-top(); }
     }
 

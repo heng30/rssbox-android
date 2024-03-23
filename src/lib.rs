@@ -11,7 +11,7 @@ mod util;
 mod version;
 
 use anyhow::Result;
-use logic::{clipboard, message};
+use logic::{clipboard, message, about};
 
 #[cfg(not(target_os = "android"))]
 fn init_logger() {
@@ -70,6 +70,7 @@ fn ui_after(ui: &AppWindow) {
     logic::util::init(&ui);
     clipboard::init(&ui);
     message::init(&ui);
+    about::init(&ui);
 }
 
 #[cfg(not(target_os = "android"))]

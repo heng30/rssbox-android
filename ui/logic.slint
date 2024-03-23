@@ -1,9 +1,9 @@
-import { RssConfig, RssEntry, SettingDialogConfig } from "./store.slint";
+import { RssConfig, RssEntry, SettingUI, SettingSync, SettingProxy } from "./store.slint";
 
 export global Logic {
     callback new-rss(RssConfig);
     callback save-rss(string, RssConfig);
-    callback delete-rss(string);
+    callback remove-rss(string);
     callback switch-rss(string, string);
     callback toggle-rss-mark(int, string);
 
@@ -26,8 +26,14 @@ export global Logic {
     callback show-message(string, string);
     callback handle-ok-cancel-dialog(string, string);
 
-    callback setting-cancel();
-    callback setting-ok(SettingDialogConfig);
+    callback get-setting-ui() -> SettingUI;
+    callback set-setting-ui(SettingUI);
+
+    callback get-setting-sync() -> SettingSync;
+    callback set-setting-sync(SettingSync);
+
+    callback get-setting-proxy() -> SettingProxy;
+    callback set-setting-proxy(SettingProxy);
 
     pure callback tr(bool, string) -> string;
     tr(is-cn, text) => {

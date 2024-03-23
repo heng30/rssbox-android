@@ -11,8 +11,8 @@ export global Theme  {
     out property<length> dialog-max-width: 600px;
 
     in-out property<length> default-width: 550px;
-    in-out property<length> default-height: 600px;
-    in-out property<length> default-font-size: Store.setting-dialog-config.ui.font-size.to-float() * 1px;
+    in-out property<length> default-height: 500px;
+    in-out property<length> default-font-size: Store.setting-ui.font-size.to-float() * 1px;
     in-out property<length> enlarge-font-size: default-font-size + 1px;
     in-out property<length> body-font-size: default-font-size + 2px;
     in-out property<length> title5-font-size: default-font-size + 1px;
@@ -21,7 +21,7 @@ export global Theme  {
     in-out property<length> title2-font-size: default-font-size + 6px;
     in-out property<length> title1-font-size: default-font-size + 8px;
 
-    in-out property<string> default-font-family: Store.setting-dialog-config.ui.font-family;
+    in-out property<string> default-font-family: Store.setting-ui.font-family;
 
     out property<length> icon-size: 24px;
     out property<length> avatar-size: 32px;
@@ -73,6 +73,8 @@ export global Theme  {
 }
 
 export global Icons  {
+    out property<image> brand: @image-url("./images/brand.png");
+    out property<image> github: @image-url("./images/github.svg");
     out property<image> rss-fill: @image-url("./images/rss-fill.svg");
     out property<image> setting-fill: @image-url("./images/setting-fill.svg");
     out property<image> add-fill: @image-url("./images/add-fill.svg");
@@ -88,4 +90,12 @@ export global Icons  {
     out property<image> close: @image-url("./images/close.svg");
     out property<image> favorite-fill: @image-url("./images/favorite-fill.svg");
     out property<image> edit: @image-url("./images/edit.svg");
+    out property<image> copy: @image-url("./images/copy.svg");
+    out property<image> paste: @image-url("./images/paste.svg");
+    out property<image> ui: @image-url("./images/ui.svg");
+    out property<image> sync: @image-url("./images/sync.svg");
+    out property<image> proxy-light: @image-url("./images/proxy-light.svg");
+    out property<image> cache-light: @image-url("./images/clear-light.svg");
+    out property<image> about-light: @image-url("./images/about-light.svg");
+    out property<image> help-light: @image-url("./images/help-light.svg");
 }

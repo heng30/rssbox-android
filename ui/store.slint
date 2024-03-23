@@ -66,16 +66,14 @@ export struct SettingUI {
     language: string,
 }
 
+export struct SettingSync {
+    // TODO
+}
+
 export struct SettingProxy {
     enabled: bool,
     url: string,
     port: string,
-}
-
-export struct SettingDialogConfig {
-    show: bool,
-    ui: SettingUI,
-    proxy: SettingProxy,
 }
 
 export struct AboutDialog {
@@ -86,7 +84,7 @@ export struct AboutDialog {
 }
 
 export global Store  {
-    out property<TabIndex> current-tab-index: TabIndex.Add;
+    out property<TabIndex> current-tab-index: TabIndex.Setting;
 
     in-out property<[RssEntry]> rss-entry: [
         {
@@ -176,26 +174,18 @@ export global Store  {
 
     in-out property<MessageItem> message;
     in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
-    in-out property<bool> is-cn: setting-dialog-config.ui.language == "cn";
+    in-out property<bool> is-cn: setting-ui.language == "cn";
 
-    in-out property<SettingDialogConfig> setting-dialog-config: {
-        show: false,
-        ui: {
-            font-size: "16",
-            font-family: "SourceHanSerifCN",
-            language: "cn",
-        },
-        proxy: {
-            enabled: false,
-            url: "127.0.0.1",
-            port: "1080",
-        }
+    in-out property<SettingUI> setting-ui: {
+        font-size: "16",
+        font-family: "SourceHanSerifCN",
+        language: "cn",
     };
 
     in-out property<AboutDialog> about-dialog: {
         show: false,
         title: "rssbox v0.0.1",
-        text: "Based on Slint-UI. Copyright 2022-2030 The Heng30 Company Ltd. All rights reserved. The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.",
+        text: "Based on Slint-UI. Copyright 2022-2030. All rights reserved. The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.",
         sponsor: "0xf1199999751b1a3A74590adBf95401D19AB30014",
     };
 

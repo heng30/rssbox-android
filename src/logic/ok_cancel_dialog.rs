@@ -9,13 +9,15 @@ pub fn init(ui: &AppWindow) {
 
             match handle_type.as_str() {
                 "remove-rss-all-entrys" => {
-                    ui.global::<Logic>()
-                        .invoke_remove_all_entrys(handle_uuid);
+                    ui.global::<Logic>().invoke_remove_all_entrys(handle_uuid);
                 }
                 "remove-rss-all-favorite-entrys" => {
-                    ui.global::<Logic>()
-                        .invoke_remove_all_favorite_entrys();
+                    ui.global::<Logic>().invoke_remove_all_favorite_entrys();
                 }
+                "remove-rss" => {
+                    ui.global::<Logic>().invoke_remove_rss(handle_uuid);
+                }
+
                 _ => (),
             }
         });

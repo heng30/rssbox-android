@@ -1,30 +1,13 @@
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex, RssConfig } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { Btn, IconBtn, NoMessageImg, Label } from "../../base/widgets.slint";
+import { Btn, IconBtn, NoMessageImg, Label, Head } from "../../base/widgets.slint";
 import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 
 enum BtnIndex {
     New,
     Edit,
     Delete,
-}
-
-component Head inherits Rectangle {
-    height: Theme.header-height;
-
-    HorizontalLayout {
-        alignment: start;
-        padding-left: Theme.padding;
-        padding-right: Theme.padding;
-
-        IconBtn {
-            icon-width: Theme.icon-size * 0.7;
-            background: Colors.transparent;
-            icon: Icons.add-fill;
-            text: Logic.tr(Store.is-cn, "添加");
-        }
-    }
 }
 
 component RssList inherits Rectangle {
@@ -136,15 +119,11 @@ component RssListBtns inherits HorizontalLayout {
         bg-pressed-color: self.bg-color.darker(30%);
         colorize: self.bg-pressed-color.darker(50%);
 
-        clicked => {
-            current-btn-index(BtnIndex.Delete);
-            Logic.delete-rss(root.current-uuid);
-        }
+        clicked => { current-btn-index(BtnIndex.Delete); }
     }
 }
 
 component AddEdit inherits Rectangle {
-    property<length> text-width: Theme.default-label-width;
     in-out property<int> icon-index: 0;
 
     public function get() -> RssConfig {
@@ -182,16 +161,15 @@ component AddEdit inherits Rectangle {
 
             txt-name := Label {
                 font-size: Theme.title4-font-size;
-                width: root.text-width;
-                text: Logic.tr(Store.is-cn, "Rss名称和图标");
+                text: Logic.tr(Store.is-cn, "RSS名称和图标");
             }
 
             HorizontalLayout {
-                height: txt-name.preferred-height * 1.33;
+                height: txt-name.preferred-height * 1.6;
                 spacing: Theme.spacing;
 
                 line-edit-name := LineEdit {
-                    placeholder-text: Logic.tr(Store.is-cn, "请输入Rss名称");
+                    placeholder-text: Logic.tr(Store.is-cn, "请输入RSS名称");
                 }
 
                 rss-icon := IconBtn {
@@ -208,13 +186,26 @@ component AddEdit inherits Rectangle {
 
             txt-url := Label {
                 font-size: Theme.title4-font-size;
-                width: root.text-width;
-                text: Logic.tr(Store.is-cn, "Rss源地址");
+                text: Logic.tr(Store.is-cn, "RSS源地址");
             }
 
-            line-edit-url := LineEdit {
-                height: txt-url.preferred-height * 1.33;
-                placeholder-text: Logic.tr(Store.is-cn, "请输入Rss源地址");
+            HorizontalLayout {
+                spacing: Theme.spacing;
+
+                line-edit-url := LineEdit {
+                    height: txt-url.preferred-height * 1.6;
+                    placeholder-text: Logic.tr(Store.is-cn, "请输入RSS源地址");
+                }
+
+                IconBtn {
+                    width: line-edit-url.height;
+                    bg-color: Colors.transparent;
+                    icon: Icons.paste;
+                    icon-width: Theme.icon-size * 1.2;
+
+                    // TODO: get text from clipboard
+                    clicked => { }
+                }
             }
         }
 
@@ -223,11 +214,11 @@ component AddEdit inherits Rectangle {
             spacing: Theme.spacing;
 
             txt-feed-format := Label {
-                text: Logic.tr(Store.is-cn, "Rss源格式");
+                text: Logic.tr(Store.is-cn, "RSS源格式");
             }
 
             feed-format-combobox := ComboBox {
-                height: txt-feed-format.preferred-height * 1.33;
+                height: line-edit-url.height;
                 model: ["AUTO", "RSS", "ATOM"];
                 current-value: self.model[0];
             }
@@ -291,10 +282,17 @@ component AddEditBtns inherits HorizontalLayout {
 
 
 component Body inherits Rectangle {
-    private property <BtnIndex> rss-list-btns-index;
+    private property <BtnIndex> rss-list-btns-index: BtnIndex.New;
     in-out property icon-index <=> ae.icon-index;
 
     rsslist-vbox := VerticalLayout {
+        Head {
+            hbox-alignment: LayoutAlignment.start;
+            icon-width: Theme.icon-size * 0.7;
+            icon: Icons.add-fill;
+            title: Logic.tr(Store.is-cn, "添加");
+        }
+
         rsslist := RssList { }
 
         RssListBtns {
@@ -310,7 +308,11 @@ component Body inherits Rectangle {
                     rsslist-vbox.visible = false;
                     ae.set(Logic.get-rss-ae-setting(rsslist.current-uuid));
                 } else if (index == BtnIndex.Delete) {
-                    Logic.delete-rss(rsslist.current-uuid);
+                    Store.ok-cancel-dialog-setting.title-type = "warning";
+                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除？");
+                    Store.ok-cancel-dialog-setting.handle-type = "remove-rss";
+                    Store.ok-cancel-dialog-setting.handle-uuid = rsslist.current-uuid;
                 }
             }
         }
@@ -318,8 +320,12 @@ component Body inherits Rectangle {
 
     ae-vbox := VerticalLayout {
         visible: !rsslist-vbox.visible;
-        spacing: Theme.spacing * 4;
-        alignment: start;
+
+        ad-head := Head {
+            hbox-alignment: LayoutAlignment.start;
+            title: root.rss-list-btns-index == BtnIndex.New ? Logic.tr(Store.is-cn, "新建") : Logic.tr(Store.is-cn, "编辑");
+            clicked => { rsslist-vbox.visible = true; }
+        }
 
         ae := AddEdit {}
 
@@ -347,6 +353,5 @@ export component Add inherits VerticalLayout {
 
     in-out property icon-index <=> body.icon-index;
 
-    head := Head {}
     body := Body {}
 }

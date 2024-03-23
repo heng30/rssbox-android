@@ -1,0 +1,18 @@
+import { Theme, Icons } from "../theme.slint";
+import { IconBtn } from "./icon-btn.slint";
+import { Head } from "./head.slint";
+
+export component SettingDetail inherits Rectangle {
+    callback back <=> head.clicked;
+
+    in-out property title <=> head.title;
+
+    VerticalLayout {
+
+        head := Head {
+            hbox-alignment: LayoutAlignment.start;
+        }
+
+        @children
+    }
+}
