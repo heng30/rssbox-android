@@ -53,14 +53,12 @@ export component Dialog inherits Rectangle {
             padding: Theme.padding * 2;
 
             cancel-btn := CancelBtn {
-                width: 120px;
                 text: Logic.tr(Store.is-cn, "取消");
                 icon: Icons.cancel;
                 clicked => { root.cancel-clicked(); }
             }
 
             ConfirmBtn {
-                width: 120px;
                 text: Logic.tr(Store.is-cn, "确认");
                 icon: Icons.success-fill;
                 clicked => { root.ok-clicked(); }

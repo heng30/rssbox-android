@@ -115,7 +115,7 @@ component Sync inherits SettingDetail {
         return {
             sync-interval: sync-interval-lineedit.text,
             sync-timeout: sync-timeout-lineedit.text,
-            is-sync-interval: sync-interval-checkbox.checked,
+            is-auto-sync: sync-auto-checkbox.checked,
             is-start-sync: start-sync-checkbox.checked,
         };
     }
@@ -123,7 +123,7 @@ component Sync inherits SettingDetail {
     public function set(setting: SettingSync) {
         sync-interval-lineedit.text = setting.sync-interval;
         sync-timeout-lineedit.text = setting.sync-timeout;
-        sync-interval-checkbox.checked = setting.is-sync-interval;
+        sync-auto-checkbox.checked = setting.is-auto-sync;
         start-sync-checkbox.checked = setting.is-start-sync;
     }
 
@@ -153,16 +153,14 @@ component Sync inherits SettingDetail {
             }
         }
 
-        sync-interval-checkbox := CheckBox {
+        sync-auto-checkbox := CheckBox {
             text: self.checked ? Logic.tr(Store.is-cn, "已经启用自动同步") : Logic.tr(Store.is-cn, "未启用自动同步");
         }
 
         start-sync-checkbox := CheckBox {
             text: self.checked ? Logic.tr(Store.is-cn, "程序启动时，马上进行一次同步") : Logic.tr(Store.is-cn, "程序启动时，不马上进行一次同步");
         }
-
     }
-
 }
 
 component Proxy inherits SettingDetail {
@@ -170,15 +168,92 @@ component Proxy inherits SettingDetail {
 
     public function get() -> SettingProxy {
         return {
-            // TODO
-
+            proxy-type: type-combox.current-value,
+            http-url: http-url-lineedit.text,
+            http-port: http-port-lineedit.text,
+            socks5-url: socks5-url-lineedit.text,
+            socks5-port: socks5-port-lineedit.text,
         };
     }
 
     public function set(setting: SettingProxy) {
+        type-combox.current-value = setting.proxy-type;
+        http-url-lineedit.text = setting.http-url;
+        http-port-lineedit.text = setting.http-port;
+        socks5-url-lineedit.text = setting.socks5-url;
+        socks5-port-lineedit.text = setting.socks5-port;
+
+        if (type-combox.current-value == "") {
+            type-combox.current-value = type-combox.model[0];
+        }
+    }
+
+    SettingDetailInner {
+        type-combox := ComboBox {
+            height: http-url-txt.preferred-height * 1.6;
+            model: ["Http", "Socks5"];
+            current-value: self.model[0];
+        }
+
+        Rectangle {
+            VerticalLayout {
+                visible: type-combox.current-value == "Http";
+                spacing: Theme.spacing * 4;
+
+                SettingDetailInnerVbox {
+                    http-url-txt := SettingDetailLabel {
+                        text: Logic.tr(Store.is-cn, "代理地址");
+                    }
+
+                    http-url-lineedit:= LineEdit {
+                        height: http-url-txt.preferred-height * 1.6;
+                        placeholder-text: "127.0.0.1";
+                    }
+                }
+
+                SettingDetailInnerVbox {
+                    http-port-txt := SettingDetailLabel {
+                        text: Logic.tr(Store.is-cn, "代理端口");
+                    }
+
+                    http-port-lineedit:= LineEdit {
+                        input-type: number;
+                        height: http-port-txt.preferred-height * 1.6;
+                        placeholder-text: "3128";
+                    }
+                }
+            }
+
+            VerticalLayout {
+                visible: type-combox.current-value == "Socks5";
+                spacing: Theme.spacing * 4;
+
+                SettingDetailInnerVbox {
+                    socks5-url-txt := SettingDetailLabel {
+                        text: Logic.tr(Store.is-cn, "代理地址");
+                    }
+
+                    socks5-url-lineedit:= LineEdit {
+                        height: socks5-url-txt.preferred-height * 1.6;
+                        placeholder-text: "127.0.0.1";
+                    }
+                }
+
+                SettingDetailInnerVbox {
+                    socks5-port-txt := SettingDetailLabel {
+                        text: Logic.tr(Store.is-cn, "代理端口");
+                    }
+
+                    socks5-port-lineedit:= LineEdit {
+                        input-type: number;
+                        height: socks5-port-txt.preferred-height * 1.6;
+                        placeholder-text: "1080";
+                    }
+                }
+            }
+        }
     }
 }
-
 
 component About inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "关 于");
@@ -245,6 +320,15 @@ component About inherits SettingDetail {
 
 component Help inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "帮 助");
+
+    Flickable {
+        SettingDetailInner {
+            Label {
+                text: Store.is-cn ? Store.help-dialog.text-cn : Store.help-dialog.text-en;
+                wrap: word-wrap;
+            }
+        }
+    }
 }
 
 component Body inherits VerticalLayout {
@@ -344,7 +428,7 @@ export component Setting inherits Rectangle {
     visible: TabIndex.Setting == Store.current-tab-index;
 
     body := Body {
-        visible: false;
+        // visible: false;
 
         switch(index) => {
             if (index == SettingDetailIndex.UI) {

@@ -26,11 +26,7 @@ export component AppWindow inherits Window {
     }
 
     modal := Rectangle {
-        function hide() { }
-
-        if oc-dialog.visible || icons-dialog.visible : Blanket {
-            clicked => { modal.hide(); }
-        }
+        if oc-dialog.visible || icons-dialog.visible : Blanket { }
 
         icons-dialog := IconsDialog {
             select-index(index) => { panel.icon-index = index; }

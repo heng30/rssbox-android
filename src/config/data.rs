@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct Config {
     #[serde(skip)]
     pub config_path: PathBuf,
@@ -14,55 +14,62 @@ pub struct Config {
 
     pub ui: UI,
 
-    pub socks5: Socks5,
-}
+    pub sync: Sync,
 
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            config_path: PathBuf::default(),
-            db_path: PathBuf::default(),
-            cache_dir: PathBuf::default(),
-            ui: UI::default(),
-            socks5: Socks5::default(),
-        }
-    }
+    pub proxy: Proxy,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UI {
     pub font_size: u32,
     pub font_family: String,
-    pub win_width: u32,
-    pub win_height: u32,
     pub language: String,
 }
 
 impl Default for UI {
     fn default() -> Self {
         Self {
-            font_size: 18,
+            font_size: 16,
             font_family: "SourceHanSerifCN".to_string(),
-            win_width: 600,
-            win_height: 800,
             language: "cn".to_string(),
         }
     }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Socks5 {
-    pub enabled: bool,
-    pub url: String,
-    pub port: u16,
+pub struct Proxy {
+    pub http_url: String,
+    pub http_port: u16,
+    pub socks5_url: String,
+    pub socks5_port: u16,
 }
 
-impl Default for Socks5 {
+impl Default for Proxy {
     fn default() -> Self {
         Self {
-            enabled: false,
-            url: "127.0.0.1".to_string(),
-            port: 1080,
+            http_url: "127.0.0.1".to_string(),
+            http_port: 3128,
+            socks5_url: "127.0.0.1".to_string(),
+            socks5_port: 1080,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Sync {
+    pub sync_interval: i64,
+    pub sync_timeout: i64,
+    pub is_auto_sync: bool,
+    pub is_start_sync: bool,
+}
+
+impl Default for Sync {
+    fn default() -> Self {
+        Self {
+            sync_interval: 60,
+            sync_timeout: 15,
+            is_auto_sync: true,
+            is_start_sync: true,
         }
     }
 }

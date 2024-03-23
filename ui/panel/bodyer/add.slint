@@ -1,8 +1,8 @@
+import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex, RssConfig } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { CancelBtn, ConfirmBtn, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
-import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 
 enum BtnIndex {
     New,
@@ -103,9 +103,9 @@ component RssListBtns inherits HorizontalLayout {
         text: Logic.tr(Store.is-cn, "编辑");
         icon: Icons.edit;
         border-radius: self.height / 2;
-        bg-color: Theme.info-color.brighter(20%);
+        bg-color: Theme.info-color.brighter(50%);
         bg-pressed-color: self.bg-color.darker(30%);
-        colorize: self.bg-pressed-color.darker(50%);
+        colorize: self.bg-pressed-color.darker(100%);
 
         clicked => { current-btn-index(BtnIndex.Edit); }
     }
@@ -117,7 +117,7 @@ component RssListBtns inherits HorizontalLayout {
         border-radius: self.height / 2;
         bg-color: Theme.danger-color;
         bg-pressed-color: self.bg-color.darker(30%);
-        colorize: self.bg-pressed-color.darker(50%);
+        colorize: self.bg-pressed-color.darker(100%);
 
         clicked => { current-btn-index(BtnIndex.Delete); }
     }
@@ -130,7 +130,8 @@ component AddEdit inherits Rectangle {
         return {
             name: line-edit-name.text,
             url: line-edit-url.text,
-            use-proxy: use-proxy-checkbox.checked,
+            use-http-proxy: use-http-proxy-checkbox.checked,
+            use-socks5-proxy: use-socks5-proxy-checkbox.checked,
             is-favorite: favorite-checkbox.checked,
             icon-index: root.icon-index,
             feed-format: feed-format-combobox.current-value,
@@ -140,7 +141,8 @@ component AddEdit inherits Rectangle {
     public function set(config: RssConfig) {
         line-edit-name.text = config.name;
         line-edit-url.text = config.url;
-        use-proxy-checkbox.checked = config.use-proxy;
+        use-http-proxy-checkbox.checked = config.use-http-proxy;
+        use-socks5-proxy-checkbox.checked = config.use-socks5-proxy;
         favorite-checkbox.checked = config.is-favorite;
         root.icon-index = config.icon-index;
 
@@ -210,19 +212,27 @@ component AddEdit inherits Rectangle {
             }
         }
 
-        HorizontalLayout {
-            spacing: Theme.spacing * 2;
+        favorite-checkbox := CheckBox {
+            text: self.checked ? Logic.tr(Store.is-cn, "已经收藏") : Logic.tr(Store.is-cn, "未收藏");
+        }
 
-            HorizontalLayout {
-                width: 50%;
-                use-proxy-checkbox := CheckBox {
-                    text: self.checked ? Logic.tr(Store.is-cn, "已经启用代理") : Logic.tr(Store.is-cn, "未启用代理");
+        use-http-proxy-checkbox := CheckBox {
+            width: 50%;
+            text: self.checked ? Logic.tr(Store.is-cn, "已经启用Http代理") : Logic.tr(Store.is-cn, "未启用Http代理");
+
+            toggled => {
+                if (self.checked && use-socks5-proxy-checkbox.checked) {
+                    use-socks5-proxy-checkbox.checked = false;
                 }
             }
+        }
 
-            HorizontalLayout {
-                favorite-checkbox := CheckBox {
-                    text: self.checked ? Logic.tr(Store.is-cn, "已经关注") : Logic.tr(Store.is-cn, "未关注");
+        use-socks5-proxy-checkbox := CheckBox {
+            text: self.checked ? Logic.tr(Store.is-cn, "已经启用Socks5代理") : Logic.tr(Store.is-cn, "未启用Socks5代理");
+
+            toggled => {
+                if (self.checked && use-http-proxy-checkbox.checked) {
+                    use-http-proxy-checkbox.checked = false;
                 }
             }
         }
@@ -230,8 +240,6 @@ component AddEdit inherits Rectangle {
 }
 
 component AddEditBtns inherits HorizontalLayout {
-    private property <length> btn-width: 100px;
-
     alignment: center;
     spacing: Theme.spacing * 10;
     padding: Theme.padding * 4;
@@ -240,13 +248,11 @@ component AddEditBtns inherits HorizontalLayout {
     callback ok-clicked();
 
     CancelBtn {
-        width: root.btn-width;
         text: Logic.tr(Store.is-cn, "取消");
         clicked => { root.cancel-clicked(); }
     }
 
     ConfirmBtn {
-        width: root.btn-width;
         text: Logic.tr(Store.is-cn, "确定");
         clicked => { root.ok-clicked(); }
     }

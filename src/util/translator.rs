@@ -26,15 +26,17 @@ pub fn tr(text: &str) -> String {
     items.insert("下载失败", "Download failed");
     items.insert("加载失败", "Load failed");
     items.insert("密码错误", "Password invalid");
-    items.insert("正在重试...", "Retrying...");
-    items.insert("正在下载...", "Downloading...");
     items.insert("创建账户成功", "Create account success");
     items.insert("创建账户失败", "Create account failed");
     items.insert("密码错误", "Wrong password");
-    items.insert("修改密码成功", "Change password success");
     items.insert("非法输入", "Invalid input");
+
+    items.insert("刷新...", "Refresh...");
+    items.insert("正在重试...", "Retrying...");
+    items.insert("正在下载...", "Downloading...");
+
     items.insert("是否删除全部？", "Delete all entrys or not?");
-    items.insert("刷新...", "Flush...");
+    items.insert("是否删除全部缓存？", "Delete all cache or not?");
 
     items.insert("界 面", "UI");
     items.insert("同 步", "Sync");
@@ -50,15 +52,31 @@ pub fn tr(text: &str) -> String {
     items.insert("RSS源地址", "RSS URL");
     items.insert("请输入RSS源地址", "Please input RSS URL");
     items.insert("RSS源格式", "RSS format");
-    items.insert("已经启用代理", "Enabled proxy");
-    items.insert("未启用代理", "Disable proxy");
-    items.insert("已经关注", "Star");
-    items.insert("未关注", "Not star");
+    items.insert("已经Http启用代理", "Enabled Http proxy");
+    items.insert("未启Http用代理", "Disable Http proxy");
+    items.insert("已经Socks5启用代理", "Enabled Socks5 proxy");
+    items.insert("未启Socks5用代理", "Disable Socks5 proxy");
+    items.insert("已经收藏", "Star");
+    items.insert("未收藏", "Not star");
     items.insert("图标库", "Icons");
+
+    items.insert("字体大小", "Font size");
+    items.insert("字体样式", "Font family");
+    items.insert("选择语言", "Choose language");
+    items.insert("同步时间间隔(分钟)", "Sync time interval(minute)");
+    items.insert("请输入时间间隔", "Please input time interval");
+    items.insert("同步超时(秒)", "Sync timeout(second)");
+    items.insert("请输入同步超时", "Please input sync timeout");
+    items.insert("已经启用自动同步", "Enabled auto sync");
+    items.insert("未启用自动同步", "Disable auto sync");
+    items.insert("程序启动时，马上进行一次同步", "Starting sync once, when application starting");
+    items.insert("程序启动时，不马上进行一次同步", "Don't start sync, when application starting");
+    items.insert("代理地址", "Proxy address");
+    items.insert("代理端口", "Proxy port");
 
     items.insert("警告", "Warning");
     items.insert("订阅", "RSS");
-    items.insert("收藏夹", "Favorite");
+    items.insert("收藏夹", "Collection");
     items.insert("添加", "Add");
     items.insert("设置", "Setting");
 

@@ -3666,6 +3666,7 @@ dependencies = [
  "slint",
  "slint-build",
  "tokio",
+ "toml",
  "uuid",
  "webbrowser",
 ]

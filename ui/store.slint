@@ -36,7 +36,8 @@ export struct RssConfig {
     uuid: string,
     name: string,
     url: string,
-    use-proxy: bool,
+    use-http-proxy: bool,
+    use-socks5-proxy: bool,
     icon-index: int,
     feed_format: string,
     is-favorite: bool,
@@ -69,14 +70,16 @@ export struct SettingUI {
 export struct SettingSync {
     sync-interval: string,
     sync-timeout: string,
-    is-sync-interval: bool,
+    is-auto-sync: bool,
     is-start-sync: bool,
 }
 
 export struct SettingProxy {
-    enabled: bool,
-    url: string,
-    port: string,
+    proxy-type: string,
+    http-url: string,
+    http-port: string,
+    socks5-url: string,
+    socks5-port: string,
 }
 
 export struct AboutDialog {
@@ -87,7 +90,7 @@ export struct AboutDialog {
 }
 
 export global Store  {
-    out property<TabIndex> current-tab-index: TabIndex.Setting;
+    out property<TabIndex> current-tab-index: TabIndex.Rss;
 
     in-out property<[RssEntry]> rss-entry: [
         {
@@ -196,18 +199,12 @@ export global Store  {
     in-out property<{show: bool, text-cn: string, text-en: string}> help-dialog: {
         show: false,
         text-cn:
-              "配置和数据:\n"
-            + "  1. 配置保存在~/.config/bitbox目录下。\n"
-            + "  2. 数据保存在~/.local/share/bitbox目录下。\n"
-            + "\n注意事项:\n"
-            + "  1. 使用 blockstream API 进行交易广播，获取UTXO等链上信息。\n",
+          "1. 向右滑动[订阅]和[收藏夹]的条目，可收藏和删除条目。\n\n"
+        + "2. 设置后，点击左上角的返回按钮。对设置进行保存。\n\n",
 
         text-en:
-              "Configuration and data:\n"
-            + "  1. Configuration is stored in the ~/.config/bitbox directory.\n"
-            + "  2. Data is stored in the ~/.local/share/bitbox directory.\n"
-            + "\nNote:\n"
-            + "  1. Use blockstream API to broadcast transation, fetch UTXO and other on chain information.\n",
+          "1. Swipe right on the [RSS] and [Collection] items to collect and delete items.\n\n"
+        + "2. After setting, click the back button in the upper left corner. Save the settings.\n\n",
     };
 
     in-out property<IconDialogSetting> icons-dialog-setting: {

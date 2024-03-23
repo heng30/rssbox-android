@@ -10,7 +10,6 @@ mod logic;
 mod util;
 mod version;
 
-use anyhow::Result;
 use logic::{clipboard, message, about};
 
 #[cfg(not(target_os = "android"))]

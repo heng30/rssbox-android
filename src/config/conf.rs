@@ -42,8 +42,8 @@ pub fn ui() -> data::UI {
     CONFIG.lock().unwrap().borrow().ui.clone()
 }
 
-pub fn socks5() -> data::Socks5 {
-    CONFIG.lock().unwrap().borrow().socks5.clone()
+pub fn proxy() -> data::Proxy {
+    CONFIG.lock().unwrap().borrow().proxy.clone()
 }
 
 pub fn db_path() -> PathBuf {
@@ -84,7 +84,7 @@ impl Config {
 
     fn init_config(&mut self, app_dirs: &AppDirs) -> Result<()> {
         self.db_path = app_dirs.data_dir.join("rssbox.db");
-        self.config_path = app_dirs.config_dir.join("rssbox.conf");
+        self.config_path = app_dirs.config_dir.join("rssbox.toml");
         self.cache_dir = app_dirs.data_dir.join("cache");
 
         fs::create_dir_all(&app_dirs.data_dir)?;
@@ -96,16 +96,17 @@ impl Config {
 
     fn load(&mut self) -> Result<()> {
         match fs::read_to_string(&self.config_path) {
-            Ok(text) => match serde_json::from_str::<Config>(&text) {
+            Ok(text) => match toml::from_str::<Config>(&text) {
                 Ok(c) => {
                     self.ui = c.ui;
-                    self.socks5 = c.socks5;
+                    self.proxy = c.proxy;
+                    self.sync = c.sync;
                     Ok(())
                 }
                 Err(e) => Err(e.into()),
             },
 
-            Err(_) => match serde_json::to_string_pretty(self) {
+            Err(_) => match toml::to_string_pretty(self) {
                 Ok(text) => Ok(fs::write(&self.config_path, text)?),
                 Err(e) => Err(e.into()),
             },
@@ -113,7 +114,7 @@ impl Config {
     }
 
     pub fn save(&self) -> Result<()> {
-        match serde_json::to_string_pretty(self) {
+        match toml::to_string_pretty(self) {
             Ok(text) => Ok(fs::write(&self.config_path, text)?),
             Err(e) => Err(e.into()),
         }
