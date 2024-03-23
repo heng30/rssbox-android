@@ -1,5 +1,6 @@
 import { Theme, Icons } from "../theme.slint";
 import { IconBtn } from "./icon-btn.slint";
+import { Label } from "./label.slint";
 import { Head } from "./head.slint";
 
 export component SettingDetail inherits Rectangle {
@@ -15,4 +16,21 @@ export component SettingDetail inherits Rectangle {
 
         @children
     }
+}
+
+export component SettingDetailInner inherits VerticalLayout {
+    alignment: start;
+    padding: Theme.padding * 2;
+    spacing: Theme.spacing * 4;
+
+    @children
+}
+
+export component SettingDetailInnerVbox inherits VerticalLayout {
+    spacing: Theme.spacing;
+    @children
+}
+
+export component SettingDetailLabel inherits Label {
+    font-size: Theme.title4-font-size;
 }

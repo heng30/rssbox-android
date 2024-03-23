@@ -8,6 +8,7 @@ export component SettingEntry inherits Rectangle {
     in-out property icon <=> sib.icon;
     in-out property icon-colorize <=> sib.colorize;
     in-out property icon-width <=> sib.icon-width;
+    in-out property attach-text <=> eib.text;
 
     background: Theme.dark-border-color;
 
@@ -27,6 +28,7 @@ export component SettingEntry inherits Rectangle {
             icon: Icons.back;
             icon-rotation-angle: 180deg;
             colorize: root.background.darker(30%);
+            is-ltr: false;
         }
     }
 

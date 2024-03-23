@@ -1,7 +1,7 @@
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex, RssConfig } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { Btn, IconBtn, NoMessageImg, Label, Head } from "../../base/widgets.slint";
+import { Btn, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
 import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 
 enum BtnIndex {
@@ -150,17 +150,9 @@ component AddEdit inherits Rectangle {
         }
     }
 
-    VerticalLayout {
-        alignment: start;
-        padding: Theme.padding * 2;
-        spacing: Theme.spacing * 4;
-
-        VerticalLayout {
-            alignment: start;
-            spacing: Theme.spacing;
-
-            txt-name := Label {
-                font-size: Theme.title4-font-size;
+    SettingDetailInner {
+        SettingDetailInnerVbox {
+            txt-name := SettingDetailLabel {
                 text: Logic.tr(Store.is-cn, "RSS名称和图标");
             }
 
@@ -180,11 +172,8 @@ component AddEdit inherits Rectangle {
             }
         }
 
-        VerticalLayout {
-            alignment: start;
-            spacing: Theme.spacing;
-
-            txt-url := Label {
+        SettingDetailInnerVbox {
+            txt-url := SettingDetailLabel {
                 font-size: Theme.title4-font-size;
                 text: Logic.tr(Store.is-cn, "RSS源地址");
             }
@@ -209,11 +198,8 @@ component AddEdit inherits Rectangle {
             }
         }
 
-        VerticalLayout {
-            alignment: start;
-            spacing: Theme.spacing;
-
-            txt-feed-format := Label {
+        SettingDetailInnerVbox {
+            txt-feed-format := SettingDetailLabel {
                 text: Logic.tr(Store.is-cn, "RSS源格式");
             }
 

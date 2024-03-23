@@ -67,7 +67,10 @@ export struct SettingUI {
 }
 
 export struct SettingSync {
-    // TODO
+    sync-interval: string,
+    sync-timeout: string,
+    is-sync-interval: bool,
+    is-start-sync: bool,
 }
 
 export struct SettingProxy {
@@ -174,8 +177,9 @@ export global Store  {
 
     in-out property<MessageItem> message;
     in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
-    in-out property<bool> is-cn: setting-ui.language == "cn";
 
+    in-out property<string> cache-size: "0M";
+    in-out property<bool> is-cn: setting-ui.language == "cn";
     in-out property<SettingUI> setting-ui: {
         font-size: "16",
         font-family: "SourceHanSerifCN",

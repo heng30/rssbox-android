@@ -1,15 +1,14 @@
+import { LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
-import { Store, TabIndex, SettingUI, SettingSync, SettingProxy } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { CenterLayout, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail } from "../../base/widgets.slint";
-import { SpinBox, LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
+import { Store, TabIndex, SettingUI, SettingSync, SettingProxy } from "../../store.slint";
+import { CenterLayout, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
     UI,
     Sync,
     Proxy,
-    Cache,
     About,
     Help,
 }
@@ -28,9 +27,13 @@ component UI inherits SettingDetail {
     }
 
     public function set(setting :SettingUI) {
-        font-size-txt.text = setting.font-size;
+        font-size-lineedit.text = setting.font-size;
         fonts-combox.current-value = setting.font-family;
         root.language = setting.language;
+
+        if (setting.font-family == "") {
+            fonts-combox.current-value = "SystemDefault";
+        }
 
         if (setting.language == "en") {
             cn-checkbox.checked = false;
@@ -41,31 +44,21 @@ component UI inherits SettingDetail {
         }
     }
 
-    VerticalLayout {
-        alignment: start;
-        padding: Theme.padding * 2;
-        spacing: Theme.spacing * 4;
-
-        VerticalLayout {
-            spacing: Theme.spacing;
-
-            font-size-txt := Label {
-                font-size: Theme.title4-font-size;
+    SettingDetailInner {
+        SettingDetailInnerVbox {
+            font-size-txt := SettingDetailLabel {
                 text: Logic.tr(Store.is-cn, "字体大小");
             }
 
             font-size-lineedit := LineEdit {
+                input-type: number;
                 height: font-size-txt.preferred-height * 1.6;
                 placeholder-text: Logic.tr(Store.is-cn, "10 ~ 50");
-                input-type: number;
             }
         }
 
-        VerticalLayout {
-            spacing: Theme.spacing;
-
-            fonts-label := Label {
-                font-size: Theme.title4-font-size;
+        SettingDetailInnerVbox {
+            fonts-label := SettingDetailLabel {
                 text: Logic.tr(Store.is-cn, "字体样式");
             }
 
@@ -77,11 +70,8 @@ component UI inherits SettingDetail {
             }
         }
 
-        VerticalLayout {
-            spacing: Theme.spacing;
-
-            Label {
-                font-size: Theme.title4-font-size;
+        SettingDetailInnerVbox {
+            SettingDetailLabel {
                 text: Logic.tr(Store.is-cn, "选择语言");
             }
 
@@ -123,11 +113,54 @@ component Sync inherits SettingDetail {
 
     public function get() -> SettingSync {
         return {
-            // TODO
+            sync-interval: sync-interval-lineedit.text,
+            sync-timeout: sync-timeout-lineedit.text,
+            is-sync-interval: sync-interval-checkbox.checked,
+            is-start-sync: start-sync-checkbox.checked,
         };
     }
 
     public function set(setting: SettingSync) {
+        sync-interval-lineedit.text = setting.sync-interval;
+        sync-timeout-lineedit.text = setting.sync-timeout;
+        sync-interval-checkbox.checked = setting.is-sync-interval;
+        start-sync-checkbox.checked = setting.is-start-sync;
+    }
+
+    SettingDetailInner {
+        SettingDetailInnerVbox {
+            sync-interval-txt := SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "同步时间间隔(分钟)");
+            }
+
+            sync-interval-lineedit := LineEdit {
+                input-type: number;
+                height: sync-interval-txt.preferred-height * 1.6;
+                placeholder-text: Logic.tr(Store.is-cn, "请输入时间间隔");
+            }
+
+        }
+
+        SettingDetailInnerVbox {
+            sync-timeout-txt := SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "同步超时(秒)");
+            }
+
+            sync-timeout-lineedit := LineEdit {
+                input-type: number;
+                height: sync-timeout-txt.preferred-height * 1.6;
+                placeholder-text: Logic.tr(Store.is-cn, "请输入同步超时");
+            }
+        }
+
+        sync-interval-checkbox := CheckBox {
+            text: self.checked ? Logic.tr(Store.is-cn, "已经启用自动同步") : Logic.tr(Store.is-cn, "未启用自动同步");
+        }
+
+        start-sync-checkbox := CheckBox {
+            text: self.checked ? Logic.tr(Store.is-cn, "程序启动时，马上进行一次同步") : Logic.tr(Store.is-cn, "程序启动时，不马上进行一次同步");
+        }
+
     }
 
 }
@@ -146,9 +179,6 @@ component Proxy inherits SettingDetail {
     }
 }
 
-component Cache inherits SettingDetail {
-    title: Logic.tr(Store.is-cn, "缓 存");
-}
 
 component About inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "关 于");
@@ -221,7 +251,8 @@ component Body inherits VerticalLayout {
     alignment: start;
     spacing: Theme.spacing;
 
-    in-out property<SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.Sync;
+    // TODO
+    in-out property<SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.UI;
 
     callback switch(SettingDetailIndex);
 
@@ -269,15 +300,6 @@ component Body inherits VerticalLayout {
             }
 
             SettingEntry {
-                text: Logic.tr(Store.is-cn, "缓 存");
-                icon: Icons.cache-light;
-                clicked => {
-                    root.visible = false;
-                    root.current-setting-detail-index = SettingDetailIndex.Cache;
-                }
-            }
-
-            SettingEntry {
                 text: Logic.tr(Store.is-cn, "关 于");
                 icon: Icons.about-light;
                 clicked => {
@@ -292,6 +314,18 @@ component Body inherits VerticalLayout {
                 clicked => {
                     root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Help;
+                }
+            }
+
+            SettingEntry {
+                text: Logic.tr(Store.is-cn, "缓 存");
+                attach-text: Store.cache-size;
+                icon: Icons.cache-light;
+                clicked => {
+                    Store.ok-cancel-dialog-setting.title-type = "warning";
+                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部缓存？");
+                    Store.ok-cancel-dialog-setting.handle-type = "remove-all-cache";
                 }
             }
 
@@ -350,11 +384,6 @@ export component Setting inherits Rectangle {
             }
         }
 
-        Cache {
-            visible: body.current-setting-detail-index == SettingDetailIndex.Cache;
-            back => { body.visible = true; }
-        }
-
         About {
             visible: body.current-setting-detail-index == SettingDetailIndex.About;
             back => { body.visible = true; }
@@ -366,4 +395,3 @@ export component Setting inherits Rectangle {
         }
     }
 }
-

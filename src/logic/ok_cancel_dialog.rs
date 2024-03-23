@@ -17,7 +17,9 @@ pub fn init(ui: &AppWindow) {
                 "remove-rss" => {
                     ui.global::<Logic>().invoke_remove_rss(handle_uuid);
                 }
-
+                "remove-all-cache" => {
+                    ui.global::<Logic>().invoke_remove_all_cache();
+                }
                 _ => (),
             }
         });
