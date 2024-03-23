@@ -1,7 +1,7 @@
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex, RssConfig } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { Btn, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
+import { CancelBtn, ConfirmBtn, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
 import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 
 enum BtnIndex {
@@ -229,7 +229,6 @@ component AddEdit inherits Rectangle {
     }
 }
 
-
 component AddEditBtns inherits HorizontalLayout {
     private property <length> btn-width: 100px;
 
@@ -240,28 +239,15 @@ component AddEditBtns inherits HorizontalLayout {
     callback cancel-clicked();
     callback ok-clicked();
 
-    IconBtn {
-        width: root.btn-width; height: 40px;
+    CancelBtn {
+        width: root.btn-width;
         text: Logic.tr(Store.is-cn, "取消");
-        icon: Icons.delete;
-        icon-width: Theme.icon-size;
-        border-radius: self.height / 2;
-        bg-color: Theme.info-color.brighter(20%);
-        bg-pressed-color: self.bg-color.darker(30%);
-        colorize: self.bg-pressed-color.darker(50%);
-
         clicked => { root.cancel-clicked(); }
     }
 
-    IconBtn {
+    ConfirmBtn {
         width: root.btn-width;
         text: Logic.tr(Store.is-cn, "确定");
-        icon: Icons.success-fill;
-        border-radius: self.height / 2;
-        bg-color: Theme.success-color.darker(20%);
-        bg-pressed-color: self.bg-color.darker(30%);
-        colorize: Theme.basic-white-color;
-
         clicked => { root.ok-clicked(); }
     }
 }
@@ -306,6 +292,7 @@ component Body inherits Rectangle {
 
     ae-vbox := VerticalLayout {
         visible: !rsslist-vbox.visible;
+        alignment: start;
 
         ad-head := Head {
             hbox-alignment: LayoutAlignment.start;

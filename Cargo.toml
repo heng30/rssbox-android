@@ -14,8 +14,7 @@ webbrowser = "0.8"
 serde_json = "1.0"
 lazy_static = "1.4"
 
-
-// TODO, not available on android
+# TODO, not available on android
 clipboard = "0.5"
 
 uuid = { version = "1.6", features = ["v4"] }

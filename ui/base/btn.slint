@@ -1,5 +1,21 @@
-import { Theme } from "../theme.slint";
-import { Button } from "std-widgets.slint";
+import { Theme, Icons } from "../theme.slint";
+import { IconBtn } from "./icon-btn.slint";
 
-export component Btn inherits Button {
+export component CancelBtn inherits IconBtn {
+    width: 100px; height: 40px;
+    icon: Icons.delete;
+    icon-width: Theme.icon-size;
+    border-radius: self.height / 2;
+    bg-color: Theme.info-color.brighter(50%);
+    bg-pressed-color: self.bg-color.darker(30%);
+    colorize: self.bg-pressed-color.darker(100%);
+}
+
+export component ConfirmBtn inherits IconBtn {
+    width: 100px; height: 40px;
+    icon: Icons.success-fill;
+    border-radius: self.height / 2;
+    bg-color: Theme.success-color.darker(20%);
+    bg-pressed-color: self.bg-color.darker(30%);
+    colorize: Theme.basic-white-color;
 }
