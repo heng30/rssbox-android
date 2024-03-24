@@ -22,7 +22,8 @@ export global Logic {
     callback get-rss-ae-setting(string) -> RssConfig; // suuid
 
     callback remove-all-cache();
-    callback copy-to-clipboard(string);
+    callback copy-to-clipboard(string); // msg
+    callback copy-from-clipboard() -> string;
     callback show-message(string, string);
     callback handle-ok-cancel-dialog(string, string);
 

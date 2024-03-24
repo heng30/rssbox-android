@@ -10,7 +10,7 @@ export component SettingEntry inherits Rectangle {
     in-out property icon-width <=> sib.icon-width;
     in-out property attach-text <=> eib.text;
 
-    background: Theme.dark-border-color;
+    background: Theme.info-color.brighter(60%);
 
     callback clicked <=> ta.clicked;
 

@@ -1,13 +1,12 @@
 use super::data::{self, Config};
 use anyhow::Result;
 use log::debug;
-use std::cell::RefCell;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
 lazy_static! {
-    pub static ref CONFIG: Mutex<RefCell<Config>> = Mutex::new(RefCell::new(Config::default()));
+    pub static ref CONFIG: Mutex<Config> = Mutex::new(Config::default());
 }
 
 #[cfg(not(target_os = "android"))]
@@ -33,36 +32,33 @@ impl AppDirs {
 }
 
 pub fn init() {
-    if let Err(e) = CONFIG.lock().unwrap().borrow_mut().init() {
+    if let Err(e) = CONFIG.lock().unwrap().init() {
         panic!("{:?}", e);
     }
 }
 
 pub fn ui() -> data::UI {
-    CONFIG.lock().unwrap().borrow().ui.clone()
+    CONFIG.lock().unwrap().ui.clone()
 }
 
 pub fn proxy() -> data::Proxy {
-    CONFIG.lock().unwrap().borrow().proxy.clone()
+    CONFIG.lock().unwrap().proxy.clone()
+}
+
+pub fn sync() -> data::Sync {
+    CONFIG.lock().unwrap().sync.clone()
 }
 
 pub fn db_path() -> PathBuf {
-    let conf = CONFIG.lock().unwrap();
-    let conf = conf.borrow();
-
-    conf.db_path.clone()
+    CONFIG.lock().unwrap().db_path.clone()
 }
 
 pub fn cache_dir() -> PathBuf {
-    let conf = CONFIG.lock().unwrap();
-    let conf = conf.borrow();
-
-    conf.cache_dir.clone()
+    CONFIG.lock().unwrap().cache_dir.clone()
 }
 
 pub fn save(conf: data::Config) -> Result<()> {
-    let config = CONFIG.lock().unwrap();
-    let mut config = config.borrow_mut();
+    let mut config = CONFIG.lock().unwrap();
     *config = conf;
     config.save()
 }

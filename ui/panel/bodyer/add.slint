@@ -65,7 +65,7 @@ component RssList inherits Rectangle {
                         alignment: center;
                         IconBtn {
                             icon: Icons.star;
-                            colorize: data.is-mark ? Theme.mark-color : Theme.unmark-color;
+                            colorize: data.is-favorite ? Theme.mark-color : Theme.unmark-color;
                             clicked => { Logic.toggle-rss-mark(index, data.uuid); }
                         }
                     }
@@ -194,8 +194,9 @@ component AddEdit inherits Rectangle {
                     icon: Icons.paste;
                     icon-width: Theme.icon-size * 1.2;
 
-                    // TODO: get text from clipboard
-                    clicked => { }
+                    clicked => {
+                        line-edit-url.text = Logic.copy-from-clipboard();
+                    }
                 }
             }
         }

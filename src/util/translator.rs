@@ -69,8 +69,14 @@ pub fn tr(text: &str) -> String {
     items.insert("请输入同步超时", "Please input sync timeout");
     items.insert("已经启用自动同步", "Enabled auto sync");
     items.insert("未启用自动同步", "Disable auto sync");
-    items.insert("程序启动时，马上进行一次同步", "Starting sync once, when application starting");
-    items.insert("程序启动时，不马上进行一次同步", "Don't start sync, when application starting");
+    items.insert(
+        "程序启动时，马上进行一次同步",
+        "Starting sync once, when application starting",
+    );
+    items.insert(
+        "程序启动时，不马上进行一次同步",
+        "Don't start sync, when application starting",
+    );
     items.insert("代理地址", "Proxy address");
     items.insert("代理端口", "Proxy port");
 

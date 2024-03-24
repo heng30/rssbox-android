@@ -1,4 +1,4 @@
 mod conf;
 mod data;
 
-pub use conf::{cache_dir, db_path, init, save, proxy, ui};
+pub use conf::{db_path, init, sync, proxy, save, ui};

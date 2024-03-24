@@ -18,12 +18,14 @@ export component SettingDetail inherits Rectangle {
     }
 }
 
-export component SettingDetailInner inherits VerticalLayout {
-    alignment: start;
-    padding: Theme.padding * 2;
-    spacing: Theme.spacing * 4;
+export component SettingDetailInner inherits Flickable {
+    VerticalLayout {
+        alignment: start;
+        padding: Theme.padding * 2;
+        spacing: Theme.spacing * 4;
 
-    @children
+        @children
+    }
 }
 
 export component SettingDetailInnerVbox inherits VerticalLayout {

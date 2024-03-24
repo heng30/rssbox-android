@@ -18,20 +18,6 @@ export struct RssEntry {
     is-read: bool,
 }
 
-export struct RssList {
-    uuid: string,
-    name: string,
-    url: string,
-    use-proxy: bool,
-    icon-index: int,
-    feed_format: string,
-    update-time: string,
-    is-mark: bool,
-    entry: [RssEntry],
-
-    unread-counts-flag: bool,
-}
-
 export struct RssConfig {
     uuid: string,
     name: string,
@@ -41,6 +27,10 @@ export struct RssConfig {
     icon-index: int,
     feed_format: string,
     is-favorite: bool,
+    update-time: string,
+
+    unread-counts-flag: bool,
+    entry: [RssEntry],
 }
 
 export struct IconDialogSetting {
@@ -138,18 +128,18 @@ export global Store  {
     ];
 
     in-out property<string> current-rss-uuid;
-    in-out property<[RssList]> rss-lists: [
+    in-out property<[RssConfig]> rss-lists: [
         {
             uuid: "uuid-1",
-            is-mark: true,
-            use_proxy: false,
+            is-favorite: true,
+            use-http-proxy: false,
             icon-index: 0,
             name: "测试-1",
         },
         {
             uuid: "uuid-2",
-            is-mark: false,
-            use_proxy: false,
+            is-favorite: false,
+            use-socks5-proxy: true,
             icon-index: 0,
             name: "测试-2",
         },
@@ -199,11 +189,11 @@ export global Store  {
     in-out property<{show: bool, text-cn: string, text-en: string}> help-dialog: {
         show: false,
         text-cn:
-          "1. 向右滑动[订阅]和[收藏夹]的条目，可收藏和删除条目。\n\n"
+          "1. 向右滑动[订阅]和[收藏夹]的条目，可收藏或删除条目。\n\n"
         + "2. 设置后，点击左上角的返回按钮。对设置进行保存。\n\n",
 
         text-en:
-          "1. Swipe right on the [RSS] and [Collection] items to collect and delete items.\n\n"
+          "1. Swipe right on the [RSS] and [Collection] items to collect or delete items.\n\n"
         + "2. After setting, click the back button in the upper left corner. Save the settings.\n\n",
     };
 

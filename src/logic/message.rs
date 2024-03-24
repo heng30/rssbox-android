@@ -6,7 +6,7 @@ use slint::{Timer, TimerMode, Weak};
 macro_rules! message_warn {
     ($ui:expr, $msg:expr) => {
         $ui.global::<Logic>()
-            .invoke_show_message(slint::format!("{}", $msg), "warning".into());
+            .invoke_show_message(slint::format!("{}", $msg), "warning".into())
     };
 }
 
@@ -14,7 +14,7 @@ macro_rules! message_warn {
 macro_rules! message_success {
     ($ui:expr, $msg:expr) => {
         $ui.global::<Logic>()
-            .invoke_show_message(slint::format!("{}", $msg), "success".into());
+            .invoke_show_message(slint::format!("{}", $msg), "success".into())
     };
 }
 
@@ -22,7 +22,7 @@ macro_rules! message_success {
 macro_rules! message_info {
     ($ui:expr, $msg:expr) => {
         $ui.global::<Logic>()
-            .invoke_show_message(slint::format!("{}", $msg), "info".into());
+            .invoke_show_message(slint::format!("{}", $msg), "info".into())
     };
 }
 

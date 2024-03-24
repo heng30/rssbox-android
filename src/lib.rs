@@ -6,11 +6,12 @@ slint::include_modules!();
 extern crate lazy_static;
 
 mod config;
+mod db;
 mod logic;
 mod util;
 mod version;
 
-use logic::{clipboard, message, about};
+use logic::{about, clipboard, message};
 
 #[cfg(not(target_os = "android"))]
 fn init_logger() {
@@ -60,9 +61,10 @@ fn init_logger() {
     );
 }
 
-fn ui_before() {
+async fn ui_before() {
     init_logger();
     config::init();
+    db::init(config::db_path().to_str().expect("invalid db path")).await;
 }
 
 fn ui_after(ui: &AppWindow) {
@@ -77,7 +79,7 @@ fn ui_after(ui: &AppWindow) {
 async fn main() {
     log::debug!("start...");
 
-    ui_before();
+    ui_before().await;
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
     ui.run().unwrap();
@@ -92,7 +94,7 @@ async fn android_main(app: slint::android::AndroidApp) {
     log::debug!("start...");
 
     slint::android::init(app).unwrap();
-    ui_before();
+    ui_before().await;
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
     ui.run().unwrap();

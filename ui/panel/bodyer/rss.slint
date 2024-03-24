@@ -132,7 +132,7 @@ component RssListItems inherits Rectangle {
                             alignment: center;
                             IconBtn {
                                 icon: Icons.star ;
-                                colorize: data.is-mark ? Theme.mark-color : Theme.unmark-color;
+                                colorize: data.is-favorite ? Theme.mark-color : Theme.unmark-color;
                                 border-radius: Theme.border-radius;
                                 clicked => {
                                     Logic.toggle-rss-mark(index, data.uuid);
