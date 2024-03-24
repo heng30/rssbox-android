@@ -119,7 +119,7 @@ pub async fn select(suuid: &str, uuid: &str) -> Result<ComEntry> {
 
 pub async fn select_all(suuid: &str) -> Result<Vec<ComEntry>> {
     Ok(
-        sqlx::query_as::<_, ComEntry>(&format!("SELECT uuid, data FROM {}", table_name(suuid)))
+        sqlx::query_as::<_, ComEntry>(&format!("SELECT * FROM {}", table_name(suuid)))
             .fetch_all(&pool())
             .await?,
     )

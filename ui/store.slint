@@ -6,6 +6,7 @@ export enum TabIndex {
 }
 
 export struct RssEntry {
+    suuid: string,
     uuid: string,
     url: string,
     title: string,
@@ -13,8 +14,6 @@ export struct RssEntry {
     tags: string,
     author: string,
     summary: string,
-
-    suuid: string,
     is-read: bool,
 }
 
@@ -29,7 +28,7 @@ export struct RssConfig {
     is-favorite: bool,
     update-time: string,
 
-    unread-counts-flag: bool,
+    unread-counts: int,
     entry: [RssEntry],
 }
 
@@ -81,53 +80,8 @@ export struct AboutDialog {
 
 export global Store  {
     out property<TabIndex> current-tab-index: TabIndex.Rss;
-
-    in-out property<[RssEntry]> rss-entry: [
-        {
-            uuid: "42342e2jkfjk",
-            url: "https://www.zhihu.com/rss",
-            pub-date: "2023-10-22 23:12:34",
-            tags: "rust",
-            is-read: false,
-            author: "hello",
-            title: "Actors may modify their own private state, but can only affect each other indirectly through messaging (removing the need for lock-based synchronization).",
-            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
-        },
-        {
-            uuid: "xx2342jkfjk",
-            url: "https://bing.com",
-            pub-date: "2023-11-12 13:12:34",
-            tags: "slint-ui, rust",
-            is-read: true,
-            title: "中文测试链接",
-            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
-        },
-        {
-            uuid: "2342jkfjk",
-            url: "http://azure.com",
-            pub-date: "2023-11-12 13:12:34",
-            is-read: true,
-            title: "hello rust",
-            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
-        },
-        {
-            uuid: "2342jkfjk",
-            url: "http://azure.com",
-            pub-date: "2023-11-12 13:12:34",
-            is-read: true,
-            title: "hello rust",
-        },
-        {
-            uuid: "2342jkfjk",
-            url: "http://azure.com",
-            pub-date: "2023-11-12 13:12:34",
-            is-read: true,
-            title: "hello rust",
-            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
-        }
-    ];
-
     in-out property<string> current-rss-uuid;
+
     in-out property<[RssConfig]> rss-lists: [
         {
             uuid: "uuid-1",
@@ -145,7 +99,28 @@ export global Store  {
         },
     ];
 
-    in-out property<[RssEntry]> rss-favorite-entry: [
+    in-out property<[RssEntry]> rss-entrys: [
+        {
+            uuid: "42342e2jkfjk",
+            url: "https://www.zhihu.com/rss",
+            pub-date: "2023-10-22 23:12:34",
+            tags: "rust",
+            is-read: false,
+            author: "hello",
+            title: "Actors may modify their own private state, but can only affect each other indirectly through messaging (removing the need for lock-based synchronization).",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
+        },
+        {
+            uuid: "xx2342jkfjk",
+            url: "https://bing.com",
+            pub-date: "2023-11-12 13:12:34",
+            tags: "slint-ui, rust",
+            is-read: true,
+            title: "中文测试链接",
+        },
+    ];
+
+    in-out property<[RssEntry]> rss-favorite-entrys: [
         {
             uuid: "42342e2jkfjk",
             url: "https://www.zhihu.com/rss",
@@ -164,7 +139,6 @@ export global Store  {
             is-read: false,
             author: "hello",
             title: "收藏测试-1",
-            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation. \nIn response to a message it receives, an actor can: make local decisions, create more actors, send more messages, and determine how to respond to the next message received.",
         },
     ];
 
@@ -231,5 +205,3 @@ export global Store  {
         current-tab-index = tab-index;
     }
 }
-
-

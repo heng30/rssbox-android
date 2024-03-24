@@ -22,18 +22,35 @@ pub struct RssConfig {
     pub feed_format: String,
 }
 
-impl From<&UIRssConfig> for RssConfig {
-    fn from(conf: &UIRssConfig) -> Self {
+impl From<UIRssConfig> for RssConfig {
+    fn from(conf: UIRssConfig) -> Self {
         RssConfig {
-            uuid: conf.uuid.clone().into(),
-            name: conf.name.clone().into(),
-            url: conf.url.clone().into(),
+            uuid: conf.uuid.into(),
+            name: conf.name.into(),
+            url: conf.url.into(),
             icon_index: conf.icon_index,
             use_http_proxy: conf.use_http_proxy,
             use_socks5_proxy: conf.use_socks5_proxy,
             is_favorite: conf.is_favorite,
-            update_time: conf.update_time.clone().into(),
-            feed_format: conf.feed_format.clone().into(),
+            update_time: conf.update_time.into(),
+            feed_format: conf.feed_format.into(),
+        }
+    }
+}
+
+impl From<RssConfig> for UIRssConfig {
+    fn from(conf: RssConfig) -> Self {
+        UIRssConfig {
+            uuid: conf.uuid.into(),
+            name: conf.name.into(),
+            url: conf.url.into(),
+            icon_index: conf.icon_index,
+            use_http_proxy: conf.use_http_proxy,
+            use_socks5_proxy: conf.use_socks5_proxy,
+            is_favorite: conf.is_favorite,
+            update_time: conf.update_time.into(),
+            feed_format: conf.feed_format.into(),
+            ..Default::default()
         }
     }
 }
@@ -95,7 +112,7 @@ pub async fn select(uuid: &str) -> Result<ComEntry> {
 }
 
 pub async fn select_all() -> Result<Vec<ComEntry>> {
-    Ok(sqlx::query_as::<_, ComEntry>("SELECT uuid, data FROM rss")
+    Ok(sqlx::query_as::<_, ComEntry>("SELECT * FROM rss")
         .fetch_all(&pool())
         .await?)
 }

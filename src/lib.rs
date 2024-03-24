@@ -11,8 +11,6 @@ mod logic;
 mod util;
 mod version;
 
-use logic::{about, clipboard, message};
-
 #[cfg(not(target_os = "android"))]
 fn init_logger() {
     use chrono::Local;
@@ -68,10 +66,7 @@ async fn ui_before() {
 }
 
 fn ui_after(ui: &AppWindow) {
-    logic::util::init(&ui);
-    clipboard::init(&ui);
-    message::init(&ui);
-    about::init(&ui);
+    logic::init(ui);
 }
 
 #[cfg(not(target_os = "android"))]

@@ -18,6 +18,7 @@ macro_rules! message_success {
     };
 }
 
+#[allow(dead_code)]
 #[macro_export]
 macro_rules! message_info {
     ($ui:expr, $msg:expr) => {

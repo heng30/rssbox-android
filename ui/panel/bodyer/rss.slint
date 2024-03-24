@@ -116,13 +116,10 @@ component RssListItems inherits Rectangle {
                         padding-right: Theme.padding;
 
                         VerticalLayout {
-                            property<int> unread-counts: Logic.unread-counts(data.entry, data.entry.length, data.unread-counts-flag);
-
-                            visible: self.unread-counts > 0;
                             alignment: center;
                             height: root.item-height;
                             unread-tag := Tag {
-                                text: parent.unread-counts;
+                                text: data.unread-counts;
                                 text-color: Theme.danger-color;
                                 background: Colors.transparent;
                             }
@@ -135,7 +132,7 @@ component RssListItems inherits Rectangle {
                                 colorize: data.is-favorite ? Theme.mark-color : Theme.unmark-color;
                                 border-radius: Theme.border-radius;
                                 clicked => {
-                                    Logic.toggle-rss-mark(index, data.uuid);
+                                    Logic.toggle-rss-favorite(index, data.uuid);
                                 }
                             }
                         }
@@ -244,7 +241,7 @@ export component EntryList inherits Rectangle {
         lv.viewport-y = 0;
     }
 
-    if Store.rss-entry.length <= 0 : CenterLayout {
+    if Store.rss-entrys.length <= 0 : CenterLayout {
         NoMessageImg {
             width: root.width * 0.6;
             text: Logic.tr(Store.is-cn, "没有消息");
@@ -255,7 +252,7 @@ export component EntryList inherits Rectangle {
         x: 0px;
         width: root.width + Theme.scroll-width;
 
-        for item[index] in Store.rss-entry : rect := Rectangle {
+        for item[index] in Store.rss-entrys : rect := Rectangle {
             private property<length> max-move-pixels-up-bound: self.width * 0.04;
             private property<length> max-move-pixels-low-bound: self.width * 0.02;
             private property<bool> is-show-opt: false;

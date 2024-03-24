@@ -5,7 +5,7 @@ export global Logic {
     callback save-rss(string, RssConfig);
     callback remove-rss(string);
     callback switch-rss(string, string);
-    callback toggle-rss-mark(int, string);
+    callback toggle-rss-favorite(int, string);
 
     pure callback update-time-rss(string) -> string; // suuid
     update-time-rss => { return "10-33 12:09:45"; }
@@ -21,6 +21,7 @@ export global Logic {
 
     callback get-rss-ae-setting(string) -> RssConfig; // suuid
 
+    callback cache-size() -> string;
     callback remove-all-cache();
     callback copy-to-clipboard(string); // msg
     callback copy-from-clipboard() -> string;
@@ -36,15 +37,11 @@ export global Logic {
     callback get-setting-proxy() -> SettingProxy;
     callback set-setting-proxy(SettingProxy);
 
-    pure callback tr(bool, string) -> string;
-    tr(is-cn, text) => {
-        return text;
-    }
-
-    pure callback unread-counts([RssEntry], int, bool) -> int;
-    unread-counts(entrys, counts, flag) => { return entrys.length; }
-
     pure callback get-update-time(string, bool) -> string;
     get-update-time(suuid) => { return "2023-09-14 19:11"; }
+
+    pure callback tr(bool, string) -> string;
+    tr(is-cn, text) => { return text; }
+
 }
 

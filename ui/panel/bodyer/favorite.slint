@@ -84,7 +84,7 @@ export component EntryList inherits Rectangle {
         lv.viewport-y = 0;
     }
 
-    if Store.rss-favorite-entry.length <= 0 : CenterLayout {
+    if Store.rss-favorite-entrys.length <= 0 : CenterLayout {
         NoMessageImg {
             width: root.width * 0.6;
             text: Logic.tr(Store.is-cn, "没有消息");
@@ -94,7 +94,7 @@ export component EntryList inherits Rectangle {
     lv := ListView {
         x: 0px; width: root.width + Theme.scroll-width;
 
-        for item[index] in Store.rss-favorite-entry : rect := Rectangle {
+        for item[index] in Store.rss-favorite-entrys : rect := Rectangle {
             private property<length> max-move-pixels-up-bound: self.width * 0.04;
             private property<length> max-move-pixels-low-bound: self.width * 0.02;
             private property<bool> is-show-opt: false;

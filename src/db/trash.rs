@@ -42,8 +42,8 @@ pub async fn is_exist(md5: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn row_count() -> Result<i32> {
-    let count: (i32,) = sqlx::query_as("SELECT COUNT(*) FROM trash")
+pub async fn row_count() -> Result<i64> {
+    let count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM trash")
         .fetch_one(&pool())
         .await?;
 
