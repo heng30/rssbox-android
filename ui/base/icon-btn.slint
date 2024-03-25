@@ -11,7 +11,7 @@ export component IconBtn inherits Rectangle {
     in-out property<string> text;
     in-out property<length> font-size: Theme.title4-font-size;
 
-    callback clicked <=> touch.clicked;
+    callback clicked();
 
     in-out property<color> bg-color: transparent;
     in-out property<color> bg-pressed-color: Theme.pressed-color;
@@ -46,5 +46,12 @@ export component IconBtn inherits Rectangle {
         }
     }
 
-    touch := TouchArea { }
+    fs := FocusScope {}
+
+    touch := TouchArea {
+        clicked => {
+            fs.focus();
+            root.clicked();
+        }
+   }
 }

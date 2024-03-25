@@ -195,7 +195,10 @@ component AddEdit inherits Rectangle {
                     icon-width: Theme.icon-size * 1.2;
 
                     clicked => {
-                        line-edit-url.text = Logic.copy-from-clipboard();
+                        line-edit-url.text = "";
+                        line-edit-url.paste();
+
+                        // line-edit-url.text = Logic.copy-from-clipboard();
                     }
                 }
             }
@@ -285,6 +288,10 @@ component Body inherits Rectangle {
                     ae.set({});
                 } else if (index == BtnIndex.Edit) {
                     rsslist-vbox.visible = false;
+                    if (Logic.exist-rss(rsslist.current-uuid)) {
+                        Logic.tr(Store.is-cn, "请选择条目");
+                        return;
+                    }
                     ae.set(Logic.get-rss-config-to-ui(rsslist.current-uuid));
                 } else if (index == BtnIndex.Delete) {
                     Store.ok-cancel-dialog-setting.title-type = "warning";
@@ -315,6 +322,11 @@ component Body inherits Rectangle {
             }
 
             ok-clicked => {
+                if (ae.get().name == "" || ae.get().url == "") {
+                    Logic.show-message(Logic.tr(Store.is-cn, "非法输入"), "warning");
+                    return;
+                }
+
                 rsslist-vbox.visible = true;
 
                 if (root.rss-list-btns-index == BtnIndex.New) {

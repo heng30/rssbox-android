@@ -20,7 +20,7 @@ component UI inherits SettingDetail {
 
     public function get() -> SettingUI {
         return {
-            font-size: font-size-txt.text,
+            font-size: font-size-lineedit.text,
             font-family: fonts-combox.current-value,
             language: root.language,
         };
@@ -428,8 +428,6 @@ export component Setting inherits Rectangle {
     visible: TabIndex.Setting == Store.current-tab-index;
 
     body := Body {
-        // visible: false;
-
         switch(index) => {
             if (index == SettingDetailIndex.UI) {
                 ui.set(Logic.get-setting-ui());
@@ -447,6 +445,11 @@ export component Setting inherits Rectangle {
         ui := UI {
             visible: body.current-setting-detail-index == SettingDetailIndex.UI;
             back => {
+                if (self.get().font-size == "") {
+                    Logic.show-message(Logic.tr(Store.is-cn, "非法输入，输入不能为空"), "warning");
+                    return;
+                }
+
                 body.visible = true;
                 Logic.set-setting-ui(self.get());
             }
@@ -455,6 +458,11 @@ export component Setting inherits Rectangle {
         sync := Sync {
             visible: body.current-setting-detail-index == SettingDetailIndex.Sync;
             back => {
+                if (self.get().sync-interval == "" || self.get().sync-timeout == "") {
+                    Logic.show-message(Logic.tr(Store.is-cn, "非法输入，输入不能为空"), "warning");
+                    return;
+                }
+
                 body.visible = true;
                 Logic.set-setting-sync(self.get());
             }

@@ -8,6 +8,7 @@ mod message;
 mod rss;
 mod util;
 mod ok_cancel_dialog;
+mod setting;
 
 pub fn init(ui: &AppWindow) {
     util::init(&ui);
@@ -16,6 +17,7 @@ pub fn init(ui: &AppWindow) {
     ok_cancel_dialog::init(&ui);
     cache::init(&ui);
     about::init(&ui);
+    setting::init(&ui);
 
     // don't adjust functions order
     entry::init(&ui);

@@ -9,7 +9,7 @@ export component TabBtn inherits Rectangle {
     in-out property<color> colorize: Theme.icon-color;
     in-out property<bool> checked: false;
 
-    callback clicked <=> touch.clicked;
+    callback clicked();
 
     in-out property<color> bg-color: transparent;
     in-out property<color> bg-pressed-color: Theme.pressed-color;
@@ -40,5 +40,12 @@ export component TabBtn inherits Rectangle {
         }
     }
 
-    touch := TouchArea { }
+    fs := FocusScope {}
+
+    touch := TouchArea {
+        clicked => {
+            fs.focus();
+            root.clicked();
+        }
+    }
 }

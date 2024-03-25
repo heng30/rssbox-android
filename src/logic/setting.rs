@@ -1,130 +1,90 @@
-use crate::slint_generatedAppWindow::{AppWindow, Logic, Store};
-use crate::util::translator::tr;
-use crate::{config, util};
-use crate::{message_success, message_warn};
+use crate::slint_generatedAppWindow::{
+    AppWindow, Logic, SettingProxy, SettingSync, SettingUI, Store,
+};
+use crate::{
+    config, message_success, message_warn,
+    util::{self, translator::tr},
+};
 use slint::{ComponentHandle, Weak};
 
 pub fn init(ui: &AppWindow) {
-    init_setting_dialog(ui.as_weak());
+    init_setting(&ui);
 
     let ui_handle = ui.as_weak();
-    ui.global::<Logic>().on_clean_cache(move || {
+    ui.global::<Logic>().on_get_setting_ui(move || {
         let ui = ui_handle.unwrap();
-        match util::fs::remove_dir_files(&config::cache_dir()) {
-            Err(e) => {
-                message_warn!(ui, format!("{}. {}: {}", tr("清空失败"), tr("原因"), e));
-            }
-            _ => {
-                message_success!(ui, tr("清空成功"));
-            }
+        ui.global::<Store>().get_setting_ui()
+    });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_set_setting_ui(move |mut setting| {
+        let font_size = u32::min(50, u32::max(10, setting.font_size.parse().unwrap_or(16)));
+        setting.font_size = slint::format!("{}", font_size);
+
+        ui_handle
+            .unwrap()
+            .global::<Store>()
+            .set_setting_ui(setting.clone());
+
+        let mut all = config::all();
+        all.ui.font_size = font_size.into();
+        all.ui.font_family = setting.font_family.into();
+        all.ui.language = setting.language.into();
+        _ = config::save(all);
+    });
+
+    ui.global::<Logic>().on_get_setting_sync(move || {
+        let config = config::sync();
+        SettingSync {
+            sync_interval: slint::format!("{}", config.sync_interval),
+            sync_timeout: slint::format!("{}", config.sync_timeout),
+            is_auto_sync: config.is_auto_sync,
+            is_start_sync: config.is_start_sync,
         }
     });
 
-    let ui_handle = ui.as_weak();
-    ui.global::<Logic>().on_setting_cancel(move || {
-        init_setting_dialog(ui_handle.clone());
+    ui.global::<Logic>().on_set_setting_sync(move |setting| {
+        let mut all = config::all();
+
+        all.sync.sync_interval = setting.sync_interval.parse().unwrap_or(60);
+        all.sync.sync_timeout = setting.sync_timeout.parse().unwrap_or(15);
+        all.sync.is_auto_sync = setting.is_auto_sync;
+        all.sync.is_start_sync = setting.is_start_sync;
+        _ = config::save(all);
     });
 
-    let ui_handle = ui.as_weak();
-    ui.global::<Logic>().on_setting_ok(move |setting_config| {
-        let ui = ui_handle.unwrap();
-        let mut config = config::config();
+    ui.global::<Logic>().on_get_setting_proxy(move || {
+        let config = config::proxy();
 
-        config.ui.font_size = setting_config
-            .ui
-            .font_size
-            .to_string()
-            .parse()
-            .unwrap_or(18);
-        config.ui.font_family = setting_config.ui.font_family.to_string();
-        config.ui.win_width = u32::max(
-            setting_config
-                .ui
-                .win_width
-                .to_string()
-                .parse()
-                .unwrap_or(800),
-            800,
-        );
-        config.ui.win_height = u32::max(
-            setting_config
-                .ui
-                .win_height
-                .to_string()
-                .parse()
-                .unwrap_or(600),
-            600,
-        );
-        config.ui.language = setting_config.ui.language.to_string();
-
-        config.account.max_feerate = setting_config
-            .account
-            .max_feerate
-            .to_string()
-            .parse()
-            .unwrap_or(100);
-        config.account.max_fee_amount = setting_config
-            .account
-            .max_fee_amount
-            .to_string()
-            .parse()
-            .unwrap_or(10_000);
-        config.account.max_send_amount = setting_config
-            .account
-            .max_send_amount
-            .to_string()
-            .parse()
-            .unwrap_or(1_f64);
-        config.account.skip_utxo_amount = setting_config
-            .account
-            .skip_utxo_amount
-            .to_string()
-            .parse()
-            .unwrap_or(1_000);
-
-        config.socks5.enabled = setting_config.proxy.enabled;
-        config.socks5.url = setting_config.proxy.url.to_string();
-        config.socks5.port = setting_config
-            .proxy
-            .port
-            .to_string()
-            .parse()
-            .unwrap_or(1080);
-
-        match config::save(config) {
-            Err(e) => {
-                message_warn!(ui, format!("{}, {}: {:?}", tr("保存失败"), tr("原因"), e));
-            }
-            _ => {
-                init_setting_dialog(ui.as_weak());
-                message_success!(ui, tr("保存成功"));
-            }
+        SettingProxy {
+            proxy_type: "Http".into(),
+            http_url: config.http_url.into(),
+            http_port: slint::format!("{}", config.http_port),
+            socks5_url: config.socks5_url.into(),
+            socks5_port: slint::format!("{}", config.socks5_port),
         }
     });
+
+    ui.global::<Logic>().on_set_setting_proxy(move |setting| {
+        let mut all = config::all();
+
+        all.proxy.http_url = setting.http_url.into();
+        all.proxy.http_port = setting.http_port.parse().unwrap_or(3218);
+        all.proxy.socks5_url = setting.socks5_url.into();
+        all.proxy.socks5_port = setting.socks5_port.parse().unwrap_or(1080);
+        _ = config::save(all);
+    });
+
+    ui.global::<Logic>()
+        .on_tr(move |_is_cn, text| tr(text.as_str()).into());
 }
 
-fn init_setting_dialog(ui: Weak<AppWindow>) {
-    let ui = ui.unwrap();
-    let ui_config = config::ui();
-    let socks5_config = config::socks5();
-    let account_config = config::account();
+fn init_setting(ui: &AppWindow) {
+    let config = config::ui();
+    let mut ui_setting = ui.global::<Store>().get_setting_ui();
+    ui_setting.font_size = slint::format!("{}", config.font_size);
+    ui_setting.font_family = config.font_family.into();
+    ui_setting.language = config.language.into();
 
-    let mut setting_dialog = ui.global::<Store>().get_setting_dialog_config();
-    setting_dialog.ui.font_size = slint::format!("{}", ui_config.font_size);
-    setting_dialog.ui.font_family = ui_config.font_family.into();
-    setting_dialog.ui.win_width = slint::format!("{}", u32::max(ui_config.win_width, 800));
-    setting_dialog.ui.win_height = slint::format!("{}", u32::max(ui_config.win_height, 600));
-    setting_dialog.ui.language = ui_config.language.into();
-
-    setting_dialog.account.max_feerate = slint::format!("{}", account_config.max_feerate);
-    setting_dialog.account.max_fee_amount = slint::format!("{}", account_config.max_fee_amount);
-    setting_dialog.account.max_send_amount = slint::format!("{}", account_config.max_send_amount);
-    setting_dialog.account.skip_utxo_amount = slint::format!("{}", account_config.skip_utxo_amount);
-
-    setting_dialog.proxy.enabled = socks5_config.enabled;
-    setting_dialog.proxy.url = socks5_config.url.into();
-    setting_dialog.proxy.port = slint::format!("{}", socks5_config.port);
-
-    ui.global::<Store>()
-        .set_setting_dialog_config(setting_dialog);
+    ui.global::<Store>().set_setting_ui(ui_setting);
 }

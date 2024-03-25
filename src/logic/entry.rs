@@ -3,6 +3,7 @@ use crate::slint_generatedAppWindow::{AppWindow, Logic, RssEntry as UIRssEntry, 
 use crate::{
     config,
     db::{self, entry::RssEntry, rss},
+    message_info,
     util::{crypto::md5_hex, translator::tr},
 };
 use anyhow::Result;
@@ -115,9 +116,46 @@ pub fn init(ui: &AppWindow) {
         _remove_all_favorite_entrys(ui.as_weak());
     });
 
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_favorite_entry(move |suuid, uuid| {
+        let ui = ui_handle.unwrap();
 
-    // callback favorite-entry(string, string); // suuid, uuid
-    // callback set-entry-read(string, string); // suuid, uuid
+        for entry in ui.global::<Store>().get_rss_entrys().iter() {
+            if entry.uuid != uuid {
+                continue;
+            }
+
+            for favorite_entry in ui.global::<Store>().get_rss_favorite_entrys().iter() {
+                if favorite_entry.uuid != uuid {
+                    continue;
+                }
+                message_info!(ui, tr("已经收藏"));
+                return;
+            }
+
+            store_favorite_entrys!(ui).insert(0, entry.clone());
+            _favorite_entry(ui.as_weak(), entry.into());
+
+            return;
+        }
+    });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_set_entry_read(move |suuid, uuid| {
+        let ui = ui_handle.unwrap();
+
+        for (index, mut entry) in ui.global::<Store>().get_rss_entrys().iter().enumerate() {
+            if entry.uuid != uuid {
+                continue;
+            }
+
+            entry.is_read = true;
+            store_rss_entrys!(ui).set_row_data(index, entry.clone());
+            _set_entry_read(ui.as_weak(), suuid, entry.into());
+
+            return;
+        }
+    });
 }
 
 fn _remove_entry(ui: Weak<AppWindow>, suuid: SharedString, uuid: SharedString) {
@@ -164,6 +202,39 @@ fn _remove_all_favorite_entrys(ui: Weak<AppWindow>) {
                 format!("{}. {}: {e:?}", tr("删除失败"), tr("原因")),
             ),
             _ => async_message_success(ui.clone(), tr("删除成功")),
+        }
+    });
+}
+
+async fn _inner_favorite_entry(entry: RssEntry) -> Result<()> {
+    let data = serde_json::to_string(&entry)?;
+    db::entry::insert(FAVORITE_UUID, entry.uuid.as_str(), &data).await?;
+    Ok(())
+}
+
+fn _favorite_entry(ui: Weak<AppWindow>, entry: RssEntry) {
+    tokio::spawn(async move {
+        match _inner_favorite_entry(entry).await {
+            Err(e) => async_message_warn(
+                ui.clone(),
+                format!("{}. {}: {e:?}", tr("收藏失败"), tr("原因")),
+            ),
+            _ => async_message_success(ui.clone(), tr("收藏成功")),
+        }
+    });
+}
+
+async fn _inner_set_entry_read(suuid: &str, entry: RssEntry) -> Result<()> {
+    let data = serde_json::to_string(&entry)?;
+    db::entry::update(suuid, entry.uuid.as_str(), &data).await?;
+    Ok(())
+}
+
+fn _set_entry_read(ui: Weak<AppWindow>, suuid: SharedString, entry: RssEntry) {
+    tokio::spawn(async move {
+        match _inner_set_entry_read(suuid.as_str(), entry).await {
+            Err(e) => async_message_warn(ui, format!("{}. {}: {e:?}", tr("保存失败"), tr("原因"))),
+            _ => (),
         }
     });
 }

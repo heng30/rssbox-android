@@ -90,6 +90,17 @@ fn rss_config_sort_fn(a: &UIRssConfig, b: &UIRssConfig) -> Ordering {
     }
 }
 
+fn rss_config_sort(ui: &AppWindow) {
+    let mut list = ui
+        .global::<Store>()
+        .get_rss_lists()
+        .iter()
+        .collect::<Vec<_>>();
+
+    list.sort_by(rss_config_sort_fn);
+    store_rss_lists!(ui).set_vec(list);
+}
+
 fn update_rss_config_from_ui(src_config: &mut UIRssConfig, ui_config: UIRssConfig) {
     src_config.name = ui_config.name;
     src_config.url = ui_config.url;
@@ -147,8 +158,8 @@ pub fn init(ui: &AppWindow) {
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_new_rss(move |config| {
         let rss: RssConfig = config.into();
-
         let ui = ui_handle.clone();
+
         tokio::spawn(async move {
             let rss = match _new_rss(rss).await {
                 Err(e) => {
@@ -211,8 +222,10 @@ pub fn init(ui: &AppWindow) {
                 }
             });
 
-            return;
+            break;
         }
+
+        rss_config_sort(&ui);
     });
 
     let ui_handle = ui.as_weak();
@@ -307,7 +320,10 @@ pub fn init(ui: &AppWindow) {
                     _ => async_message_success(ui.clone(), tr("收藏成功")),
                 }
             });
+
+            break;
         }
+        rss_config_sort(&ui);
     });
 
     let ui_handle = ui.as_weak();
@@ -325,6 +341,13 @@ pub fn init(ui: &AppWindow) {
 
         time
     });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>()
+        .on_exist_rss(move |uuid| get_rss_config(&ui_handle.unwrap(), uuid.as_str()).is_some());
+
+    // TODO
+    // callback sync-rss(string); // suuid
 }
 
 async fn _new_rss(mut rss: RssConfig) -> Result<RssConfig> {

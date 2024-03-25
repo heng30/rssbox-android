@@ -37,6 +37,10 @@ pub fn init() {
     }
 }
 
+pub fn all() -> data::Config {
+    CONFIG.lock().unwrap().clone()
+}
+
 pub fn ui() -> data::UI {
     CONFIG.lock().unwrap().ui.clone()
 }

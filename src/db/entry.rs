@@ -16,8 +16,8 @@ pub struct RssEntry {
     pub is_read: bool,
 }
 
-impl From<&UIRssEntry> for RssEntry {
-    fn from(entry: &UIRssEntry) -> Self {
+impl From<UIRssEntry> for RssEntry {
+    fn from(entry: UIRssEntry) -> Self {
         RssEntry {
             suuid: entry.suuid.clone().into(),
             uuid: entry.uuid.clone().into(),

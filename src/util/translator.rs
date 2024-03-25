@@ -9,6 +9,11 @@ pub fn tr(text: &str) -> String {
     let mut items: HashMap<&str, &str> = HashMap::new();
     items.insert("出错", "Error");
     items.insert("原因", "Reason");
+    items.insert("取消", "Cancel");
+    items.insert("确认", "Confirm");
+    items.insert("编辑", "Edit");
+    items.insert("删除", "Delete");
+
     items.insert("删除成功", "Delete success");
     items.insert("删除失败", "Delete failed");
     items.insert("添加成功", "Add success");
@@ -37,6 +42,8 @@ pub fn tr(text: &str) -> String {
 
     items.insert("是否删除全部？", "Delete all entrys or not?");
     items.insert("是否删除全部缓存？", "Delete all cache or not?");
+    items.insert("清除缓存失败", "Remove cache failed");
+    items.insert("清除缓存成功", "Remove cache success");
 
     items.insert("界 面", "UI");
     items.insert("同 步", "Sync");
@@ -59,6 +66,7 @@ pub fn tr(text: &str) -> String {
     items.insert("已经收藏", "Star");
     items.insert("未收藏", "Not star");
     items.insert("图标库", "Icons");
+    items.insert("请选择条目", "Please select entry");
 
     items.insert("字体大小", "Font size");
     items.insert("字体样式", "Font family");
