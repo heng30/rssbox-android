@@ -11,8 +11,8 @@ export component AppWindow inherits Window {
     preferred-width: Theme.default-width;
     preferred-height: Theme.default-height;
 
-    width: Theme.default-width;
-    height: Theme.default-height;
+    // width: Theme.default-width;
+    // height: Theme.default-height;
 
     background: Theme.base-background-dark;
     icon: Icons.brand;
@@ -39,6 +39,7 @@ export component AppWindow inherits Window {
 
     msg := Message {
         x: root.width / 2 - self.width / 2; y: 50px;
+        inner-max-width: root.width * 80%;
         text: Store.message.text;
         type: Store.message.text-type;
         clicked => { Logic.copy-to-clipboard(self.text); }

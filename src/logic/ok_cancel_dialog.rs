@@ -8,10 +8,10 @@ pub fn init(ui: &AppWindow) {
             let ui = ui_handle.unwrap();
 
             match handle_type.as_str() {
-                "remove-rss-all-entrys" => {
+                "remove-all-entrys" => {
                     ui.global::<Logic>().invoke_remove_all_entrys(handle_uuid);
                 }
-                "remove-rss-all-favorite-entrys" => {
+                "remove-all-favorite-entrys" => {
                     ui.global::<Logic>().invoke_remove_all_favorite_entrys();
                 }
                 "remove-rss" => {

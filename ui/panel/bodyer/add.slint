@@ -12,7 +12,7 @@ enum BtnIndex {
 
 component RssList inherits Rectangle {
     private property<length> item-height: 40px;
-    private property<color> selected-item-color: Theme.dark-fill-color;
+    private property<color> selected-item-color: Theme.lighter-border-color;
     out property<string> current-uuid;
 
     if Store.rss-lists.length == 0 : Rectangle {

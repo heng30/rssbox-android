@@ -2,7 +2,8 @@ import { ListView } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { IconBtn, Head, Label, Tag, Link, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { Util } from "../../util.slint";
+import { IconBtn, Head, Label, Tag, Link, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component FHead inherits Head {
@@ -20,7 +21,7 @@ component FHead inherits Head {
             Store.ok-cancel-dialog-setting.title-type = "warning";
             Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
             Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
-            Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-favorite-entrys";
+            Store.ok-cancel-dialog-setting.handle-type = "remove-all-favorite-entrys";
         }
     }
 }
@@ -46,9 +47,7 @@ export component Entry inherits Rectangle {
         spacing: Theme.spacing * 2;
 
         title-txt := Link {
-            clicked => {
-                Logic.open-url(root.url);
-            }
+            clicked => { Util.open-url(root.url); }
         }
 
         if root.summary != "" : Text {
@@ -82,13 +81,6 @@ export component EntryList inherits Rectangle {
 
     public function scroll-to-top()  {
         lv.viewport-y = 0;
-    }
-
-    if Store.rss-favorite-entrys.length <= 0 : CenterLayout {
-        NoMessageImg {
-            width: root.width * 0.6;
-            text: Logic.tr(Store.is-cn, "没有消息");
-        }
     }
 
     lv := ListView {
@@ -181,6 +173,13 @@ export component EntryList inherits Rectangle {
                     }
                 }
             }
+        }
+    }
+
+    if Store.rss-favorite-entrys.length == 0 : CenterLayout {
+        NoDataImg {
+            width: root.width * 0.6;
+            text: Logic.tr(Store.is-cn, "没有消息");
         }
     }
 }

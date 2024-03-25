@@ -2,7 +2,8 @@ import { ListView } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { IconBtn, Head, Label, Tag, Link, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { Util } from "../../util.slint";
+import { IconBtn, Head, Label, Tag, Link, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component RHead inherits Head {
@@ -42,7 +43,7 @@ component RHead inherits Head {
                         Store.ok-cancel-dialog-setting.title-type = "warning";
                         Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
                         Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
-                        Store.ok-cancel-dialog-setting.handle-type = "remove-rss-all-entrys";
+                        Store.ok-cancel-dialog-setting.handle-type = "remove-all-entrys";
                         Store.ok-cancel-dialog-setting.handle-uuid = Store.current-rss-uuid;
                     }
                 }
@@ -201,8 +202,8 @@ export component Entry inherits Rectangle {
             is-read: root.is-read;
 
             clicked => {
-                Logic.set-read-entry(Store.current-rss-uuid, root.uuid);
-                Logic.open-url(root.url);
+                Logic.set-entry-read(Store.current-rss-uuid, root.uuid);
+                Util.open-url(root.url);
             }
         }
 
@@ -237,13 +238,6 @@ export component EntryList inherits Rectangle {
 
     public function scroll-to-top()  {
         lv.viewport-y = 0;
-    }
-
-    if Store.rss-entrys.length <= 0 : CenterLayout {
-        NoMessageImg {
-            width: root.width * 0.6;
-            text: Logic.tr(Store.is-cn, "没有消息");
-        }
     }
 
     lv := ListView {
@@ -355,6 +349,13 @@ export component EntryList inherits Rectangle {
                     }
                 }
             }
+        }
+    }
+
+    if Store.rss-entrys.length == 0 : CenterLayout {
+        NoDataImg {
+            width: root.width * 0.6;
+            text: Logic.tr(Store.is-cn, "没有消息");
         }
     }
 }

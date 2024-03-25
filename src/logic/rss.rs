@@ -1,4 +1,3 @@
-// use super::data::SyncItem;
 use super::message::{async_message_success, async_message_warn};
 use crate::slint_generatedAppWindow::{
     AppWindow, Logic, RssConfig as UIRssConfig, RssEntry as UIRssEntry, Store,
@@ -28,6 +27,18 @@ macro_rules! store_rss_lists {
             .downcast_ref::<VecModel<UIRssConfig>>()
             .expect("We know we set a VecModel earlier")
     };
+}
+
+pub fn get_rss_config(ui: &AppWindow, uuid: &str) -> Option<UIRssConfig> {
+    for rss in ui.global::<Store>().get_rss_lists().iter() {
+        if rss.uuid != uuid {
+            continue;
+        }
+
+        return Some(rss);
+    }
+
+    None
 }
 
 async fn init_rss_configs(items: Vec<ComEntry>) -> Vec<RssConfig> {

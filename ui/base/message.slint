@@ -1,31 +1,41 @@
 import { Theme } from "../theme.slint";
 import { Util } from "../util.slint";
+import { Label } from "./label.slint";
+import { CenterLayout } from "./center-layout.slint";
 
 export component Message inherits Rectangle {
     in-out property<string> type: "success";
+    in-out property<length> inner-max-width: 300px;
     in-out property text <=> txt.text;
-    visible: root.text != "";
+
     callback clicked <=> touch.clicked;
 
-    width: txt.preferred-width + img.width + Theme.padding * 4 + Theme.spacing * 2;
-    height: txt.preferred-height + Theme.padding * 4;
+    visible: root.text != "";
+    width: hbox.preferred-width;
+    height: hbox.preferred-height;
     border-radius: Theme.border-radius;
     border-color: Theme.basic-black-color;
     background: Util.text-color(root.type);
 
-    HorizontalLayout {
+    hbox := HorizontalLayout {
+        alignment: start;
         spacing: Theme.spacing;
         padding: Theme.padding * 2;
-        img := Image {
-            width: txt.preferred-height;
-            height: self.width;
-            source: Util.icon-source(root.type);
-            colorize: Colors.white;
+
+        CenterLayout {
+            img := Image {
+                width: txt.font-size * 1.2;
+                height: self.width;
+                source: Util.icon-source(root.type);
+                colorize: Colors.white;
+            }
         }
 
-        txt := Text {
-            font-size: Theme.default-font-size + 2px;
-            color: Colors.white;
+        txt := Label {
+            max-width: root.inner-max-width;
+            font-size: Theme.title4-font-size;
+            color: Theme.basic-white-color;
+            wrap: word-wrap;
         }
     }
 
