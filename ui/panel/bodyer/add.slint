@@ -257,7 +257,7 @@ component AddEditBtns inherits HorizontalLayout {
     }
 
     ConfirmBtn {
-        text: Logic.tr(Store.is-cn, "确定");
+        text: Logic.tr(Store.is-cn, "确认");
         clicked => { root.ok-clicked(); }
     }
 }
@@ -288,7 +288,7 @@ component Body inherits Rectangle {
                     ae.set({});
                 } else if (index == BtnIndex.Edit) {
                     rsslist-vbox.visible = false;
-                    if (Logic.exist-rss(rsslist.current-uuid)) {
+                    if (!Logic.exist-rss(rsslist.current-uuid)) {
                         Logic.tr(Store.is-cn, "请选择条目");
                         return;
                     }

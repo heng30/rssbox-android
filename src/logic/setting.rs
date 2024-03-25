@@ -5,7 +5,7 @@ use crate::{
     config, message_success, message_warn,
     util::{self, translator::tr},
 };
-use slint::{ComponentHandle, Weak};
+use slint::ComponentHandle;
 
 pub fn init(ui: &AppWindow) {
     init_setting(&ui);

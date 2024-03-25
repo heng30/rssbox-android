@@ -59,10 +59,10 @@ pub fn tr(text: &str) -> String {
     items.insert("RSS源地址", "RSS URL");
     items.insert("请输入RSS源地址", "Please input RSS URL");
     items.insert("RSS源格式", "RSS format");
-    items.insert("已经Http启用代理", "Enabled Http proxy");
-    items.insert("未启Http用代理", "Disable Http proxy");
-    items.insert("已经Socks5启用代理", "Enabled Socks5 proxy");
-    items.insert("未启Socks5用代理", "Disable Socks5 proxy");
+    items.insert("已经启用Http代理", "Enabled Http proxy");
+    items.insert("未启用Http代理", "Disable Http proxy");
+    items.insert("已经启用Socks5代理", "Enabled Socks5 proxy");
+    items.insert("未启用Socks5代理", "Disable Socks5 proxy");
     items.insert("已经收藏", "Star");
     items.insert("未收藏", "Not star");
     items.insert("图标库", "Icons");

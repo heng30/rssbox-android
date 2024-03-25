@@ -5,7 +5,7 @@ use crate::slint_generatedAppWindow::{
 use crate::{
     config,
     db::{self, entry::RssEntry, rss::RssConfig, ComEntry},
-    message_success, message_warn, store_rss_entrys,
+    message_info, message_success, message_warn, store_rss_entrys,
     util::{self, crypto::md5_hex, http, translator::tr},
 };
 use anyhow::Result;
@@ -17,6 +17,35 @@ use std::{cmp::Ordering, io::BufReader, time::Duration};
 use uuid::Uuid;
 
 const EMPTY_UUID: &str = "empty-uuid";
+
+#[derive(Debug, Default, Clone)]
+pub struct SyncItem {
+    pub suuid: String,
+    pub url: String,
+    pub proxy_type: String,
+    pub feed_format: String,
+}
+
+#[derive(Debug, Clone)]
+struct ErrorMsg {
+    url: String,
+    msg: String,
+}
+
+impl From<UIRssConfig> for SyncItem {
+    fn from(rss: UIRssConfig) -> Self {
+        SyncItem {
+            suuid: rss.uuid.to_string(),
+            url: rss.url.to_string(),
+            feed_format: rss.feed_format.to_string(),
+            proxy_type: if rss.use_http_proxy {
+                "Http".to_string()
+            } else {
+                "Socks5".to_string()
+            },
+        }
+    }
+}
 
 #[macro_export]
 macro_rules! store_rss_lists {
@@ -346,8 +375,35 @@ pub fn init(ui: &AppWindow) {
     ui.global::<Logic>()
         .on_exist_rss(move |uuid| get_rss_config(&ui_handle.unwrap(), uuid.as_str()).is_some());
 
-    // TODO
-    // callback sync-rss(string); // suuid
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_sync_rss(move |suuid| {
+        let ui = ui_handle.unwrap();
+
+        for rss in ui.global::<Store>().get_rss_lists().iter() {
+            if suuid != rss.uuid {
+                continue;
+            }
+
+            let mut items: Vec<SyncItem> = vec![rss.into()];
+            message_info!(ui, tr("正在同步..."));
+
+            let ui = ui.as_weak();
+            tokio::spawn(async move {
+                let error_msgs = sync_rss(ui, items).await;
+
+                if error_msgs.is_empty() {
+                    async_message_success(ui.clone(), tr("同步成功"));
+                } else {
+                    let err = format!("{}:[{}] {}. {}: {}"
+                        tr("访问"), error_msgs[0].url, tr("失败"),
+                        tr("原因"), error_msgs[0].msg);
+                    async_message_warn(ui.clone(), err);
+                }
+            });
+
+            return;
+        }
+    });
 }
 
 async fn _new_rss(mut rss: RssConfig) -> Result<RssConfig> {
@@ -374,4 +430,175 @@ async fn _toggle_rss_favorite(rss: RssConfig) -> Result<()> {
     let config = serde_json::to_string(&rss)?;
     db::rss::update(&rss.uuid.as_str(), &config).await?;
     Ok(())
+}
+
+fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
+    let mut entry = vec![];
+    let ch = Channel::read_from(&content[..])?;
+
+    for item in ch.items() {
+        let url = item.link().unwrap_or_default().to_string();
+        let title = item.title().unwrap_or_default().to_string();
+        let author = item.author().unwrap_or_default().to_string();
+        let pub_date = item.pub_date().unwrap_or_default().to_string();
+
+        let summary = if item.description().is_some() {
+            let s = item.description().unwrap();
+            let s = html2text::from_read(s.as_bytes(), usize::MAX)
+                .trim()
+                .to_string();
+            if s.len() > 100 {
+                format!("{}...", &s[..100])
+            } else {
+                s
+            }
+        } else {
+            String::default()
+        };
+
+        let tags = item
+            .categories()
+            .iter()
+            .map(|c| c.name().to_string())
+            .collect::<Vec<_>>()
+            .join(",")
+            .to_string();
+
+        if url.is_empty() || title.is_empty() {
+            continue;
+        }
+
+        entry.push(RssEntry {
+            suuid: suuid.to_string(),
+            uuid: Uuid::new_v4().to_string(),
+            url,
+            title,
+            pub_date,
+            author,
+            summary,
+            tags,
+            ..Default::default()
+        });
+    }
+}
+
+fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
+    let feed = Feed::read_from(BufReader::new(&content[..]))?;
+    for item in feed.entries() {
+        let url = item
+            .links()
+            .first()
+            .unwrap_or(&Link::default())
+            .href()
+            .to_string();
+        let title = item.title().as_str().to_string();
+        let pub_date = item
+            .published()
+            .unwrap_or(&FixedDateTime::default())
+            .to_string();
+
+        let author = item
+            .authors()
+            .iter()
+            .map(|p| p.name().to_string())
+            .collect::<Vec<_>>()
+            .join("|")
+            .to_string();
+
+        let summary = if item.summary().is_some() {
+            let s = item.summary().unwrap();
+            if s.r#type == TextType::Text {
+                s.as_str().to_string()
+            } else {
+                String::default()
+            }
+        } else {
+            String::default()
+        };
+
+        let tags = item
+            .categories()
+            .iter()
+            .map(|c| c.term().to_string())
+            .collect::<Vec<_>>()
+            .join(",")
+            .to_string();
+
+        if url.is_empty() || title.is_empty() {
+            continue;
+        }
+
+        entry.push(RssEntry {
+            suuid: suuid.to_string(),
+            uuid: Uuid::new_v4().to_string(),
+            url,
+            title,
+            pub_date,
+            author,
+            summary,
+            tags,
+            ..Default::default()
+        });
+    }
+}
+
+async fn fetch_entry(config: SyncItem) -> Result<Vec<RssEntry>> {
+    let rss_config = config::rss();
+    let request_timeout = u64::min(rss_config.sync_timeout as u64, 10_u64);
+
+    let client = uhttp::client(config.proxy_type.as_str().into())?;
+    let content = client
+        .get(&config.url)
+        .headers(uhttp::headers())
+        .timeout(Duration::from_secs(request_timeout))
+        .send()
+        .await?
+        .bytes()
+        .await?;
+
+    let feed_format = config.feed_format.to_lowercase();
+
+    let entrys = match feed_format {
+        "auto" => match parse_rss(config.suuid.as_str(), content) {
+            Ok(v) => v,
+            _ => parse_atom(config.suuid.as_str(), content)?,
+        },
+        "rss" => parse_rss(config.suuid.as_str(), content)?,
+        _ => parse_atom(config.suuid.as_str(), content)?,
+    };
+
+    entrys = entrys
+        .into_iter()
+        .filter(|e| match db::trash::is_exist(&md5_hex(e.url.as_str())) {
+            Ok(flag) => !flag,
+            _ => true,
+        })
+        .rev()
+        .collect();
+
+    Ok(entrys)
+}
+
+pub async fn sync_rss(ui: Weak<AppWindow>, items: Vec<SyncItem>) -> Vec<ErrorMsg> {
+    let mut error_msgs = vec![];
+
+    for item in items.into_iter() {
+        let suuid = item.suuid.clone();
+        let url = item.url.clone();
+
+        match fetch_entry(item).await {
+            Ok(entry) => {
+                let ui = ui.clone();
+                let _ = slint::invoke_from_event_loop(move || {
+                    super::entry::update_new_entrys(&ui.unwrap(), suuid.as_str(), entry);
+                });
+            }
+            Err(e) => error_msgs.push(ErrorMsg {
+                url,
+                msg: format!("{e:?}"),
+            }),
+        }
+    }
+
+    error_msgs
 }

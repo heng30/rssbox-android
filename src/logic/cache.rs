@@ -1,6 +1,9 @@
 use super::message::{async_message_success, async_message_warn};
 use crate::slint_generatedAppWindow::{AppWindow, Logic, Store};
-use crate::{db, util::translator::tr};
+use crate::{
+    db,
+    util::{self, translator::tr},
+};
 use slint::ComponentHandle;
 
 pub fn init(ui: &AppWindow) {
@@ -43,7 +46,7 @@ fn init_cache(ui: &AppWindow) {
                     ui.clone()
                         .unwrap()
                         .global::<Store>()
-                        .set_cache_size(format!("{}M", count * 32 / (1024 * 1024)).into());
+                        .set_cache_size(util::str::pretty_size_string(count as u64 * 32));
                 });
             }
         }

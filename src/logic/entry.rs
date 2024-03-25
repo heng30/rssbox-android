@@ -117,7 +117,7 @@ pub fn init(ui: &AppWindow) {
     });
 
     let ui_handle = ui.as_weak();
-    ui.global::<Logic>().on_favorite_entry(move |suuid, uuid| {
+    ui.global::<Logic>().on_favorite_entry(move |_suuid, uuid| {
         let ui = ui_handle.unwrap();
 
         for entry in ui.global::<Store>().get_rss_entrys().iter() {
@@ -237,4 +237,50 @@ fn _set_entry_read(ui: Weak<AppWindow>, suuid: SharedString, entry: RssEntry) {
             _ => (),
         }
     });
+}
+
+async fn update_new_entry(ui: &AppWindow, suuid: &str, entry: RssEntry) -> Result<()> {
+    let data = serde_json::to_string(&entry)?;
+    db::entry::insert(suuid, entry.uuid.as_str(), &data).await?;
+    Ok(())
+}
+
+fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
+    for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
+        if rss.uuid != suuid {
+            continue;
+        }
+
+        let mut unfound_list = vec![];
+        for entry in entrys.into_iter() {
+            if rss.entry.iter().find(|&v| item.url == &entry.url).is_none() {
+                unfound_list.push(entry);
+            }
+        }
+
+        for mut item in unfound_list.into_iter() {
+            item.suuid = suuid.into();
+
+            rss.entry
+                .as_any()
+                .downcast_ref::<VecModel<UIRssEntry>>()
+                .expect("We know we set a VecModel earlier")
+                .insert(0, item.clone().into());
+
+            let ui = ui.as_weak();
+            let suuid = suuid.to_string();
+            tokio::spawn(async move {
+                if let Err(e) = update_new_entry(ui, &suuid, item).await {
+                    log::warn!("e");
+                }
+            });
+        }
+
+        rss.update_time = util::time::local_now("%m-%d %H:%M").into();
+        ui.global::<Store>()
+            .get_rss_lists()
+            .set_row_data(index, rss);
+
+        return;
+    }
 }

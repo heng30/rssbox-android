@@ -87,6 +87,8 @@ component UI inherits SettingDetail {
 
                         en-checkbox.checked = !self.checked;
                         root.language = "cn";
+
+                        Logic.set-setting-ui(root.get());
                     }
                 }
 
@@ -101,6 +103,8 @@ component UI inherits SettingDetail {
 
                         cn-checkbox.checked = !self.checked;
                         root.language = "en";
+
+                        Logic.set-setting-ui(root.get());
                     }
                 }
             }
