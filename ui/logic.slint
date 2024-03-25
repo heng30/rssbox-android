@@ -2,15 +2,16 @@ import { RssConfig, RssEntry, SettingUI, SettingSync, SettingProxy } from "./sto
 
 export global Logic {
     callback new-rss(RssConfig);
-    callback save-rss(string, RssConfig);
-    callback remove-rss(string);
-    callback switch-rss(string, string);
-    callback toggle-rss-favorite(int, string);
+    callback update-rss(string, RssConfig);
+    callback remove-rss(string); // suuid
+    callback switch-rss(string, string); // from_suuid, to_suuid
+    callback toggle-rss-favorite(string); // suuid
+    callback sync-rss(string); // suuid
+    callback get-rss-config-to-ui(string) -> RssConfig; // suuid
 
     pure callback update-time-rss(string) -> string; // suuid
     update-time-rss => { return "10-33 12:09:45"; }
 
-    callback sync-rss(string); // suuid
     callback favorite-entry(string, string); // suuid, uuid
     callback remove-entry(string, string); // suuid, uuid
     callback remove-all-entrys(string); // suuid
@@ -18,8 +19,6 @@ export global Logic {
     callback remove-all-favorite-entrys();
     callback set-read-entry(string, string); // suuid, uuid
     callback open-url(string);
-
-    callback get-rss-ae-setting(string) -> RssConfig; // suuid
 
     callback cache-size() -> string;
     callback remove-all-cache();

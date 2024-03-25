@@ -16,7 +16,7 @@ component RHead inherits Head {
 
         Label {
             text: Logic.update-time-rss(Store.current-rss-uuid);
-            font-size: Theme.default-font-size - 2px;
+            font-size: Theme.default-font-size - 4px;
             color: Theme.placeholder-text-color;
         }
 
@@ -131,9 +131,7 @@ component RssListItems inherits Rectangle {
                                 icon: Icons.star ;
                                 colorize: data.is-favorite ? Theme.mark-color : Theme.unmark-color;
                                 border-radius: Theme.border-radius;
-                                clicked => {
-                                    Logic.toggle-rss-favorite(index, data.uuid);
-                                }
+                                clicked => { Logic.toggle-rss-favorite(data.uuid); }
                             }
                         }
                     }

@@ -66,7 +66,7 @@ component RssList inherits Rectangle {
                         IconBtn {
                             icon: Icons.star;
                             colorize: data.is-favorite ? Theme.mark-color : Theme.unmark-color;
-                            clicked => { Logic.toggle-rss-favorite(index, data.uuid); }
+                            clicked => { Logic.toggle-rss-favorite(data.uuid); }
                         }
                     }
                 }
@@ -285,7 +285,7 @@ component Body inherits Rectangle {
                     ae.set({});
                 } else if (index == BtnIndex.Edit) {
                     rsslist-vbox.visible = false;
-                    ae.set(Logic.get-rss-ae-setting(rsslist.current-uuid));
+                    ae.set(Logic.get-rss-config-to-ui(rsslist.current-uuid));
                 } else if (index == BtnIndex.Delete) {
                     Store.ok-cancel-dialog-setting.title-type = "warning";
                     Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
@@ -320,7 +320,7 @@ component Body inherits Rectangle {
                 if (root.rss-list-btns-index == BtnIndex.New) {
                     Logic.new-rss(ae.get());
                 } else if (root.rss-list-btns-index == BtnIndex.Edit) {
-                    Logic.save-rss(rsslist.current-uuid, ae.get());
+                    Logic.update-rss(rsslist.current-uuid, ae.get());
                 }
             }
         }
