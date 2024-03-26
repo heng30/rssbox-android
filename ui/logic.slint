@@ -7,10 +7,11 @@ export global Logic {
     callback switch-rss(string, string); // from_suuid, to_suuid
     callback toggle-rss-favorite(string); // suuid
     callback sync-rss(string); // suuid
+    callback sync-rss_all();
     callback get-rss-config-to-ui(string) -> RssConfig; // suuid
     callback exist-rss(string) -> bool; // suuid
 
-    pure callback update-time-rss(string) -> string; // suuid
+    pure callback update-time-rss(string, bool) -> string; // suuid, toggle_flag
     update-time-rss => { return "10-33 12:09:45"; }
 
     callback remove-entry(string, string); // suuid, uuid
@@ -20,7 +21,6 @@ export global Logic {
     callback favorite-entry(string, string); // suuid, uuid
     callback set-entry-read(string, string); // suuid, uuid
 
-    callback cache-size() -> string;
     callback remove-all-cache();
 
     callback copy-to-clipboard(string); // msg

@@ -5,11 +5,20 @@ slint::include_modules!();
 #[macro_use]
 extern crate lazy_static;
 
+use chrono::Utc;
+use slint::{Timer, TimerMode};
+use std::{
+    sync::atomic::{AtomicI64, Ordering},
+    time::Duration,
+};
+
 mod config;
 mod db;
 mod logic;
 mod util;
 mod version;
+
+static SYNC_TIMESTAMP_CACHE: AtomicI64 = AtomicI64::new(0);
 
 #[cfg(not(target_os = "android"))]
 fn init_logger() {
@@ -69,6 +78,29 @@ fn ui_after(ui: &AppWindow) {
     logic::init(ui);
 }
 
+fn sync_rss_timer(ui: &AppWindow) -> Timer {
+    let ui_handle = ui.as_weak();
+    SYNC_TIMESTAMP_CACHE.store(Utc::now().timestamp(), Ordering::SeqCst);
+
+    let timer = Timer::default();
+    timer.start(TimerMode::Repeated, Duration::from_secs(10), move || {
+        let config = config::sync();
+        let now = Utc::now().timestamp();
+
+        if config.is_auto_sync {
+            let sync_interval = i64::max(config.sync_interval as i64, 1_i64) * 60;
+            if SYNC_TIMESTAMP_CACHE.load(Ordering::SeqCst) + sync_interval <= now {
+                SYNC_TIMESTAMP_CACHE.store(now, Ordering::SeqCst);
+
+                ui_handle.unwrap().global::<Logic>().invoke_sync_rss_all();
+            }
+        } else {
+            SYNC_TIMESTAMP_CACHE.store(now, Ordering::SeqCst);
+        }
+    });
+    timer
+}
+
 #[cfg(not(target_os = "android"))]
 #[tokio::main]
 async fn main() {
@@ -77,6 +109,8 @@ async fn main() {
     ui_before().await;
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
+
+    let _timer = sync_rss_timer(&ui);
     ui.run().unwrap();
 
     log::debug!("exit...");
@@ -92,6 +126,8 @@ async fn android_main(app: slint::android::AndroidApp) {
     ui_before().await;
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
+
+    let _timer = sync_rss_timer(&ui);
     ui.run().unwrap();
 
     log::debug!("exit...");

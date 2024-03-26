@@ -5,7 +5,7 @@ use crate::slint_generatedAppWindow::{
 use crate::{
     config,
     db::{self, entry::RssEntry, rss::RssConfig, ComEntry},
-    message_info, message_success, message_warn, store_rss_entrys,
+    message_info, message_success, store_rss_entrys,
     util::{self, crypto::md5_hex, http, translator::tr},
 };
 use anyhow::Result;
@@ -40,8 +40,10 @@ impl From<UIRssConfig> for SyncItem {
             feed_format: rss.feed_format.to_string(),
             proxy_type: if rss.use_http_proxy {
                 "Http".to_string()
-            } else {
+            } else if rss.use_socks5_proxy {
                 "Socks5".to_string()
+            } else {
+                "Unknown".to_string()
             },
         }
     }
@@ -68,6 +70,34 @@ pub fn get_rss_config(ui: &AppWindow, uuid: &str) -> Option<UIRssConfig> {
     }
 
     None
+}
+
+pub fn decease_unread_counts(ui: &AppWindow, uuid: &str) {
+    for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
+        if rss.uuid != uuid {
+            continue;
+        }
+
+        rss.unread_counts = i32::max(0, rss.unread_counts - 1);
+        ui.global::<Store>()
+            .get_rss_lists()
+            .set_row_data(index, rss);
+        return;
+    }
+}
+
+pub fn reset_unread_counts(ui: &AppWindow, uuid: &str) {
+    for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
+        if rss.uuid != uuid {
+            continue;
+        }
+
+        rss.unread_counts = 0;
+        ui.global::<Store>()
+            .get_rss_lists()
+            .set_row_data(index, rss);
+        return;
+    }
 }
 
 async fn init_rss_configs(items: Vec<ComEntry>) -> Vec<RssConfig> {
@@ -174,6 +204,10 @@ fn init_rss(ui: &AppWindow) {
                     }
 
                     store_rss_lists!(ui).set_vec(list);
+
+                    if config::sync().is_start_sync {
+                        ui.global::<Logic>().invoke_sync_rss_all();
+                    }
                 });
             }
             Err(e) => log::warn!("{e:?}"),
@@ -204,6 +238,12 @@ pub fn init(ui: &AppWindow) {
             let _ = slint::invoke_from_event_loop(move || {
                 let ui = ui.clone().unwrap();
                 let rss: UIRssConfig = rss.into();
+
+                let _assert = rss
+                    .entry
+                    .as_any()
+                    .downcast_ref::<VecModel<UIRssEntry>>()
+                    .expect("We know we set a VecModel earlier");
 
                 let mut list = ui
                     .global::<Store>()
@@ -356,7 +396,7 @@ pub fn init(ui: &AppWindow) {
     });
 
     let ui_handle = ui.as_weak();
-    ui.global::<Logic>().on_update_time_rss(move |uuid| {
+    ui.global::<Logic>().on_update_time_rss(move |uuid, _flag| {
         let mut time = SharedString::default();
 
         for rss in ui_handle.unwrap().global::<Store>().get_rss_lists().iter() {
@@ -379,29 +419,50 @@ pub fn init(ui: &AppWindow) {
     ui.global::<Logic>().on_sync_rss(move |suuid| {
         let ui = ui_handle.unwrap();
 
-        for rss in ui.global::<Store>().get_rss_lists().iter() {
+        for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
             if suuid != rss.uuid {
                 continue;
             }
 
-            let mut items: Vec<SyncItem> = vec![rss.into()];
+            rss.update_time = util::time::local_now("%H:%M:%S").into();
+            ui.global::<Store>()
+                .get_rss_lists()
+                .set_row_data(index, rss.clone());
+
+            ui.global::<Store>()
+                .set_rss_update_time_flag(!ui.global::<Store>().get_rss_update_time_flag());
+
+            let items: Vec<SyncItem> = vec![rss.into()];
             message_info!(ui, tr("正在同步..."));
 
             let ui = ui.as_weak();
             tokio::spawn(async move {
-                let error_msgs = sync_rss(ui, items).await;
+                let error_msgs = sync_rss(ui.clone(), items).await;
 
                 if error_msgs.is_empty() {
                     async_message_success(ui.clone(), tr("同步成功"));
                 } else {
-                    let err = format!("{}:[{}] {}. {}: {}"
-                        tr("访问"), error_msgs[0].url, tr("失败"),
-                        tr("原因"), error_msgs[0].msg);
+                    let err = format!(
+                        "{}:[{}] {}. {}: {}",
+                        tr("访问"),
+                        error_msgs[0].url,
+                        tr("失败"),
+                        tr("原因"),
+                        error_msgs[0].msg
+                    );
                     async_message_warn(ui.clone(), err);
                 }
             });
 
             return;
+        }
+    });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_sync_rss_all(move || {
+        let ui = ui_handle.unwrap();
+        for item in ui.global::<Store>().get_rss_lists().iter() {
+            ui.global::<Logic>().invoke_sync_rss(item.uuid);
         }
     });
 }
@@ -432,8 +493,37 @@ async fn _toggle_rss_favorite(rss: RssConfig) -> Result<()> {
     Ok(())
 }
 
+fn parse_summary_html(summary: &str) -> String {
+    let summary = html2text::from_read(summary.as_bytes(), usize::MAX)
+        .trim()
+        .replace("\r\n", "")
+        .replace("\n", "");
+
+    let chars_summary = summary.chars().collect::<Vec<_>>();
+
+    if chars_summary.len() > summary.len() {
+        if chars_summary.len() > 100 {
+            format!(
+                "{}...",
+                chars_summary[..100].iter().collect::<String>()
+            )
+        } else {
+            summary
+        }
+    } else {
+        if chars_summary.len() > 200 {
+            format!(
+                "{}...",
+                chars_summary[..200].iter().collect::<String>()
+            )
+        } else {
+            summary
+        }
+    }
+}
+
 fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
-    let mut entry = vec![];
+    let mut entrys = vec![];
     let ch = Channel::read_from(&content[..])?;
 
     for item in ch.items() {
@@ -442,18 +532,9 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
         let author = item.author().unwrap_or_default().to_string();
         let pub_date = item.pub_date().unwrap_or_default().to_string();
 
-        let summary = if item.description().is_some() {
-            let s = item.description().unwrap();
-            let s = html2text::from_read(s.as_bytes(), usize::MAX)
-                .trim()
-                .to_string();
-            if s.len() > 100 {
-                format!("{}...", &s[..100])
-            } else {
-                s
-            }
-        } else {
-            String::default()
+        let summary = match item.description() {
+            Some(s) => parse_summary_html(s),
+            _ => String::default(),
         };
 
         let tags = item
@@ -468,7 +549,7 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
             continue;
         }
 
-        entry.push(RssEntry {
+        entrys.push(RssEntry {
             suuid: suuid.to_string(),
             uuid: Uuid::new_v4().to_string(),
             url,
@@ -480,10 +561,14 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
             ..Default::default()
         });
     }
+
+    Ok(entrys)
 }
 
-fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
+fn parse_atom(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
+    let mut entrys = vec![];
     let feed = Feed::read_from(BufReader::new(&content[..]))?;
+
     for item in feed.entries() {
         let url = item
             .links()
@@ -505,15 +590,15 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
             .join("|")
             .to_string();
 
-        let summary = if item.summary().is_some() {
-            let s = item.summary().unwrap();
-            if s.r#type == TextType::Text {
-                s.as_str().to_string()
-            } else {
-                String::default()
+        let summary = match item.summary() {
+            Some(s) => {
+                if s.r#type == TextType::Text {
+                    s.as_str().to_string()
+                } else {
+                    parse_summary_html(s.as_str())
+                }
             }
-        } else {
-            String::default()
+            _ => String::default(),
         };
 
         let tags = item
@@ -528,7 +613,7 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
             continue;
         }
 
-        entry.push(RssEntry {
+        entrys.push(RssEntry {
             suuid: suuid.to_string(),
             uuid: Uuid::new_v4().to_string(),
             url,
@@ -540,57 +625,59 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
             ..Default::default()
         });
     }
-}
-
-async fn fetch_entry(config: SyncItem) -> Result<Vec<RssEntry>> {
-    let rss_config = config::rss();
-    let request_timeout = u64::min(rss_config.sync_timeout as u64, 10_u64);
-
-    let client = uhttp::client(config.proxy_type.as_str().into())?;
-    let content = client
-        .get(&config.url)
-        .headers(uhttp::headers())
-        .timeout(Duration::from_secs(request_timeout))
-        .send()
-        .await?
-        .bytes()
-        .await?;
-
-    let feed_format = config.feed_format.to_lowercase();
-
-    let entrys = match feed_format {
-        "auto" => match parse_rss(config.suuid.as_str(), content) {
-            Ok(v) => v,
-            _ => parse_atom(config.suuid.as_str(), content)?,
-        },
-        "rss" => parse_rss(config.suuid.as_str(), content)?,
-        _ => parse_atom(config.suuid.as_str(), content)?,
-    };
-
-    entrys = entrys
-        .into_iter()
-        .filter(|e| match db::trash::is_exist(&md5_hex(e.url.as_str())) {
-            Ok(flag) => !flag,
-            _ => true,
-        })
-        .rev()
-        .collect();
 
     Ok(entrys)
 }
 
-pub async fn sync_rss(ui: Weak<AppWindow>, items: Vec<SyncItem>) -> Vec<ErrorMsg> {
+async fn fetch_entrys(sync_item: SyncItem) -> Result<Vec<RssEntry>> {
+    let request_timeout = u64::min(config::sync().sync_timeout as u64, 10_u64);
+
+    let client = http::client(Some(sync_item.proxy_type.as_str().into()))?;
+    let content = client
+        .get(&sync_item.url)
+        .headers(http::headers())
+        .timeout(Duration::from_secs(request_timeout))
+        .send()
+        .await?
+        .bytes()
+        .await?
+        .to_vec();
+
+    let entrys = match sync_item.feed_format.to_lowercase().as_str() {
+        "auto" => match parse_rss(sync_item.suuid.as_str(), content.clone()) {
+            Ok(v) => v,
+            _ => parse_atom(sync_item.suuid.as_str(), content)?,
+        },
+        "rss" => parse_rss(sync_item.suuid.as_str(), content)?,
+        _ => parse_atom(sync_item.suuid.as_str(), content)?,
+    };
+
+    let mut unique_entrys = vec![];
+    for item in entrys.into_iter() {
+        if db::trash::is_exist(&md5_hex(item.url.as_str()))
+            .await
+            .is_err()
+        {
+            unique_entrys.push(item);
+        }
+    }
+
+    let unique_entrys = unique_entrys.into_iter().rev().collect();
+    Ok(unique_entrys)
+}
+
+async fn sync_rss(ui: Weak<AppWindow>, items: Vec<SyncItem>) -> Vec<ErrorMsg> {
     let mut error_msgs = vec![];
 
     for item in items.into_iter() {
         let suuid = item.suuid.clone();
         let url = item.url.clone();
 
-        match fetch_entry(item).await {
-            Ok(entry) => {
+        match fetch_entrys(item).await {
+            Ok(entrys) => {
                 let ui = ui.clone();
                 let _ = slint::invoke_from_event_loop(move || {
-                    super::entry::update_new_entrys(&ui.unwrap(), suuid.as_str(), entry);
+                    super::entry::update_new_entrys(&ui.unwrap(), suuid.as_str(), entrys);
                 });
             }
             Err(e) => error_msgs.push(ErrorMsg {

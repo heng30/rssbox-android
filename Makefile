@@ -2,7 +2,7 @@
 
 # build-evn=SLINT_STYLE=fluent
 build-evn=SLINT_STYLE=material
-run-evn=RUST_LOG=error,warn,info,debug,sqlx=off,reqwest=off
+run-evn=RUST_LOG=error,warn,info,debug,sqlx=off,reqwest=off,html2text=off
 
 all: build-release
 

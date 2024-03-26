@@ -13,6 +13,7 @@ pub fn working_dir() -> Result<PathBuf> {
     }
 }
 
+#[allow(dead_code)]
 pub fn remove_dir_files(path: &str) -> io::Result<()> {
     for entry in fs::read_dir(path)? {
         let entry = entry?;

@@ -1,7 +1,8 @@
 use super::{pool, ComEntry};
-use crate::slint_generatedAppWindow::RssConfig as UIRssConfig;
+use crate::slint_generatedAppWindow::{RssConfig as UIRssConfig, RssEntry as UIRssEntry};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use slint::{ModelRc, VecModel};
 
 fn feed_format_default() -> String {
     "AUTO".to_string()
@@ -50,6 +51,7 @@ impl From<RssConfig> for UIRssConfig {
             is_favorite: conf.is_favorite,
             update_time: conf.update_time.into(),
             feed_format: conf.feed_format.into(),
+            entry: ModelRc::new(VecModel::<UIRssEntry>::default()),
             ..Default::default()
         }
     }
@@ -102,6 +104,7 @@ pub async fn update(uuid: &str, data: &str) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 pub async fn select(uuid: &str) -> Result<ComEntry> {
     Ok(
         sqlx::query_as::<_, ComEntry>("SELECT * FROM rss WHERE uuid=?")
@@ -117,6 +120,7 @@ pub async fn select_all() -> Result<Vec<ComEntry>> {
         .await?)
 }
 
+#[allow(dead_code)]
 pub async fn is_exist(uuid: &str) -> Result<()> {
     select(uuid).await?;
     Ok(())

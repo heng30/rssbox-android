@@ -7,7 +7,7 @@ use reqwest::{
 pub enum ProxyType {
     Http,
     Socks5,
-    Unknow,
+    Unknown,
 }
 
 impl From<&str> for ProxyType {
@@ -15,7 +15,7 @@ impl From<&str> for ProxyType {
         match pt.to_lowercase().as_str() {
             "http" => ProxyType::Http,
             "socks5" => ProxyType::Socks5,
-            _ => ProxyType::Unknow,
+            _ => ProxyType::Unknown,
         }
     }
 }
@@ -37,11 +37,11 @@ pub fn client(proxy_type: Option<ProxyType>) -> Result<Client> {
 
             let proxy = match item {
                 ProxyType::Http => {
-                    Proxy::all(format!("https://{}:{}", config.http_url, config.http_port))?
+                    Proxy::all(format!("http://{}:{}", config.http_url, config.http_port))?
                 }
                 ProxyType::Socks5 => Proxy::all(format!(
                     "socks5://{}:{}",
-                    config.socks5_url, config.http_port
+                    config.socks5_url, config.socks5_port
                 ))?,
                 _ => return Ok(Client::new()),
             };

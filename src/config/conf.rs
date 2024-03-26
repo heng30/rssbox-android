@@ -57,6 +57,7 @@ pub fn db_path() -> PathBuf {
     CONFIG.lock().unwrap().db_path.clone()
 }
 
+#[allow(dead_code)]
 pub fn cache_dir() -> PathBuf {
     CONFIG.lock().unwrap().cache_dir.clone()
 }
@@ -103,9 +104,11 @@ impl Config {
                     self.sync = c.sync;
                     Ok(())
                 }
-                Err(e) => Err(e.into()),
+                Err(_) => match toml::to_string_pretty(self) {
+                    Ok(text) => Ok(fs::write(&self.config_path, text)?),
+                    Err(e) => Err(e.into()),
+                },
             },
-
             Err(_) => match toml::to_string_pretty(self) {
                 Ok(text) => Ok(fs::write(&self.config_path, text)?),
                 Err(e) => Err(e.into()),

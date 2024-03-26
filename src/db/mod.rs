@@ -1,11 +1,11 @@
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
 use sqlx::migrate::MigrateDatabase;
 use sqlx::{
     sqlite::{Sqlite, SqlitePoolOptions},
     Pool,
 };
 use std::sync::Mutex;
-use serde::{Serialize, Deserialize};
 
 pub mod entry;
 pub mod rss;

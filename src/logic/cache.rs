@@ -11,6 +11,11 @@ pub fn init(ui: &AppWindow) {
 
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_remove_all_cache(move || {
+        ui_handle
+            .unwrap()
+            .global::<Store>()
+            .set_cache_size("0M".into());
+
         let ui = ui_handle.clone();
         tokio::spawn(async move {
             match db::trash::delete_all().await {
@@ -29,16 +34,7 @@ fn init_cache(ui: &AppWindow) {
     tokio::spawn(async move {
         let ui = ui_handle.clone();
         match db::trash::row_count().await {
-            Err(e) => {
-                log::warn!("Cache size error: {e:?}");
-
-                let _ = slint::invoke_from_event_loop(move || {
-                    ui.clone()
-                        .unwrap()
-                        .global::<Store>()
-                        .set_cache_size("0M".into());
-                });
-            }
+            Err(e) => log::warn!("Cache size error: {e:?}"),
             Ok(count) => {
                 log::debug!("trash count: {count}");
 
@@ -46,7 +42,7 @@ fn init_cache(ui: &AppWindow) {
                     ui.clone()
                         .unwrap()
                         .global::<Store>()
-                        .set_cache_size(util::str::pretty_size_string(count as u64 * 32));
+                        .set_cache_size(util::str::pretty_size_string(count as u64 * 32).into());
                 });
             }
         }

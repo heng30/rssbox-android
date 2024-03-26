@@ -1,10 +1,5 @@
-use crate::slint_generatedAppWindow::{
-    AppWindow, Logic, SettingProxy, SettingSync, SettingUI, Store,
-};
-use crate::{
-    config, message_success, message_warn,
-    util::{self, translator::tr},
-};
+use crate::slint_generatedAppWindow::{AppWindow, Logic, SettingProxy, SettingSync, Store};
+use crate::{config, util::translator::tr};
 use slint::ComponentHandle;
 
 pub fn init(ui: &AppWindow) {
@@ -82,7 +77,9 @@ pub fn init(ui: &AppWindow) {
 fn init_setting(ui: &AppWindow) {
     let config = config::ui();
     let mut ui_setting = ui.global::<Store>().get_setting_ui();
-    ui_setting.font_size = slint::format!("{}", config.font_size);
+
+    let font_size = u32::min(50, u32::max(10, config.font_size));
+    ui_setting.font_size = slint::format!("{}", font_size);
     ui_setting.font_family = config.font_family.into();
     ui_setting.language = config.language.into();
 

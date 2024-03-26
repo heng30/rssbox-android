@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, Tag, Link, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component RHead inherits Head {
@@ -16,7 +16,7 @@ component RHead inherits Head {
         padding-left: Theme.padding * 3;
 
         Label {
-            text: Logic.update-time-rss(Store.current-rss-uuid);
+            text: Logic.update-time-rss(Store.current-rss-uuid, Store.rss-update-time-flag);
             font-size: Theme.default-font-size - 4px;
             color: Theme.placeholder-text-color;
         }
@@ -101,12 +101,11 @@ component RssListItems inherits Rectangle {
                             }
                         }
 
-                        name-txt := Text {
+                        name-txt := Label {
                             color: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
                             text: data.name;
                             font-size: Theme.enlarge-font-size;
                             overflow: elide;
-                            vertical-alignment: center;
                         }
                     }
 

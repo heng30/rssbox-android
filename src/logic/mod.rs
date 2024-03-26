@@ -5,10 +5,10 @@ mod cache;
 mod clipboard;
 mod entry;
 mod message;
-mod rss;
-mod util;
 mod ok_cancel_dialog;
+mod rss;
 mod setting;
+mod util;
 
 pub fn init(ui: &AppWindow) {
     util::init(&ui);

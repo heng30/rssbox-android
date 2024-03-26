@@ -40,6 +40,7 @@ pub fn tr(text: &str) -> String {
     items.insert("正在重试...", "Retrying...");
     items.insert("正在下载...", "Downloading...");
 
+    items.insert("是否删除？", "Delete or not?");
     items.insert("是否删除全部？", "Delete all entrys or not?");
     items.insert("是否删除全部缓存？", "Delete all cache or not?");
     items.insert("清除缓存失败", "Remove cache failed");

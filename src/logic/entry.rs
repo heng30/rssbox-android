@@ -1,14 +1,12 @@
 use super::message::{async_message_success, async_message_warn};
 use crate::slint_generatedAppWindow::{AppWindow, Logic, RssEntry as UIRssEntry, Store};
 use crate::{
-    config,
-    db::{self, entry::RssEntry, rss},
+    db::{self, entry::RssEntry},
     message_info,
     util::{crypto::md5_hex, translator::tr},
 };
 use anyhow::Result;
-use slint::{ComponentHandle, Model, ModelRc, SharedString, VecModel, Weak};
-use webbrowser;
+use slint::{ComponentHandle, Model, SharedString, VecModel, Weak};
 
 const FAVORITE_UUID: &str = "favorite-uuid";
 
@@ -72,8 +70,10 @@ pub fn init(ui: &AppWindow) {
                 continue;
             }
 
+            super::rss::decease_unread_counts(&ui, &suuid);
+
             store_rss_entrys!(ui).remove(index);
-            _remove_entry(ui.as_weak(), suuid, uuid);
+            _remove_entry(ui.as_weak(), suuid, uuid, entry.url);
             return;
         }
     });
@@ -85,8 +85,16 @@ pub fn init(ui: &AppWindow) {
         }
 
         let ui = ui_handle.unwrap();
+
+        super::rss::reset_unread_counts(&ui, &suuid);
+
+        let urls = store_rss_entrys!(ui)
+            .iter()
+            .map(|item| item.url.clone())
+            .collect::<Vec<_>>();
+
         store_rss_entrys!(ui).set_vec(vec![]);
-        _remove_all_entrys(ui.as_weak(), suuid);
+        _remove_all_entrys(ui.as_weak(), suuid, urls);
     });
 
     let ui_handle = ui.as_weak();
@@ -158,8 +166,10 @@ pub fn init(ui: &AppWindow) {
     });
 }
 
-fn _remove_entry(ui: Weak<AppWindow>, suuid: SharedString, uuid: SharedString) {
+fn _remove_entry(ui: Weak<AppWindow>, suuid: SharedString, uuid: SharedString, url: SharedString) {
     tokio::spawn(async move {
+        _ = db::trash::insert(&md5_hex(&url)).await;
+
         match db::entry::delete(suuid.as_str(), uuid.as_str()).await {
             Err(e) => async_message_warn(
                 ui.clone(),
@@ -170,8 +180,12 @@ fn _remove_entry(ui: Weak<AppWindow>, suuid: SharedString, uuid: SharedString) {
     });
 }
 
-fn _remove_all_entrys(ui: Weak<AppWindow>, suuid: SharedString) {
+fn _remove_all_entrys(ui: Weak<AppWindow>, suuid: SharedString, urls: Vec<SharedString>) {
     tokio::spawn(async move {
+        for url in urls.into_iter() {
+            _ = db::trash::insert(&md5_hex(&url)).await;
+        }
+
         match db::entry::delete_all(suuid.as_str()).await {
             Err(e) => async_message_warn(
                 ui.clone(),
@@ -239,13 +253,13 @@ fn _set_entry_read(ui: Weak<AppWindow>, suuid: SharedString, entry: RssEntry) {
     });
 }
 
-async fn update_new_entry(ui: &AppWindow, suuid: &str, entry: RssEntry) -> Result<()> {
+async fn update_new_entry(suuid: &str, entry: RssEntry) -> Result<()> {
     let data = serde_json::to_string(&entry)?;
     db::entry::insert(suuid, entry.uuid.as_str(), &data).await?;
     Ok(())
 }
 
-fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
+pub fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
     for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
         if rss.uuid != suuid {
             continue;
@@ -253,7 +267,7 @@ fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
 
         let mut unfound_list = vec![];
         for entry in entrys.into_iter() {
-            if rss.entry.iter().find(|&v| item.url == &entry.url).is_none() {
+            if rss.entry.iter().find(|v| v.url == entry.url).is_none() {
                 unfound_list.push(entry);
             }
         }
@@ -267,16 +281,16 @@ fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
                 .expect("We know we set a VecModel earlier")
                 .insert(0, item.clone().into());
 
-            let ui = ui.as_weak();
             let suuid = suuid.to_string();
             tokio::spawn(async move {
-                if let Err(e) = update_new_entry(ui, &suuid, item).await {
-                    log::warn!("e");
+                if let Err(e) = update_new_entry(&suuid, item).await {
+                    log::warn!("{e:?}");
                 }
             });
         }
 
-        rss.update_time = util::time::local_now("%m-%d %H:%M").into();
+        rss.unread_counts += 1;
+
         ui.global::<Store>()
             .get_rss_lists()
             .set_row_data(index, rss);

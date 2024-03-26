@@ -176,7 +176,6 @@ component AddEdit inherits Rectangle {
 
         SettingDetailInnerVbox {
             txt-url := SettingDetailLabel {
-                font-size: Theme.title4-font-size;
                 text: Logic.tr(Store.is-cn, "RSS源地址");
             }
 
@@ -194,12 +193,7 @@ component AddEdit inherits Rectangle {
                     icon: Icons.paste;
                     icon-width: Theme.icon-size * 1.2;
 
-                    clicked => {
-                        line-edit-url.text = "";
-                        line-edit-url.paste();
-
-                        // line-edit-url.text = Logic.copy-from-clipboard();
-                    }
+                    clicked => { line-edit-url.text = Logic.copy-from-clipboard(); }
                 }
             }
         }
@@ -287,13 +281,19 @@ component Body inherits Rectangle {
                     rsslist-vbox.visible = false;
                     ae.set({});
                 } else if (index == BtnIndex.Edit) {
-                    rsslist-vbox.visible = false;
                     if (!Logic.exist-rss(rsslist.current-uuid)) {
-                        Logic.tr(Store.is-cn, "请选择条目");
+                        Logic.show-message(Logic.tr(Store.is-cn, "请选择条目"), "info");
                         return;
                     }
+
+                    rsslist-vbox.visible = false;
                     ae.set(Logic.get-rss-config-to-ui(rsslist.current-uuid));
                 } else if (index == BtnIndex.Delete) {
+                    if (!Logic.exist-rss(rsslist.current-uuid)) {
+                        Logic.show-message(Logic.tr(Store.is-cn, "请选择条目"), "info");
+                        return;
+                    }
+
                     Store.ok-cancel-dialog-setting.title-type = "warning";
                     Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
                     Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除？");
