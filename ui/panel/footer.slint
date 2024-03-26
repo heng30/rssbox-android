@@ -1,7 +1,7 @@
 import { Theme, Icons } from "../theme.slint";
 import { Store, TabIndex } from "../store.slint";
 import { Logic } from "../logic.slint";
-import { TabBtn, Divider } from "../base/widgets.slint";
+import { TabBtn, Tag, Divider } from "../base/widgets.slint";
 
 export component Footer inherits Rectangle {
     private property <length> btn-height: self.height * 0.9;
@@ -22,6 +22,16 @@ export component Footer inherits Rectangle {
             checked: Store.current-tab-index == TabIndex.Rss;
 
             clicked => { Store.switch-tab(TabIndex.Rss); }
+
+            Tag {
+                x: parent.width / 2 + self.width / 2; y: 0;
+                width: 20px;
+                height: self.width;
+                font-size: 12px;
+                background: Colors.transparent;
+                text-color: Theme.danger-color;
+                text: Logic.unread-counts-rss(Store.current-rss-uuid, Store.rss-unread-counts-flag);
+            }
         }
 
         TabBtn {
@@ -48,7 +58,10 @@ export component Footer inherits Rectangle {
             text: Logic.tr(Store.is-cn, "设置");
             checked: Store.current-tab-index == TabIndex.Setting;
 
-            clicked => { Store.switch-tab(TabIndex.Setting); }
+            clicked => {
+                Logic.update-cache-size();
+                Store.switch-tab(TabIndex.Setting);
+            }
         }
     }
 }

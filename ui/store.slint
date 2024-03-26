@@ -56,6 +56,11 @@ export struct SettingUI {
     language: string,
 }
 
+export struct SettingReading {
+    browser: string,
+    delete-after-reading: bool,
+}
+
 export struct SettingSync {
     sync-interval: string,
     sync-timeout: string,
@@ -79,7 +84,7 @@ export struct AboutDialog {
 }
 
 export global Store  {
-    out property<TabIndex> current-tab-index: TabIndex.Rss;
+    out property<TabIndex> current-tab-index: TabIndex.Setting;
     in-out property<string> current-rss-uuid;
 
     in-out property<[RssConfig]> rss-lists: [
@@ -146,6 +151,7 @@ export global Store  {
     in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
 
     in-out property <bool> rss-update-time-flag;
+    in-out property <bool> rss-unread-counts-flag;
     in-out property<string> cache-size: "0M";
     in-out property<bool> is-cn: setting-ui.language == "cn";
     in-out property<SettingUI> setting-ui: {

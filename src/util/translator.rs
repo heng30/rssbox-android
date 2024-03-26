@@ -60,11 +60,11 @@ pub fn tr(text: &str) -> String {
     items.insert("RSS源地址", "RSS URL");
     items.insert("请输入RSS源地址", "Please input RSS URL");
     items.insert("RSS源格式", "RSS format");
-    items.insert("已经启用Http代理", "Enabled Http proxy");
+    items.insert("已启用Http代理", "Enabled Http proxy");
     items.insert("未启用Http代理", "Disable Http proxy");
-    items.insert("已经启用Socks5代理", "Enabled Socks5 proxy");
+    items.insert("已启用Socks5代理", "Enabled Socks5 proxy");
     items.insert("未启用Socks5代理", "Disable Socks5 proxy");
-    items.insert("已经收藏", "Star");
+    items.insert("已收藏", "Star");
     items.insert("未收藏", "Not star");
     items.insert("图标库", "Icons");
     items.insert("请选择条目", "Please select entry");
@@ -76,7 +76,7 @@ pub fn tr(text: &str) -> String {
     items.insert("请输入时间间隔", "Please input time interval");
     items.insert("同步超时(秒)", "Sync timeout(second)");
     items.insert("请输入同步超时", "Please input sync timeout");
-    items.insert("已经启用自动同步", "Enabled auto sync");
+    items.insert("已启用自动同步", "Enabled auto sync");
     items.insert("未启用自动同步", "Disable auto sync");
     items.insert(
         "程序启动时，马上进行一次同步",

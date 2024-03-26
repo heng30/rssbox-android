@@ -27,6 +27,11 @@ pub fn init(ui: &AppWindow) {
             }
         });
     });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_update_cache_size(move || {
+        init_cache(&ui_handle.unwrap());
+    });
 }
 
 fn init_cache(ui: &AppWindow) {

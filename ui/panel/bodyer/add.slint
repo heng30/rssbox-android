@@ -211,12 +211,12 @@ component AddEdit inherits Rectangle {
         }
 
         favorite-checkbox := CheckBox {
-            text: self.checked ? Logic.tr(Store.is-cn, "已经收藏") : Logic.tr(Store.is-cn, "未收藏");
+            text: self.checked ? Logic.tr(Store.is-cn, "已收藏") : Logic.tr(Store.is-cn, "未收藏");
         }
 
         use-http-proxy-checkbox := CheckBox {
             width: 50%;
-            text: self.checked ? Logic.tr(Store.is-cn, "已经启用Http代理") : Logic.tr(Store.is-cn, "未启用Http代理");
+            text: self.checked ? Logic.tr(Store.is-cn, "已启用Http代理") : Logic.tr(Store.is-cn, "未启用Http代理");
 
             toggled => {
                 if (self.checked && use-socks5-proxy-checkbox.checked) {
@@ -226,7 +226,7 @@ component AddEdit inherits Rectangle {
         }
 
         use-socks5-proxy-checkbox := CheckBox {
-            text: self.checked ? Logic.tr(Store.is-cn, "已经启用Socks5代理") : Logic.tr(Store.is-cn, "未启用Socks5代理");
+            text: self.checked ? Logic.tr(Store.is-cn, "已启用Socks5代理") : Logic.tr(Store.is-cn, "未启用Socks5代理");
 
             toggled => {
                 if (self.checked && use-http-proxy-checkbox.checked) {

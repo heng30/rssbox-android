@@ -70,7 +70,9 @@ pub fn init(ui: &AppWindow) {
                 continue;
             }
 
-            super::rss::decease_unread_counts(&ui, &suuid);
+            if !entry.is_read {
+                super::rss::decease_unread_counts(&ui, &suuid);
+            }
 
             store_rss_entrys!(ui).remove(index);
             _remove_entry(ui.as_weak(), suuid, uuid, entry.url);
@@ -151,6 +153,8 @@ pub fn init(ui: &AppWindow) {
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_set_entry_read(move |suuid, uuid| {
         let ui = ui_handle.unwrap();
+
+        super::rss::decease_unread_counts(&ui, &suuid);
 
         for (index, mut entry) in ui.global::<Store>().get_rss_entrys().iter().enumerate() {
             if entry.uuid != uuid {
@@ -272,6 +276,8 @@ pub fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
             }
         }
 
+        rss.unread_counts += unfound_list.len() as i32;
+
         for mut item in unfound_list.into_iter() {
             item.suuid = suuid.into();
 
@@ -288,8 +294,6 @@ pub fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
                 }
             });
         }
-
-        rss.unread_counts += 1;
 
         ui.global::<Store>()
             .get_rss_lists()

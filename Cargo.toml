@@ -19,7 +19,6 @@ serde_json = "1.0"
 lazy_static = "1.4"
 atom_syndication = "0.12"
 
-
 uuid = { version = "1.6", features = ["v4"] }
 tokio = { version = "1.35", features = ["full"] }
 serde = { version = "1.0", features = ["serde_derive"] }
@@ -79,15 +78,12 @@ target_sdk_version = 30
 
 [[package.metadata.android.uses_permission]]
 name = "android.permission.WRITE_EXTERNAL_STORAGE"
-max_sdk_version = 18
 
 [[package.metadata.android.uses_permission]]
 name = "android.permission.INTERNET"
-max_sdk_version = 18
 
 [[package.metadata.android.uses_permission]]
 name = "android.permission.READ_EXTERNAL_STORAGE"
-max_sdk_version = 18
 
 [package.metadata.android.application]
 label = "rssbox"

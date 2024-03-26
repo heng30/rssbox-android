@@ -82,6 +82,8 @@ pub fn decease_unread_counts(ui: &AppWindow, uuid: &str) {
         ui.global::<Store>()
             .get_rss_lists()
             .set_row_data(index, rss);
+
+        notify_ui_update_unread_counts(&ui);
         return;
     }
 }
@@ -96,8 +98,15 @@ pub fn reset_unread_counts(ui: &AppWindow, uuid: &str) {
         ui.global::<Store>()
             .get_rss_lists()
             .set_row_data(index, rss);
+
+        notify_ui_update_unread_counts(ui);
         return;
     }
+}
+
+pub fn notify_ui_update_unread_counts(ui: &AppWindow) {
+    ui.global::<Store>()
+        .set_rss_unread_counts_flag(!ui.global::<Store>().get_rss_unread_counts_flag());
 }
 
 async fn init_rss_configs(items: Vec<ComEntry>) -> Vec<RssConfig> {
@@ -309,6 +318,8 @@ pub fn init(ui: &AppWindow) {
             ui.global::<Logic>().invoke_remove_all_entrys(uuid.clone());
             store_rss_lists!(ui).remove(index);
 
+            notify_ui_update_unread_counts(&ui);
+
             if uuid == ui.global::<Store>().get_current_rss_uuid() {
                 ui.global::<Logic>()
                     .invoke_switch_rss(uuid.clone(), EMPTY_UUID.into());
@@ -363,6 +374,18 @@ pub fn init(ui: &AppWindow) {
         }
         des_rss
     });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_name_rss(move |uuid| {
+        get_rss_config(&ui_handle.unwrap(), &uuid).map_or(Default::default(), |item| item.name)
+    });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>()
+        .on_unread_counts_rss(move |uuid, _flag| {
+            get_rss_config(&ui_handle.unwrap(), &uuid)
+                .map_or(Default::default(), |item| item.unread_counts)
+        });
 
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_toggle_rss_favorite(move |uuid| {
@@ -496,26 +519,19 @@ async fn _toggle_rss_favorite(rss: RssConfig) -> Result<()> {
 fn parse_summary_html(summary: &str) -> String {
     let summary = html2text::from_read(summary.as_bytes(), usize::MAX)
         .trim()
-        .replace("\r\n", "")
         .replace("\n", "");
 
     let chars_summary = summary.chars().collect::<Vec<_>>();
 
     if chars_summary.len() > summary.len() {
         if chars_summary.len() > 100 {
-            format!(
-                "{}...",
-                chars_summary[..100].iter().collect::<String>()
-            )
+            format!("{}...", chars_summary[..100].iter().collect::<String>())
         } else {
             summary
         }
     } else {
         if chars_summary.len() > 200 {
-            format!(
-                "{}...",
-                chars_summary[..200].iter().collect::<String>()
-            )
+            format!("{}...", chars_summary[..200].iter().collect::<String>())
         } else {
             summary
         }
@@ -677,7 +693,11 @@ async fn sync_rss(ui: Weak<AppWindow>, items: Vec<SyncItem>) -> Vec<ErrorMsg> {
             Ok(entrys) => {
                 let ui = ui.clone();
                 let _ = slint::invoke_from_event_loop(move || {
-                    super::entry::update_new_entrys(&ui.unwrap(), suuid.as_str(), entrys);
+                    let ui = ui.unwrap();
+                    super::entry::update_new_entrys(&ui, suuid.as_str(), entrys);
+                    if suuid.as_str() == ui.global::<Store>().get_current_rss_uuid().as_str() {
+                        notify_ui_update_unread_counts(&ui);
+                    }
                 });
             }
             Err(e) => error_msgs.push(ErrorMsg {

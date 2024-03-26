@@ -10,6 +10,7 @@ export component IconBtn inherits Rectangle {
 
     in-out property<string> text;
     in-out property<length> font-size: Theme.title4-font-size;
+    in-out property<color> text-color: root.colorize;
 
     callback clicked();
 
@@ -29,7 +30,7 @@ export component IconBtn inherits Rectangle {
         alignment: center;
 
         if !root.is-ltr && root.text != "" : Label {
-            color: img.colorize;
+            color: root.text-color;
             font-size: root.font-size;
             text: root.text;
         }
@@ -40,7 +41,7 @@ export component IconBtn inherits Rectangle {
         }
 
         if root.is-ltr && root.text != "" : Label {
-            color: img.colorize;
+            color: root.text-color;
             font-size: root.font-size;
             text: root.text;
         }

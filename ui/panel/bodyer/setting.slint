@@ -2,15 +2,18 @@ import { LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { Store, TabIndex, SettingUI, SettingSync, SettingProxy } from "../../store.slint";
+import { Store, TabIndex, SettingUI, SettingSync, SettingProxy, SettingReading } from "../../store.slint";
 import { CenterLayout, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
     UI,
+    Reading,
     Sync,
     Proxy,
     About,
     Help,
+    Feedback,
+    Donate,
 }
 
 component UI inherits SettingDetail {
@@ -112,6 +115,48 @@ component UI inherits SettingDetail {
     }
 }
 
+component Reading inherits SettingDetail {
+    title: Logic.tr(Store.is-cn, "阅 读");
+
+    public function get() -> SettingReading {
+        return {
+            browser: browser-combox.current-value,
+            delete-after-reading: delete-after-reading-checkbox.checked,
+        };
+    }
+
+    public function set(setting: SettingReading) {
+        browser-combox.current-value = setting.browser;
+        delete-after-reading-checkbox.checked = setting.delete-after-reading;
+
+        if (browser-combox.current-value == "") {
+            browser-combox.current-value = browser-combox.model[0];
+        }
+    }
+
+    SettingDetailInner {
+        SettingDetailInnerVbox {
+            browser-label := SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "选择浏览器");
+            }
+
+            browser-combox := ComboBox {
+                height: browser-label.preferred-height * 1.6;
+                model: [ "Default", "Firefox", "InternetExplorer", "Chrome", "Opera", "Safari", "WebPositive" ];
+                current-value: self.model[0];
+                current-index: 0;
+            }
+
+        }
+
+        delete-after-reading-checkbox := CheckBox {
+            text: self.checked ? Logic.tr(Store.is-cn, "已启用阅后即焚") : Logic.tr(Store.is-cn, "未启用阅后即焚");
+
+        }
+    }
+}
+
+
 component Sync inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "同 步");
 
@@ -158,7 +203,7 @@ component Sync inherits SettingDetail {
         }
 
         sync-auto-checkbox := CheckBox {
-            text: self.checked ? Logic.tr(Store.is-cn, "已经启用自动同步") : Logic.tr(Store.is-cn, "未启用自动同步");
+            text: self.checked ? Logic.tr(Store.is-cn, "已启用自动同步") : Logic.tr(Store.is-cn, "未启用自动同步");
         }
 
         start-sync-checkbox := CheckBox {
@@ -335,6 +380,56 @@ component Help inherits SettingDetail {
     }
 }
 
+component Feedback inherits SettingDetail {
+    title: Logic.tr(Store.is-cn, "反 馈");
+
+//     SettingDetailInner {
+//         SettingDetailInnerVbox {
+//             browser-label := SettingDetailLabel {
+//                 text: Logic.tr(Store.is-cn, "选择浏览器");
+//             }
+
+//             browser-combox := ComboBox {
+//                 height: browser-label.preferred-height * 1.6;
+//                 model: [ "Default", "Firefox", "InternetExplorer", "Chrome", "Opera", "Safari", "WebPositive" ];
+//                 current-value: self.model[0];
+//                 current-index: 0;
+//             }
+
+//         }
+
+//         delete-after-reading-checkbox := CheckBox {
+//             text: self.checked ? Logic.tr(Store.is-cn, "已启用阅后即焚") : Logic.tr(Store.is-cn, "未启用阅后即焚");
+
+//         }
+//     }
+}
+
+component Donate inherits SettingDetail {
+    title: Logic.tr(Store.is-cn, "捐 赠");
+
+//     SettingDetailInner {
+//         SettingDetailInnerVbox {
+//             browser-label := SettingDetailLabel {
+//                 text: Logic.tr(Store.is-cn, "选择浏览器");
+//             }
+
+//             browser-combox := ComboBox {
+//                 height: browser-label.preferred-height * 1.6;
+//                 model: [ "Default", "Firefox", "InternetExplorer", "Chrome", "Opera", "Safari", "WebPositive" ];
+//                 current-value: self.model[0];
+//                 current-index: 0;
+//             }
+
+//         }
+
+//         delete-after-reading-checkbox := CheckBox {
+//             text: self.checked ? Logic.tr(Store.is-cn, "已启用阅后即焚") : Logic.tr(Store.is-cn, "未启用阅后即焚");
+
+//         }
+//     }
+}
+
 component Body inherits VerticalLayout {
     alignment: start;
     spacing: Theme.spacing;
@@ -364,6 +459,17 @@ component Body inherits VerticalLayout {
                     root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.UI;
                     root.switch(SettingDetailIndex.UI);
+                }
+            }
+
+            SettingEntry {
+                text: Logic.tr(Store.is-cn, "阅 读");
+                icon: Icons.reading;
+
+                clicked => {
+                    root.visible = false;
+                    root.current-setting-detail-index = SettingDetailIndex.Reading;
+                    root.switch(SettingDetailIndex.Reading);
                 }
             }
 
@@ -406,6 +512,24 @@ component Body inherits VerticalLayout {
             }
 
             SettingEntry {
+                text: Logic.tr(Store.is-cn, "反 馈");
+                icon: Icons.feedback;
+                clicked => {
+                    root.visible = false;
+                    root.current-setting-detail-index = SettingDetailIndex.Feedback;
+                }
+            }
+
+            SettingEntry {
+                text: Logic.tr(Store.is-cn, "捐 赠");
+                icon: Icons.donate;
+                clicked => {
+                    root.visible = false;
+                    root.current-setting-detail-index = SettingDetailIndex.Donate;
+                }
+            }
+
+            SettingEntry {
                 text: Logic.tr(Store.is-cn, "缓 存");
                 attach-text: Store.cache-size;
                 icon: Icons.cache-light;
@@ -435,6 +559,8 @@ export component Setting inherits Rectangle {
         switch(index) => {
             if (index == SettingDetailIndex.UI) {
                 ui.set(Logic.get-setting-ui());
+            } else if (index == SettingDetailIndex.Reading) {
+                reading.set(Logic.get-setting-reading());
             } else if (index == SettingDetailIndex.Sync) {
                 sync.set(Logic.get-setting-sync());
             } else if (index == SettingDetailIndex.Proxy) {
@@ -456,6 +582,14 @@ export component Setting inherits Rectangle {
 
                 body.visible = true;
                 Logic.set-setting-ui(self.get());
+            }
+        }
+
+        reading := Reading {
+            visible: body.current-setting-detail-index == SettingDetailIndex.Reading;
+            back => {
+                body.visible = true;
+                Logic.set-setting-reading(self.get());
             }
         }
 
@@ -488,6 +622,18 @@ export component Setting inherits Rectangle {
         Help {
             visible: body.current-setting-detail-index == SettingDetailIndex.Help;
             back => { body.visible = true; }
+        }
+
+        Feedback {
+            visible: body.current-setting-detail-index == SettingDetailIndex.Feedback;
+            back => { body.visible = true; }
+
+        }
+
+        Donate {
+            visible: body.current-setting-detail-index == SettingDetailIndex.Donate;
+            back => { body.visible = true; }
+
         }
     }
 }

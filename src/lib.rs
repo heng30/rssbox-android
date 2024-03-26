@@ -92,7 +92,8 @@ fn sync_rss_timer(ui: &AppWindow) -> Timer {
             if SYNC_TIMESTAMP_CACHE.load(Ordering::SeqCst) + sync_interval <= now {
                 SYNC_TIMESTAMP_CACHE.store(now, Ordering::SeqCst);
 
-                ui_handle.unwrap().global::<Logic>().invoke_sync_rss_all();
+                let ui = ui_handle.unwrap();
+                ui.global::<Logic>().invoke_sync_rss_all();
             }
         } else {
             SYNC_TIMESTAMP_CACHE.store(now, Ordering::SeqCst);

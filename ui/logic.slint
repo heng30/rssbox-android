@@ -1,4 +1,4 @@
-import { RssConfig, RssEntry, SettingUI, SettingSync, SettingProxy } from "./store.slint";
+import { RssConfig, RssEntry, SettingUI, SettingReading, SettingSync, SettingProxy } from "./store.slint";
 
 export global Logic {
     callback new-rss(RssConfig);
@@ -11,8 +11,14 @@ export global Logic {
     callback get-rss-config-to-ui(string) -> RssConfig; // suuid
     callback exist-rss(string) -> bool; // suuid
 
-    pure callback update-time-rss(string, bool) -> string; // suuid, toggle_flag
-    update-time-rss => { return "10-33 12:09:45"; }
+    pure callback name-rss(string) -> string; // suuid
+    name-rss => { return "标题测试-1"; }
+
+    pure callback unread-counts-rss(string, bool) -> int; // suuid, toggle-flag
+    unread-counts-rss => { return 10; }
+
+    pure callback update-time-rss(string, bool) -> string; // suuid, toggle-flag
+    update-time-rss => { return "12:09:45"; }
 
     callback remove-entry(string, string); // suuid, uuid
     callback remove-all-entrys(string); // suuid
@@ -21,6 +27,7 @@ export global Logic {
     callback favorite-entry(string, string); // suuid, uuid
     callback set-entry-read(string, string); // suuid, uuid
 
+    callback update-cache-size();
     callback remove-all-cache();
 
     callback copy-to-clipboard(string); // msg
@@ -30,6 +37,9 @@ export global Logic {
 
     callback get-setting-ui() -> SettingUI;
     callback set-setting-ui(SettingUI);
+
+    callback get-setting-reading() -> SettingReading;
+    callback set-setting-reading(SettingReading);
 
     callback get-setting-sync() -> SettingSync;
     callback set-setting-sync(SettingSync);
