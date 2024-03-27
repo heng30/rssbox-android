@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct Config {
@@ -12,11 +13,20 @@ pub struct Config {
     #[serde(skip)]
     pub cache_dir: PathBuf,
 
+    #[serde(default = "appid_default")]
+    pub appid: String,
+
     pub ui: UI,
+
+    pub reading: Reading,
 
     pub sync: Sync,
 
     pub proxy: Proxy,
+}
+
+fn appid_default() -> String {
+    Uuid::new_v4().to_string()
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -70,6 +80,21 @@ impl Default for Sync {
             sync_timeout: 15,
             is_auto_sync: true,
             is_start_sync: true,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Reading {
+    pub browser: String,
+    pub is_delete_after_reading: bool,
+}
+
+impl Default for Reading {
+    fn default() -> Self {
+        Self {
+            browser: "Default".to_string(),
+            is_delete_after_reading: false,
         }
     }
 }

@@ -24,13 +24,16 @@ export component Footer inherits Rectangle {
             clicked => { Store.switch-tab(TabIndex.Rss); }
 
             Tag {
+                private property<int> unread_counts: Logic.unread-counts-rss(Store.current-rss-uuid, Store.rss-unread-counts-flag);
+
+                visible: self.unread_counts > 0;
                 x: parent.width / 2 + self.width / 2; y: 0;
                 width: 20px;
                 height: self.width;
                 font-size: 12px;
                 background: Colors.transparent;
                 text-color: Theme.danger-color;
-                text: Logic.unread-counts-rss(Store.current-rss-uuid, Store.rss-unread-counts-flag);
+                text: self.unread_counts;
             }
         }
 

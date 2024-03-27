@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { Store, TabIndex, SettingUI, SettingSync, SettingProxy, SettingReading } from "../../store.slint";
-import { CenterLayout, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
+import { CenterLayout, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn } from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
     UI,
@@ -121,13 +121,13 @@ component Reading inherits SettingDetail {
     public function get() -> SettingReading {
         return {
             browser: browser-combox.current-value,
-            delete-after-reading: delete-after-reading-checkbox.checked,
+            is-delete-after-reading: delete-after-reading-checkbox.checked,
         };
     }
 
     public function set(setting: SettingReading) {
         browser-combox.current-value = setting.browser;
-        delete-after-reading-checkbox.checked = setting.delete-after-reading;
+        delete-after-reading-checkbox.checked = setting.is-delete-after-reading;
 
         if (browser-combox.current-value == "") {
             browser-combox.current-value = browser-combox.model[0];
@@ -382,52 +382,60 @@ component Help inherits SettingDetail {
 
 component Feedback inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "反 馈");
+    forward-focus: edit;
 
-//     SettingDetailInner {
-//         SettingDetailInnerVbox {
-//             browser-label := SettingDetailLabel {
-//                 text: Logic.tr(Store.is-cn, "选择浏览器");
-//             }
+    SettingDetailInner {
+        vbox-alignment: LayoutAlignment.stretch;
 
-//             browser-combox := ComboBox {
-//                 height: browser-label.preferred-height * 1.6;
-//                 model: [ "Default", "Firefox", "InternetExplorer", "Chrome", "Opera", "Safari", "WebPositive" ];
-//                 current-value: self.model[0];
-//                 current-index: 0;
-//             }
+        edit := TxtEdit {
+            vertical-stretch: 1;
 
-//         }
+            in-out property<int> current-text-len;
 
-//         delete-after-reading-checkbox := CheckBox {
-//             text: self.checked ? Logic.tr(Store.is-cn, "已启用阅后即焚") : Logic.tr(Store.is-cn, "未启用阅后即焚");
+            edited => {
+                self.current-text-len = Util.text-len(self.text);
 
-//         }
-//     }
+                if (self.current-text-len > 2048) {
+                    Logic.show-message(Logic.tr(Store.is-cn, "超过2048字数限制"), "warning");
+                }
+            }
+        }
+
+        HorizontalLayout {
+            padding-right: Theme.padding * 2;
+            padding-bottom: Theme.padding * 2;
+
+            Label {
+                text: edit.current-text-len + "/2048";
+                color: edit.current-text-len > 2048 ? Theme.danger-color : Theme.placeholder-text-color;
+            }
+
+            HorizontalLayout {
+                alignment: end;
+                spacing: Theme.spacing * 4;
+
+                cancel-btn := CancelBtn {
+                    text: Logic.tr(Store.is-cn, "清空");
+                    icon: Icons.cache-light;
+                    clicked => { edit.clear(); edit.focus(); }
+                }
+
+                ConfirmBtn  {
+                    text: Logic.tr(Store.is-cn, "发送");
+                    icon: Icons.send;
+
+                    clicked => {
+                        Logic.send-feedback(edit.text);
+                        root.back();
+                    }
+                }
+            }
+        }
+    }
 }
 
 component Donate inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "捐 赠");
-
-//     SettingDetailInner {
-//         SettingDetailInnerVbox {
-//             browser-label := SettingDetailLabel {
-//                 text: Logic.tr(Store.is-cn, "选择浏览器");
-//             }
-
-//             browser-combox := ComboBox {
-//                 height: browser-label.preferred-height * 1.6;
-//                 model: [ "Default", "Firefox", "InternetExplorer", "Chrome", "Opera", "Safari", "WebPositive" ];
-//                 current-value: self.model[0];
-//                 current-index: 0;
-//             }
-
-//         }
-
-//         delete-after-reading-checkbox := CheckBox {
-//             text: self.checked ? Logic.tr(Store.is-cn, "已启用阅后即焚") : Logic.tr(Store.is-cn, "未启用阅后即焚");
-
-//         }
-//     }
 }
 
 component Body inherits VerticalLayout {
@@ -435,7 +443,7 @@ component Body inherits VerticalLayout {
     spacing: Theme.spacing;
 
     // TODO
-    in-out property<SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.UI;
+    in-out property<SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.Feedback;
 
     callback switch(SettingDetailIndex);
 
@@ -494,6 +502,18 @@ component Body inherits VerticalLayout {
             }
 
             SettingEntry {
+                text: Logic.tr(Store.is-cn, "缓 存");
+                attach-text: Store.cache-size;
+                icon: Icons.cache-light;
+                clicked => {
+                    Store.ok-cancel-dialog-setting.title-type = "warning";
+                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部缓存？");
+                    Store.ok-cancel-dialog-setting.handle-type = "remove-all-cache";
+                }
+            }
+
+            SettingEntry {
                 text: Logic.tr(Store.is-cn, "关 于");
                 icon: Icons.about-light;
                 clicked => {
@@ -517,6 +537,7 @@ component Body inherits VerticalLayout {
                 clicked => {
                     root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Feedback;
+                    root.switch(SettingDetailIndex.Feedback);
                 }
             }
 
@@ -526,18 +547,6 @@ component Body inherits VerticalLayout {
                 clicked => {
                     root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Donate;
-                }
-            }
-
-            SettingEntry {
-                text: Logic.tr(Store.is-cn, "缓 存");
-                attach-text: Store.cache-size;
-                icon: Icons.cache-light;
-                clicked => {
-                    Store.ok-cancel-dialog-setting.title-type = "warning";
-                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
-                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部缓存？");
-                    Store.ok-cancel-dialog-setting.handle-type = "remove-all-cache";
                 }
             }
 
@@ -556,6 +565,7 @@ export component Setting inherits Rectangle {
     visible: TabIndex.Setting == Store.current-tab-index;
 
     body := Body {
+              visible: false;
         switch(index) => {
             if (index == SettingDetailIndex.UI) {
                 ui.set(Logic.get-setting-ui());
@@ -565,6 +575,8 @@ export component Setting inherits Rectangle {
                 sync.set(Logic.get-setting-sync());
             } else if (index == SettingDetailIndex.Proxy) {
                 proxy.set(Logic.get-setting-proxy());
+            } else if (index == SettingDetailIndex.Feedback) {
+                feedback.focus();
             }
         }
     }
@@ -624,10 +636,9 @@ export component Setting inherits Rectangle {
             back => { body.visible = true; }
         }
 
-        Feedback {
+        feedback := Feedback {
             visible: body.current-setting-detail-index == SettingDetailIndex.Feedback;
             back => { body.visible = true; }
-
         }
 
         Donate {

@@ -1,4 +1,6 @@
+use crate::config;
 use crate::slint_generatedAppWindow::AppWindow;
+use serde::{Deserialize, Serialize};
 
 mod about;
 mod cache;
@@ -9,6 +11,23 @@ mod ok_cancel_dialog;
 mod rss;
 mod setting;
 mod util;
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ReqData {
+    appid: String,
+    r#type: String,
+    data: String,
+}
+
+impl Default for ReqData {
+    fn default() -> Self {
+        Self {
+            appid: config::appid(),
+            r#type: Default::default(),
+            data: Default::default(),
+        }
+    }
+}
 
 pub fn init(ui: &AppWindow) {
     util::init(&ui);

@@ -1,6 +1,19 @@
-use crate::slint_generatedAppWindow::{AppWindow, Logic, SettingProxy, SettingSync, Store};
-use crate::{config, util::translator::tr};
-use slint::ComponentHandle;
+use super::{
+    message::{async_message_success, async_message_warn},
+    ReqData,
+};
+use crate::slint_generatedAppWindow::{
+    AppWindow, Logic, SettingProxy, SettingReading, SettingSync, Store,
+};
+use crate::{
+    config,
+    util::{http, translator::tr},
+};
+use anyhow::Result;
+use slint::{ComponentHandle, SharedString};
+use std::time::Duration;
+
+const FEEDBACK_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/feedback";
 
 pub fn init(ui: &AppWindow) {
     init_setting(&ui);
@@ -70,8 +83,39 @@ pub fn init(ui: &AppWindow) {
         _ = config::save(all);
     });
 
+    ui.global::<Logic>().on_get_setting_reading(move || {
+        let config = config::reading();
+
+        SettingReading {
+            browser: config.browser.into(),
+            is_delete_after_reading: config.is_delete_after_reading,
+        }
+    });
+
+    ui.global::<Logic>().on_set_setting_reading(move |setting| {
+        let mut all = config::all();
+
+        all.reading.browser = setting.browser.into();
+        all.reading.is_delete_after_reading = setting.is_delete_after_reading;
+        _ = config::save(all);
+    });
+
     ui.global::<Logic>()
         .on_tr(move |_is_cn, text| tr(text.as_str()).into());
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_send_feedback(move |text| {
+        let ui = ui_handle.clone();
+        tokio::spawn(async move {
+            match _send_feedback(text).await {
+                Err(e) => async_message_warn(
+                    ui.clone(),
+                    format!("{}. {}: {e:?}", tr("发送失败"), tr("原因")),
+                ),
+                _ => async_message_success(ui.clone(), tr("发送成功")),
+            }
+        });
+    });
 }
 
 fn init_setting(ui: &AppWindow) {
@@ -84,4 +128,35 @@ fn init_setting(ui: &AppWindow) {
     ui_setting.language = config.language.into();
 
     ui.global::<Store>().set_setting_ui(ui_setting);
+}
+
+async fn _send_feedback(text: SharedString) -> Result<()> {
+    let chars_text = text.chars().collect::<Vec<_>>();
+    let text = if chars_text.len() > 2048 {
+        format!("{}", chars_text[..2048].iter().collect::<String>())
+    } else {
+        text.into()
+    };
+
+    let req = ReqData {
+        r#type: "feedback".into(),
+        data: text,
+        ..Default::default()
+    };
+
+    let res = http::client(None)?
+        .post(FEEDBACK_URL)
+        .timeout(Duration::from_secs(15))
+        .json(&req)
+        .send()
+        .await?;
+
+    if !res.status().is_success() {
+        return Err(anyhow::anyhow!(
+            "http error code: {}",
+            res.status().as_str()
+        ));
+    }
+
+    Ok(())
 }

@@ -1,9 +1,11 @@
-use crate::message_warn;
-use crate::slint_generatedAppWindow::{AppWindow, Logic, Util};
-use crate::util::translator::tr;
-use crate::util::{self, number, time};
+use crate::util::{self, number, time, translator::tr};
+use crate::{
+    config, message_warn,
+    slint_generatedAppWindow::{AppWindow, Logic, Util},
+};
 use slint::ComponentHandle;
-use webbrowser;
+use std::str::FromStr;
+use webbrowser::{self, Browser};
 
 pub fn init(ui: &AppWindow) {
     ui.global::<Util>().on_string_fixed2(move |n| {
@@ -17,11 +19,18 @@ pub fn init(ui: &AppWindow) {
     let ui_handle = ui.as_weak();
     ui.global::<Util>().on_open_url(move |url| {
         let ui = ui_handle.unwrap();
-        if let Err(e) = webbrowser::open(url.as_str()) {
-            message_warn!(
-                ui,
-                format!("{}{}: {:?}", tr("打开链接失败！"), tr("原因"), e)
-            );
+        let reading_config = config::reading();
+
+        let browser = Browser::from_str(&reading_config.browser.to_lowercase()).unwrap_or_default();
+
+        let browser = if browser.exists() {
+            browser
+        } else {
+            Browser::Default
+        };
+
+        if let Err(e) = webbrowser::open_browser(browser, url.as_str()) {
+            message_warn!(ui, format!("{}{}: {:?}", tr("打开链接失败"), tr("原因"), e));
         }
     });
 
@@ -32,6 +41,11 @@ pub fn init(ui: &AppWindow) {
 
     ui.global::<Util>()
         .on_local_now(move |format| time::local_now(format.as_str()).into());
+
+    ui.global::<Util>().on_text_len(move |text| {
+        let chars_text = text.chars().collect::<Vec<_>>();
+        chars_text.len() as i32
+    });
 
     ui.global::<Util>()
         .on_split_and_join_string(move |input, length, sep| {

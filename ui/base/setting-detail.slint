@@ -19,8 +19,10 @@ export component SettingDetail inherits Rectangle {
 }
 
 export component SettingDetailInner inherits Flickable {
+    in-out property<LayoutAlignment> vbox-alignment: LayoutAlignment.start;
+
     VerticalLayout {
-        alignment: start;
+        alignment: root.vbox-alignment;
         padding: Theme.padding * 2;
         spacing: Theme.spacing * 4;
 

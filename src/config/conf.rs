@@ -37,12 +37,20 @@ pub fn init() {
     }
 }
 
+pub fn appid() -> String {
+    CONFIG.lock().unwrap().appid.clone()
+}
+
 pub fn all() -> data::Config {
     CONFIG.lock().unwrap().clone()
 }
 
 pub fn ui() -> data::UI {
     CONFIG.lock().unwrap().ui.clone()
+}
+
+pub fn reading() -> data::Reading {
+    CONFIG.lock().unwrap().reading.clone()
 }
 
 pub fn proxy() -> data::Proxy {
@@ -99,7 +107,9 @@ impl Config {
         match fs::read_to_string(&self.config_path) {
             Ok(text) => match toml::from_str::<Config>(&text) {
                 Ok(c) => {
+                    self.appid = c.appid;
                     self.ui = c.ui;
+                    self.reading = c.reading;
                     self.proxy = c.proxy;
                     self.sync = c.sync;
                     Ok(())

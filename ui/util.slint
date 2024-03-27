@@ -5,16 +5,13 @@ export global Util {
     callback float-fixed2(float) -> string;
     callback open-url(string);
 
-    out property<image> no-image: @image-url("./images/no-image.svg");
+    pure callback text-len(string) -> int; // text
 
     pure callback local-now(string) -> string;
     local-now => { return "12:34:45"; }
 
     pure callback format_number_with_commas(string) -> string;
     format_number-with-commas(number-str) => { return number-str; }
-
-    pure callback generate-qrcode(string) -> image;
-    generate-qrcode(msg) => { return no-image; }
 
     pure callback split-and-join-string(string, int, string) -> string;
     split-and-join-string(input, length, sep) => { return input; }
@@ -39,21 +36,5 @@ export global Util {
            return @image-url("./images/danger.svg");
        }
        return @image-url("./images/info.svg");
-    }
-
-    public pure function blockstream-address-url(network: string, address: string) -> string {
-        if (network == "main") {
-            return "https://blockstream.info/address/" + address;
-        } else {
-            return "https://blockstream.info/testnet/address/" + address;
-        }
-    }
-
-    public pure function blockstream-txid-url(network: string, txid: string) -> string {
-        if (network == "main") {
-            return "https://blockstream.info/tx/" + txid;
-        } else {
-            return "https://blockstream.info/testnet/tx/" + txid;
-        }
     }
 }

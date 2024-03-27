@@ -35,6 +35,7 @@ pub fn tr(text: &str) -> String {
     items.insert("创建账户失败", "Create account failed");
     items.insert("密码错误", "Wrong password");
     items.insert("非法输入", "Invalid input");
+    items.insert("打开链接失败", "Open link failed");
 
     items.insert("刷新...", "Refresh...");
     items.insert("正在重试...", "Retrying...");
@@ -45,13 +46,17 @@ pub fn tr(text: &str) -> String {
     items.insert("是否删除全部缓存？", "Delete all cache or not?");
     items.insert("清除缓存失败", "Remove cache failed");
     items.insert("清除缓存成功", "Remove cache success");
+    items.insert("超过1000字数限制", "Over the limit of 2048 word counts");
 
     items.insert("界 面", "UI");
+    items.insert("阅 读", "Reading");
     items.insert("同 步", "Sync");
     items.insert("代 理", "Proxy");
     items.insert("缓 存", "Cache");
     items.insert("关 于", "About");
     items.insert("帮 助", "Help");
+    items.insert("反 馈", "Feedback");
+    items.insert("捐 赠", "Donate");
 
     items.insert("新建", "New");
     items.insert("没有订阅", "No RSS");

@@ -40,6 +40,7 @@ component RHead inherits Head {
                 text: Logic.update-time-rss(Store.current-rss-uuid, Store.rss-update-time-flag);
                 font-size: Theme.default-font-size - 4px;
                 text-color: Theme.placeholder-text-color;
+                background: Colors.transparent;
 
                 clicked => { Logic.sync-rss(Store.current-rss-uuid); }
             }
@@ -215,6 +216,7 @@ export component Entry inherits Rectangle {
                 }
 
                 Util.open-url(root.url);
+                Logic.remove-entry(Store.current-rss-uuid, root.uuid);
             }
         }
 

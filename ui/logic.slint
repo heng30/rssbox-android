@@ -47,6 +47,8 @@ export global Logic {
     callback get-setting-proxy() -> SettingProxy;
     callback set-setting-proxy(SettingProxy);
 
+    callback send-feedback(string); // feedback message
+
     pure callback tr(bool, string) -> string;
     tr(is-cn, text) => { return text; }
 }
