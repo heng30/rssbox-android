@@ -8,10 +8,10 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use slint::{ComponentHandle, Model, VecModel, Weak};
 use std::time::Duration;
-use uuid::Uuid;
 
 const FIND_UUID: &str = "find-uuid";
 const RSS_ENTRY_URL: &str = "https://heng30.xyz/apisvr/rssbox/rss/entrys";
+const TOP_RSS_LIST_CN: &str = include_str!("../../data/top-rss-list.json");
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct FindEntry {
@@ -116,6 +116,15 @@ pub fn init(ui: &AppWindow) {
             store_find_entrys_keyword!(ui).set_vec(keyword_list);
             message_success!(ui, tr("查找完成"));
         });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_find_entrys_counts(move |_flag| {
+        ui_handle
+            .unwrap()
+            .global::<Store>()
+            .get_find_entrys()
+            .row_count() as i32
+    });
 }
 
 async fn _inner_fetch_all_find_entrys() -> Result<Vec<FindEntry>> {
@@ -128,41 +137,53 @@ async fn _inner_fetch_all_find_entrys() -> Result<Vec<FindEntry>> {
         .await?)
 }
 
+fn top_rss_list_cn() -> Result<Vec<FindEntry>> {
+    Ok(serde_json::from_str::<Vec<_>>(TOP_RSS_LIST_CN)?)
+}
+
 fn _fetch_all_find_entrys(ui: Weak<AppWindow>) {
     tokio::spawn(async move {
-        match _inner_fetch_all_find_entrys().await {
-            Err(e) => async_message_warn(
-                ui.clone(),
-                format!("{}. {}: {e:?}", tr("刷新失败"), tr("原因")),
-            ),
-            Ok(items) => {
-                if items.is_empty() {
+        let items = match _inner_fetch_all_find_entrys().await {
+            Err(e) => match top_rss_list_cn() {
+                Ok(items) => items,
+                _ => {
                     async_message_warn(
                         ui.clone(),
-                        format!("{}. {}: {}", tr("刷新失败"), tr("原因"), tr("返回为空")),
+                        format!("{}. {}: {e:?}", tr("刷新失败"), tr("原因")),
                     );
                     return;
                 }
+            },
+            Ok(items) => items,
+        };
 
-                _ = db::entry::delete_all(FIND_UUID).await;
-                for item in items.iter() {
-                    if let Ok(data) = serde_json::to_string(item) {
-                        _ = db::entry::insert(FIND_UUID, &Uuid::new_v4().to_string(), &data).await;
-                    }
-                }
+        if items.is_empty() {
+            async_message_warn(
+                ui.clone(),
+                format!("{}. {}: {}", tr("刷新失败"), tr("原因"), tr("返回为空")),
+            );
+            return;
+        }
 
-                let ui_items = items
-                    .into_iter()
-                    .map(|item| item.into())
-                    .collect::<Vec<UIFindEntry>>();
-
-                let ui = ui.clone();
-                let _ = slint::invoke_from_event_loop(move || {
-                    let ui = ui.unwrap();
-                    store_find_entrys!(ui).set_vec(ui_items);
-                    message_success!(ui, tr("刷新成功"));
-                });
+        _ = db::entry::delete_all(FIND_UUID).await;
+        for (index, item) in items.iter().enumerate() {
+            if let Ok(data) = serde_json::to_string(item) {
+                _ = db::entry::insert(FIND_UUID, &format!("{}", index), &data).await;
             }
         }
+
+        let ui_items = items
+            .into_iter()
+            .map(|item| item.into())
+            .collect::<Vec<UIFindEntry>>();
+
+        let ui = ui.clone();
+        let _ = slint::invoke_from_event_loop(move || {
+            let ui = ui.unwrap();
+            store_find_entrys!(ui).set_vec(ui_items);
+            message_success!(ui, tr("刷新成功"));
+            ui.global::<Store>()
+                .set_find_entrys_counts_flag(!ui.global::<Store>().get_find_entrys_counts_flag());
+        });
     });
 }

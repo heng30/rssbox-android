@@ -18,6 +18,7 @@ component RHead inherits Head {
         padding-right: Theme.padding;
 
         Rectangle {
+            clip: true;
             Label {
                 text: Logic.name-rss(Store.current-rss-uuid);
                 font-size: Theme.default-font-size - 2px;

@@ -90,7 +90,7 @@ export struct AboutDialog {
 }
 
 export global Store  {
-    out property<TabIndex> current-tab-index: TabIndex.Find;
+    out property<TabIndex> current-tab-index: TabIndex.Rss;
     in-out property<string> current-rss-uuid;
 
     in-out property<[RssConfig]> rss-lists: [
@@ -156,15 +156,11 @@ export global Store  {
     in-out property<[FindEntry]> find-entrys: [
         { name: "find name 1", url: "url-1" },
         { name: "find name 2", url: "url-2" },
-        { name: "find name 3", url: "url-3" },
-        { name: "find name 4", url: "url-4" },
     ];
 
     in-out property<[FindEntry]> find-entrys-keyword: [
         { name: "keyword name 1", url: "url-1" },
         { name: "keyword name 2", url: "url-1" },
-        { name: "keyword name 3", url: "url-1" },
-        { name: "keyword name 4", url: "url-1" },
     ];
 
     in-out property<MessageItem> message;
@@ -172,6 +168,7 @@ export global Store  {
 
     in-out property <bool> rss-update-time-flag;
     in-out property <bool> rss-unread-counts-flag;
+    in-out property <bool> find-entrys-counts-flag;
     in-out property<string> cache-size: "0M";
     in-out property<bool> is-cn: setting-ui.language == "cn";
     in-out property<SettingUI> setting-ui: {

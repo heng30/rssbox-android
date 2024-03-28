@@ -30,6 +30,9 @@ export global Logic {
     callback fetch-all-find-entrys();
     callback update-find-entrylist(string); // search-text
 
+    pure callback find-entrys-counts(bool) -> int; // toggle_flag
+    find-entrys-counts => { return 12; }
+
     callback update-cache-size();
     callback remove-all-cache();
 

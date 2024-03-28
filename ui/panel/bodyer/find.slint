@@ -7,14 +7,20 @@ import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, Center
 
 component FHead inherits Head {
     in-out property <bool> is-search;
-    callback scroll-to-top;
 
     icon: Icons.find-light;
     title: Logic.tr(Store.is-cn, "发现");
 
     Rectangle {
         horizontal-stretch: 1;
-        if !is-search : TouchArea { clicked => { root.scroll-to-top(); } }
+        if !is-search : HorizontalLayout {
+            padding-left: Theme.padding * 4;
+
+            Label {
+                color: Theme.placeholder-text-color;
+                text: Logic.find-entrys-counts(Store.find-entrys-counts-flag);
+            }
+        }
 
         HorizontalLayout {
             visible: is-search;
@@ -42,6 +48,7 @@ component FHead inherits Head {
                 clicked => {
                     root.is-search = !root.is-search;
                     if (root.is-search) {
+                        search-lineedit.text = "";
                         search-lineedit.focus();
                     }
                 }
@@ -55,7 +62,6 @@ component FHead inherits Head {
                 clicked => { Logic.fetch-all-find-entrys(); }
             }
         }
-
     }
 }
 
@@ -80,9 +86,17 @@ component EntryList inherits Rectangle {
 
             HorizontalLayout {
                 horizontal-stretch: 1;
-                Label {
+                Link {
+                    width: 100%;
+                    wrap: no-wrap;
                     text: item.name;
+                    color: Theme.primary-text-color;
+                    font-size: Theme.default-font-size;
                     overflow: elide;
+
+                    clicked => {
+                        Util.open-url(item.url);
+                    }
                 }
             }
 
