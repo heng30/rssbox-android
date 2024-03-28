@@ -6,11 +6,11 @@ use crate::slint_generatedAppWindow::{
     AppWindow, Logic, SettingProxy, SettingReading, SettingSync, Store,
 };
 use crate::{
-    config,
+    config, message_warn,
     util::{http, translator::tr},
 };
 use anyhow::Result;
-use slint::{ComponentHandle, SharedString};
+use slint::ComponentHandle;
 use std::time::Duration;
 
 const FEEDBACK_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/feedback";
@@ -105,7 +105,13 @@ pub fn init(ui: &AppWindow) {
 
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_send_feedback(move |text| {
-        let ui = ui_handle.clone();
+        let (ui, text) = (ui_handle.unwrap(), text.trim().to_string());
+        if text.is_empty() {
+            message_warn!(ui, tr("非法输入"));
+            return;
+        }
+
+        let ui = ui.as_weak();
         tokio::spawn(async move {
             match _send_feedback(text).await {
                 Err(e) => async_message_warn(
@@ -130,7 +136,7 @@ fn init_setting(ui: &AppWindow) {
     ui.global::<Store>().set_setting_ui(ui_setting);
 }
 
-async fn _send_feedback(text: SharedString) -> Result<()> {
+async fn _send_feedback(text: String) -> Result<()> {
     let chars_text = text.chars().collect::<Vec<_>>();
     let text = if chars_text.len() > 2048 {
         format!("{}", chars_text[..2048].iter().collect::<String>())

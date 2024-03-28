@@ -77,7 +77,6 @@ component RssList inherits Rectangle {
 
 component RssListBtns inherits HorizontalLayout {
     in property<string> current-uuid;
-    private property <length> btn-width: 100px;
 
     alignment: center;
     spacing: Theme.spacing * 4;
@@ -86,10 +85,9 @@ component RssListBtns inherits HorizontalLayout {
     callback current-btn-index(BtnIndex);
 
     IconBtn {
-        width: root.btn-width; height: 40px;
+        use-auto-size: true;
         text: Logic.tr(Store.is-cn, "新建");
-        icon: Icons.add-fill;
-        icon-width: Theme.icon-size * 0.8;
+        icon: Icons.add-small;
         border-radius: self.height / 2;
         bg-color: Theme.success-color.darker(10%);
         bg-pressed-color: self.bg-color.darker(30%);
@@ -99,7 +97,7 @@ component RssListBtns inherits HorizontalLayout {
     }
 
     IconBtn {
-        width: root.btn-width;
+        use-auto-size: true;
         text: Logic.tr(Store.is-cn, "编辑");
         icon: Icons.edit;
         border-radius: self.height / 2;
@@ -111,7 +109,7 @@ component RssListBtns inherits HorizontalLayout {
     }
 
     IconBtn {
-        width: root.btn-width;
+        use-auto-size: true;
         text: Logic.tr(Store.is-cn, "删除");
         icon: Icons.delete;
         border-radius: self.height / 2;
@@ -264,8 +262,7 @@ component Body inherits Rectangle {
     rsslist-vbox := VerticalLayout {
         Head {
             hbox-alignment: LayoutAlignment.start;
-            icon-width: Theme.icon-size * 0.7;
-            icon: Icons.add-fill;
+            icon: Icons.add-small;
             title: Logic.tr(Store.is-cn, "添加");
         }
 

@@ -5,6 +5,7 @@ import { TabBtn, Tag, Divider } from "../base/widgets.slint";
 
 export component Footer inherits Rectangle {
     private property <length> btn-height: self.height * 0.9;
+    private property <length> btn-width: self.width * 0.2;
     height: Theme.footer-height;
 
     Divider {
@@ -16,6 +17,7 @@ export component Footer inherits Rectangle {
         padding-top: Theme.padding;
 
         TabBtn {
+            width: root.btn-width;
             height: root.btn-height;
             icon: Icons.rss-fill;
             text: Logic.tr(Store.is-cn, "订阅");
@@ -38,6 +40,7 @@ export component Footer inherits Rectangle {
         }
 
         TabBtn {
+            width: root.btn-width;
             height: root.btn-height;
             icon: Icons.favorite-fill;
             text: Logic.tr(Store.is-cn, "收藏夹");
@@ -47,6 +50,7 @@ export component Footer inherits Rectangle {
         }
 
         TabBtn {
+            width: root.btn-width;
             height: root.btn-height;
             icon: Icons.add-small;
             text: Logic.tr(Store.is-cn, "添加");
@@ -56,6 +60,17 @@ export component Footer inherits Rectangle {
         }
 
         TabBtn {
+            width: root.btn-width;
+            height: root.btn-height;
+            icon: Icons.find-light;
+            text: Logic.tr(Store.is-cn, "发现");
+            checked: Store.current-tab-index == TabIndex.Find;
+
+            clicked => { Store.switch-tab(TabIndex.Find); }
+        }
+
+        TabBtn {
+            width: root.btn-width;
             height: root.btn-height;
             icon: Icons.setting-fill;
             text: Logic.tr(Store.is-cn, "设置");

@@ -72,6 +72,26 @@ pub fn get_rss_config(ui: &AppWindow, uuid: &str) -> Option<UIRssConfig> {
     None
 }
 
+pub fn get_rss_configs(ui: &AppWindow) -> Vec<RssConfig> {
+    ui.global::<Store>()
+        .get_rss_lists()
+        .iter()
+        .map(|item| item.clone().into())
+        .collect()
+}
+
+pub fn is_exist_url(ui: &AppWindow, url: &str) -> bool {
+    if url.is_empty() {
+        return false;
+    }
+
+    ui.global::<Store>()
+        .get_rss_lists()
+        .iter()
+        .find(|item| item.url == url)
+        .is_some()
+}
+
 pub fn decease_unread_counts(ui: &AppWindow, uuid: &str) {
     for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
         if rss.uuid != uuid {
@@ -229,9 +249,16 @@ pub fn init(ui: &AppWindow) {
 
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_new_rss(move |config| {
-        let rss: RssConfig = config.into();
-        let ui = ui_handle.clone();
+        let ui = ui_handle.unwrap();
 
+        if is_exist_url(&ui, &config.url) {
+            message_info!(ui, tr("请勿重复添加"));
+            return;
+        }
+
+        let rss: RssConfig = config.into();
+
+        let ui = ui.as_weak();
         tokio::spawn(async move {
             let rss = match _new_rss(rss).await {
                 Err(e) => {
@@ -547,25 +574,25 @@ async fn _toggle_rss_favorite(rss: RssConfig) -> Result<()> {
     Ok(())
 }
 
-fn parse_summary_html(summary: &str) -> String {
-    let summary = html2text::from_read(summary.as_bytes(), usize::MAX)
-        .trim()
-        .replace("\n", "");
+fn parse_summary(summary: &str, is_text: bool) -> String {
+    let max_counts = 50;
+    let summary = summary.trim();
 
-    let chars_summary = summary.chars().collect::<Vec<_>>();
+    let chars_summary = match is_text {
+        true => summary.chars().collect::<Vec<_>>(),
+        _ => html2text::from_read(summary.as_bytes(), max_counts * 4)
+            .replace("\n", "")
+            .chars()
+            .collect::<Vec<_>>(),
+    };
 
-    if chars_summary.len() > summary.len() {
-        if chars_summary.len() > 100 {
-            format!("{}...", chars_summary[..100].iter().collect::<String>())
-        } else {
-            summary
-        }
+    if chars_summary.len() > max_counts {
+        format!(
+            "{}...",
+            chars_summary[..max_counts].iter().collect::<String>()
+        )
     } else {
-        if chars_summary.len() > 200 {
-            format!("{}...", chars_summary[..200].iter().collect::<String>())
-        } else {
-            summary
-        }
+        summary.to_string()
     }
 }
 
@@ -580,7 +607,7 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
         let pub_date = item.pub_date().unwrap_or_default().to_string();
 
         let summary = match item.description() {
-            Some(s) => parse_summary_html(s).trim().to_string(),
+            Some(s) => parse_summary(s, true),
             _ => String::default(),
         };
 
@@ -638,13 +665,7 @@ fn parse_atom(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
             .to_string();
 
         let summary = match item.summary() {
-            Some(s) => {
-                if s.r#type == TextType::Text {
-                    s.as_str().trim().to_string()
-                } else {
-                    parse_summary_html(s.as_str()).trim().to_string()
-                }
-            }
+            Some(s) => parse_summary(s.as_str(), s.r#type == TextType::Text),
             _ => String::default(),
         };
 

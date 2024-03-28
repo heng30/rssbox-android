@@ -50,6 +50,8 @@ pub fn tr(text: &str) -> String {
     items.insert("刷新...", "Refresh...");
     items.insert("正在同步...", "Refreshing...");
     items.insert("同步成功", "Refresh success");
+    items.insert("查找完成", "Search finish");
+    items.insert("返回为空", "Empty data");
 
     items.insert("是否删除？", "Delete or not?");
     items.insert("是否删除全部？", "Delete all entrys or not?");
@@ -84,6 +86,9 @@ pub fn tr(text: &str) -> String {
     items.insert("图标库", "Icons");
     items.insert("请选择条目", "Please select entry");
     items.insert("请添加RSS源", "Please add RSS URL");
+    items.insert("请选择浏览器", "Please select browser");
+    items.insert("已启用阅后即焚", "Enabled delete after reading");
+    items.insert("未启用阅后即焚", "Disable delete after reading");
 
     items.insert("字体大小", "Font size");
     items.insert("字体样式", "Font family");
@@ -108,11 +113,13 @@ pub fn tr(text: &str) -> String {
     items.insert("警告", "Warning");
     items.insert("订阅", "RSS");
     items.insert("收藏夹", "Collection");
+    items.insert("发现", "Find");
     items.insert("添加", "Add");
     items.insert("设置", "Setting");
 
     items.insert("没有数据", "No Data");
     items.insert("没有消息", "No Message");
+    items.insert("输入关键字", "input keyword");
 
     if let Some(txt) = items.get(text) {
         return txt.to_string();

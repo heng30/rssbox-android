@@ -1,0 +1,128 @@
+import { LineEdit, ListView } from "std-widgets.slint";
+import { Theme, Icons } from "../../theme.slint";
+import { Store, TabIndex, FindEntry } from "../../store.slint";
+import { Logic } from "../../logic.slint";
+import { Util } from "../../util.slint";
+import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+
+component FHead inherits Head {
+    in-out property <bool> is-search;
+    callback scroll-to-top;
+
+    icon: Icons.find-light;
+    title: Logic.tr(Store.is-cn, "发现");
+
+    Rectangle {
+        horizontal-stretch: 1;
+        if !is-search : TouchArea { clicked => { root.scroll-to-top(); } }
+
+        HorizontalLayout {
+            visible: is-search;
+            padding: Theme.padding / 2;
+            padding-left: Theme.padding * 4;
+            padding-right: Theme.padding * 2;
+
+            Rectangle {
+                search-lineedit := LineEdit {
+                    height: 100%; width: 100%;
+                    horizontal-stretch: 1;
+                    placeholder-text: Logic.tr(Store.is-cn, "关键字");
+                    accepted => { Logic.update-find-entrylist(self.text); }
+                }
+            }
+        }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.padding * 3;
+
+        CenterLayout {
+            IconBtn {
+                icon: root.is-search ? Icons.cancel : Icons.search;
+                clicked => {
+                    root.is-search = !root.is-search;
+                    if (root.is-search) {
+                        search-lineedit.focus();
+                    }
+                }
+            }
+        }
+
+        CenterLayout {
+            refresh-icon := IconBtn {
+                icon: Icons.refresh;
+                icon-width: Theme.icon-size * 1.2;
+                clicked => { Logic.fetch-all-find-entrys(); }
+            }
+        }
+
+    }
+}
+
+component EntryList inherits Rectangle {
+    private property<length> item-length: 40px;
+    in property<[FindEntry]> items: [];
+
+    public function scroll-to-top()  {
+        lv.viewport-y = 0;
+    }
+
+    lv := ListView {
+        x: 0px;
+        width: root.width + Theme.scroll-width + Theme.padding;
+
+        for item[index] in items: HorizontalLayout {
+            height: root.item-length;
+
+            spacing: Theme.spacing * 4;
+            padding: Theme.padding;
+            padding-right: Theme.padding * 2;
+
+            HorizontalLayout {
+                horizontal-stretch: 1;
+                Label {
+                    text: item.name;
+                    overflow: elide;
+                }
+            }
+
+            IconBtn {
+                icon: Icons.add-in-rect;
+                icon-width: Theme.icon-size * 1.2;
+                clicked => {
+                    Logic.new-rss({
+                        name: item.name,
+                        url: item.url
+                    });
+                }
+            }
+        }
+    }
+}
+
+component Body inherits Rectangle {
+    in property <bool> is-search;
+
+    if !is-search && Store.find-entrys.length != 0 : EntryList {
+        items: Store.find-entrys;
+    }
+
+    if is-search && Store.find-entrys-keyword.length != 0 : EntryList {
+        items: Store.find-entrys-keyword;
+    }
+
+    if (!is-search && Store.find-entrys.length == 0) ||
+       (is-search && Store.find-entrys-keyword.length == 0) : NoDataImg {
+        width: root.width * 0.6;
+        text: Logic.tr(Store.is-cn, "没有消息");
+    }
+}
+
+export component Find inherits VerticalLayout {
+    visible: TabIndex.Find == Store.current-tab-index;
+
+    head := FHead { }
+    Body { is-search: head.is-search; }
+}
+
+

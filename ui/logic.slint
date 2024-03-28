@@ -27,6 +27,9 @@ export global Logic {
     callback favorite-entry(string, string); // suuid, uuid
     callback set-entry-read(string, string); // suuid, uuid
 
+    callback fetch-all-find-entrys();
+    callback update-find-entrylist(string); // search-text
+
     callback update-cache-size();
     callback remove-all-cache();
 

@@ -59,7 +59,7 @@ name = "rssbox"
 required-features = ["desktop"]
 
 [package.metadata.android]
-package = "xyz.heng30.rssbox"
+package = "xyz.heng30.rssbox_dev"
 build_targets = ["aarch64-linux-android"]
 resources = "./res"
 strip = "strip"

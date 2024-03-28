@@ -62,6 +62,12 @@ pub fn init(ui: &AppWindow) {
             timer.stop();
         }
 
+        let interval = if msg.chars().collect::<Vec<_>>().len() > 20 {
+            5
+        } else {
+            2
+        };
+
         ui.global::<Store>().set_message(MessageItem {
             text: msg,
             text_type: msg_type,
@@ -69,7 +75,7 @@ pub fn init(ui: &AppWindow) {
 
         timer.start(
             TimerMode::SingleShot,
-            std::time::Duration::from_secs(3),
+            std::time::Duration::from_secs(interval),
             move || {
                 ui.global::<Store>().set_message(MessageItem {
                     text: "".into(),

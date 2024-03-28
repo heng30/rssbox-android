@@ -11,6 +11,7 @@ mod ok_cancel_dialog;
 mod rss;
 mod setting;
 mod util;
+mod find;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ReqData {
@@ -41,4 +42,5 @@ pub fn init(ui: &AppWindow) {
     // don't adjust functions order
     entry::init(&ui);
     rss::init(&ui);
+    find::init(&ui);
 }

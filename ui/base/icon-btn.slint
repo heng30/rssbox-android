@@ -7,6 +7,7 @@ export component IconBtn inherits Rectangle {
     in-out property icon-width <=> img.width;
     in-out property icon-rotation-angle <=> img.rotation-angle;
     in-out property<bool> is-ltr: true;
+    in-out property<bool> use-auto-size: false;
 
     in-out property<string> text;
     in-out property<length> font-size: Theme.title4-font-size;
@@ -26,8 +27,12 @@ export component IconBtn inherits Rectangle {
     }
 
     hbox := HorizontalLayout {
-        spacing: Theme.spacing * 2;
         alignment: center;
+        spacing: Theme.spacing * 2;
+
+        padding: root.use-auto-size ? Theme.padding : 0;
+        padding-left: root.use-auto-size ? Theme.padding * 4 : 0;
+        padding-right: root.use-auto-size ? Theme.padding * 4 : 0;
 
         if !root.is-ltr && root.text != "" : Label {
             color: root.text-color;
