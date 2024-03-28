@@ -247,6 +247,7 @@ pub fn init(ui: &AppWindow) {
             let _ = slint::invoke_from_event_loop(move || {
                 let ui = ui.clone().unwrap();
                 let rss: UIRssConfig = rss.into();
+                let suuid = rss.uuid.clone();
 
                 let _assert = rss
                     .entry
@@ -261,6 +262,7 @@ pub fn init(ui: &AppWindow) {
                     .collect::<Vec<_>>();
 
                 if list.is_empty() {
+                    ui.global::<Store>().set_rss_entrys(rss.entry.clone());
                     ui.global::<Store>().set_current_rss_uuid(rss.uuid.clone());
                 }
 
@@ -269,6 +271,8 @@ pub fn init(ui: &AppWindow) {
 
                 store_rss_lists!(ui).set_vec(list);
                 message_success!(ui, ("新建成功"));
+
+                ui.global::<Logic>().invoke_sync_rss(suuid);
             });
         });
     });
@@ -344,7 +348,14 @@ pub fn init(ui: &AppWindow) {
     ui.global::<Logic>()
         .on_switch_rss(move |_from_uuid, to_uuid| {
             let ui = ui_handle.unwrap();
-            for rss in ui.global::<Store>().get_rss_lists().iter() {
+            let rss_lists = ui.global::<Store>().get_rss_lists();
+
+            if rss_lists.row_count() == 0 {
+                ui.global::<Store>().set_current_rss_uuid(EMPTY_UUID.into());
+                return;
+            }
+
+            for rss in rss_lists.iter() {
                 if to_uuid == EMPTY_UUID {
                     ui.global::<Store>().set_rss_entrys(rss.entry);
                     ui.global::<Store>().set_current_rss_uuid(rss.uuid);
@@ -404,12 +415,30 @@ pub fn init(ui: &AppWindow) {
             let ui = ui.as_weak();
             let rss = RssConfig::from(rss);
             tokio::spawn(async move {
+                let is_favorite = rss.is_favorite;
                 match _toggle_rss_favorite(rss).await {
                     Err(e) => async_message_warn(
                         ui.clone(),
-                        format!("{}. {}: {e:?}", tr("收藏失败"), tr("原因")),
+                        format!(
+                            "{}. {}: {e:?}",
+                            if is_favorite {
+                                tr("收藏失败")
+                            } else {
+                                tr("取消收藏失败")
+                            },
+                            tr("原因")
+                        ),
                     ),
-                    _ => async_message_success(ui.clone(), tr("收藏成功")),
+                    _ => {
+                        async_message_success(
+                            ui.clone(),
+                            if is_favorite {
+                                tr("收藏成功")
+                            } else {
+                                tr("取消收藏成功")
+                            },
+                        );
+                    }
                 }
             });
 
@@ -479,6 +508,8 @@ pub fn init(ui: &AppWindow) {
 
             return;
         }
+
+        message_info!(&ui, tr("请添加RSS源"));
     });
 
     let ui_handle = ui.as_weak();
@@ -549,7 +580,7 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
         let pub_date = item.pub_date().unwrap_or_default().to_string();
 
         let summary = match item.description() {
-            Some(s) => parse_summary_html(s),
+            Some(s) => parse_summary_html(s).trim().to_string(),
             _ => String::default(),
         };
 
@@ -609,9 +640,9 @@ fn parse_atom(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
         let summary = match item.summary() {
             Some(s) => {
                 if s.r#type == TextType::Text {
-                    s.as_str().to_string()
+                    s.as_str().trim().to_string()
                 } else {
-                    parse_summary_html(s.as_str())
+                    parse_summary_html(s.as_str()).trim().to_string()
                 }
             }
             _ => String::default(),

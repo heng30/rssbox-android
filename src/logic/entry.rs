@@ -190,13 +190,8 @@ fn _remove_all_entrys(ui: Weak<AppWindow>, suuid: SharedString, urls: Vec<Shared
             _ = db::trash::insert(&md5_hex(&url)).await;
         }
 
-        match db::entry::delete_all(suuid.as_str()).await {
-            Err(e) => async_message_warn(
-                ui.clone(),
-                format!("{}. {}: {e:?}", tr("删除失败"), tr("原因")),
-            ),
-            _ => async_message_success(ui.clone(), tr("删除成功")),
-        }
+        _ = db::entry::delete_all(suuid.as_str()).await;
+        async_message_success(ui.clone(), tr("删除成功"));
     });
 }
 

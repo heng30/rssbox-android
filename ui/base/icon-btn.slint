@@ -14,8 +14,8 @@ export component IconBtn inherits Rectangle {
 
     callback clicked();
 
-    in-out property<color> bg-color: transparent;
-    in-out property<color> bg-pressed-color: Theme.pressed-color;
+    in-out property<color> bg-color: Colors.transparent;
+    in-out property<color> bg-pressed-color: Colors.transparent;
 
     border-radius: Theme.border-radius;
     background: touch.pressed ? bg-pressed-color : bg-color;

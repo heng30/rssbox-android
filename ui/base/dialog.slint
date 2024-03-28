@@ -54,13 +54,11 @@ export component Dialog inherits Rectangle {
 
             cancel-btn := CancelBtn {
                 text: Logic.tr(Store.is-cn, "取消");
-                icon: Icons.cancel;
                 clicked => { root.cancel-clicked(); }
             }
 
             ConfirmBtn {
                 text: Logic.tr(Store.is-cn, "确认");
-                icon: Icons.success-fill;
                 clicked => { root.ok-clicked(); }
             }
         }

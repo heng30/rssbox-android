@@ -1,3 +1,4 @@
+import { TextEdit } from "std-widgets.slint";
 import { Theme } from "../theme.slint";
 
 export component TxtEdit inherits Rectangle {
@@ -18,15 +19,18 @@ export component TxtEdit inherits Rectangle {
         padding: Theme.padding * 2;
         padding-right: 0;
 
-        Flickable {
-            viewport-height: edit.preferred-height;
-
-            edit := TextInput {
-                font-size: Theme.default-font-size;
-                single-line: false;
-                wrap: word-wrap;
-            }
+        edit := TextEdit {
+            font-size: Theme.default-font-size;
         }
 
+        // Flickable {
+        //     viewport-height: edit.preferred-height;
+
+            // edit := TextInput {
+                // font-size: Theme.default-font-size;
+                // single-line: false;
+                // wrap: word-wrap;
+            // }
+        // }
     }
 }

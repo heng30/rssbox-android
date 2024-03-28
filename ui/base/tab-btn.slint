@@ -6,13 +6,14 @@ export component TabBtn inherits Rectangle {
     in-out property icon-rotation-angle <=> img.rotation-angle;
     in-out property text <=> txt.text;
 
+    in-out property<length> icon-size: Theme.icon-size;
     in-out property<color> colorize: Theme.icon-color;
     in-out property<bool> checked: false;
 
     callback clicked();
 
-    in-out property<color> bg-color: transparent;
-    in-out property<color> bg-pressed-color: Theme.pressed-color;
+    in-out property<color> bg-color: Colors.transparent;
+    in-out property<color> bg-pressed-color: Colors.transparent;
 
     background: touch.pressed ? bg-pressed-color : bg-color;
 
@@ -26,7 +27,7 @@ export component TabBtn inherits Rectangle {
         HorizontalLayout {
             alignment: center;
             img := Image {
-                width: Theme.icon-size;
+                width: root.icon-size;
                 colorize: root.checked ? Theme.brand-color : root.colorize;
             }
         }

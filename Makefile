@@ -29,9 +29,13 @@ clippy:
 
 clean-incremental:
 	rm -rf ./target/debug/incremental/*
+	rm -rf ./target/aarch64-linux-android/debug/incremental
 
 clean:
 	cargo clean
+
+sweep:
+	cargo sweep --maxsize 10GB
 
 slint-view:
 	slint-viewer --style material --auto-reload -I ui ./ui/appwindow.slint

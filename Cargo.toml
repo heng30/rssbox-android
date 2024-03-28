@@ -62,13 +62,14 @@ required-features = ["desktop"]
 package = "xyz.heng30.rssbox"
 build_targets = ["aarch64-linux-android"]
 resources = "./res"
+strip = "strip"
 
 [package.metadata.android.signing.debug]
-path = "./debug.keystore"
+path = "./keystore/debug.keystore"
 keystore_password = "123456"
 
 [package.metadata.android.signing.release]
-path = "./release.keystore"
+path = "./keystore/release.keystore"
 keystore_password = "123456"
 
 [package.metadata.android.sdk]
@@ -89,3 +90,7 @@ name = "android.permission.READ_EXTERNAL_STORAGE"
 label = "rssbox"
 icon = "@mipmap/ic_launcher"
 # theme = "@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen"
+
+[package.metadata.android.application.activity]
+launch_mode = "singleTop"
+always_retain_task_state = true

@@ -13,6 +13,8 @@ pub fn tr(text: &str) -> String {
     items.insert("确认", "Confirm");
     items.insert("编辑", "Edit");
     items.insert("删除", "Delete");
+    items.insert("清空", "Clear");
+    items.insert("发送", "Send");
 
     items.insert("删除成功", "Delete success");
     items.insert("删除失败", "Delete failed");
@@ -37,9 +39,17 @@ pub fn tr(text: &str) -> String {
     items.insert("非法输入", "Invalid input");
     items.insert("打开链接失败", "Open link failed");
 
+    items.insert("微信支付", "Wechat pay");
+    items.insert("小狐狸（加密）支付", "MetaMask crypto pay");
+
+    items.insert("收藏成功", "Favorite success");
+    items.insert("收藏失败", "Favorite failed");
+    items.insert("取消收藏成功", "Cancel favorite success");
+    items.insert("取消收藏失败", "Cancel favorite failed");
+
     items.insert("刷新...", "Refresh...");
-    items.insert("正在重试...", "Retrying...");
-    items.insert("正在下载...", "Downloading...");
+    items.insert("正在同步...", "Refreshing...");
+    items.insert("同步成功", "Refresh success");
 
     items.insert("是否删除？", "Delete or not?");
     items.insert("是否删除全部？", "Delete all entrys or not?");
@@ -73,6 +83,7 @@ pub fn tr(text: &str) -> String {
     items.insert("未收藏", "Not star");
     items.insert("图标库", "Icons");
     items.insert("请选择条目", "Please select entry");
+    items.insert("请添加RSS源", "Please add RSS URL");
 
     items.insert("字体大小", "Font size");
     items.insert("字体样式", "Font family");

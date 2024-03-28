@@ -216,7 +216,9 @@ export component Entry inherits Rectangle {
                 }
 
                 Util.open-url(root.url);
-                Logic.remove-entry(Store.current-rss-uuid, root.uuid);
+                if (Logic.get-setting-reading().is-delete-after-reading) {
+                    Logic.remove-entry(Store.current-rss-uuid, root.uuid);
+                }
             }
         }
 

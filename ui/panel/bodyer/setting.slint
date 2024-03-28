@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { Store, TabIndex, SettingUI, SettingSync, SettingProxy, SettingReading } from "../../store.slint";
-import { CenterLayout, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn } from "../../base/widgets.slint";
+import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn } from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
     UI,
@@ -436,6 +436,45 @@ component Feedback inherits SettingDetail {
 
 component Donate inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "捐 赠");
+
+    private property<bool> is-wechat: true;
+
+    SettingDetailInner {
+        vbox-alignment: LayoutAlignment.stretch;
+
+        HorizontalLayout {
+            TabBtn {
+                width: 50%;
+                height: Theme.footer-height;
+                icon: Icons.wechat-light;
+                text: Logic.tr(Store.is-cn, "微信支付");
+                checked: root.is-wechat;
+                clicked => { root.is-wechat = true; }
+            }
+
+            TabBtn {
+                height: Theme.footer-height;
+                icon: Icons.metamask-light;
+                text: Logic.tr(Store.is-cn, "小狐狸（加密）支付");
+                checked: !root.is-wechat;
+                clicked => { root.is-wechat = false; }
+            }
+        }
+
+        Rectangle {
+            if root.is-wechat : Image {
+                source: Icons.wechat-pay;
+                width: root.width * 0.6;
+                height: self.width;
+            }
+
+            if !root.is-wechat : Image {
+                source: Icons.metamask-pay;
+                width: root.width * 0.6;
+                height: self.width;
+            }
+        }
+    }
 }
 
 component Body inherits VerticalLayout {
@@ -443,7 +482,7 @@ component Body inherits VerticalLayout {
     spacing: Theme.spacing;
 
     // TODO
-    in-out property<SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.Feedback;
+    in-out property<SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.UI;
 
     callback switch(SettingDetailIndex);
 
@@ -565,7 +604,6 @@ export component Setting inherits Rectangle {
     visible: TabIndex.Setting == Store.current-tab-index;
 
     body := Body {
-              visible: false;
         switch(index) => {
             if (index == SettingDetailIndex.UI) {
                 ui.set(Logic.get-setting-ui());
@@ -626,25 +664,23 @@ export component Setting inherits Rectangle {
             }
         }
 
-        About {
-            visible: body.current-setting-detail-index == SettingDetailIndex.About;
-            back => { body.visible = true; }
-        }
-
-        Help {
-            visible: body.current-setting-detail-index == SettingDetailIndex.Help;
-            back => { body.visible = true; }
-        }
-
         feedback := Feedback {
             visible: body.current-setting-detail-index == SettingDetailIndex.Feedback;
             back => { body.visible = true; }
         }
+    }
 
-        Donate {
-            visible: body.current-setting-detail-index == SettingDetailIndex.Donate;
+    if !body.visible : Rectangle {
+        if body.current-setting-detail-index == SettingDetailIndex.About : About {
             back => { body.visible = true; }
+        }
 
+        if body.current-setting-detail-index == SettingDetailIndex.Help: Help {
+            back => { body.visible = true; }
+        }
+
+        if body.current-setting-detail-index == SettingDetailIndex.Donate : Donate {
+            back => { body.visible = true; }
         }
     }
 }
