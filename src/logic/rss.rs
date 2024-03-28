@@ -346,12 +346,11 @@ pub fn init(ui: &AppWindow) {
                 continue;
             }
 
-            ui.global::<Logic>().invoke_remove_all_entrys(uuid.clone());
             store_rss_lists!(ui).remove(index);
 
-            notify_ui_update_unread_counts(&ui);
-
             if uuid == ui.global::<Store>().get_current_rss_uuid() {
+                ui.global::<Logic>().invoke_remove_all_entrys(uuid.clone());
+                notify_ui_update_unread_counts(&ui);
                 ui.global::<Logic>()
                     .invoke_switch_rss(uuid.clone(), EMPTY_UUID.into());
             }
