@@ -27,8 +27,8 @@ tool-gen-rss-build:
 tool-gen-rss-run:
 	RUST_BACKTRACE=1 RUST_LOG=error,warn,info cargo run --bin tool-gen-rss --features=tool-gen-rss
 
-tool-gen-rss-build:
-	RUST_LOG=error,warn,info cargo build --bin tool-gen-rss --features=tool-gen-rss
+tool-gen-rss-run-local:
+	RUST_LOG=error,warn,info ./target/debug/tool-gen-rss
 
 test:
 	$(build-evn) $(run-evn) cargo test -- --nocapture

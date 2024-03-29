@@ -13,7 +13,7 @@ const FIND_UUID: &str = "find-uuid";
 const RSS_ENTRY_URL: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
 const TOP_RSS_LIST_CN: &str = include_str!("../../data/top-rss-list-valid.json");
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Hash, Eq, PartialEq, Debug, Clone)]
 pub struct FindEntry {
     pub name: String,
     pub url: String,

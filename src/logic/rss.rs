@@ -325,9 +325,9 @@ pub fn init(ui: &AppWindow) {
                 match _edit_rss(rss).await {
                     Err(e) => async_message_warn(
                         ui.clone(),
-                        format!("{}. {}: {e:?}", tr("新建失败"), tr("原因")),
+                        format!("{}. {}: {e:?}", tr("编辑失败"), tr("原因")),
                     ),
-                    _ => async_message_success(ui.clone(), tr("新建成功")),
+                    _ => async_message_success(ui.clone(), tr("编辑成功")),
                 }
             });
 

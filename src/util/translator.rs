@@ -32,12 +32,13 @@ pub fn tr(text: &str) -> String {
     items.insert("下载成功", "Download success");
     items.insert("下载失败", "Download failed");
     items.insert("加载失败", "Load failed");
-    items.insert("密码错误", "Password invalid");
-    items.insert("创建账户成功", "Create account success");
-    items.insert("创建账户失败", "Create account failed");
-    items.insert("密码错误", "Wrong password");
     items.insert("非法输入", "Invalid input");
     items.insert("打开链接失败", "Open link failed");
+
+    items.insert("新建成功", "New success");
+    items.insert("新建失败", "New failed");
+    items.insert("编辑成功", "Edit success");
+    items.insert("编辑失败", "Edit failed");
 
     items.insert("微信支付", "Wechat pay");
     items.insert("小狐狸（加密）支付", "MetaMask crypto pay");
@@ -86,7 +87,7 @@ pub fn tr(text: &str) -> String {
     items.insert("图标库", "Icons");
     items.insert("请选择条目", "Please select entry");
     items.insert("请添加RSS源", "Please add RSS URL");
-    items.insert("请选择浏览器", "Please select browser");
+    items.insert("选择浏览器", "Select browser");
     items.insert("已启用阅后即焚", "Enabled delete after reading");
     items.insert("未启用阅后即焚", "Disable delete after reading");
 
@@ -119,7 +120,7 @@ pub fn tr(text: &str) -> String {
 
     items.insert("没有数据", "No Data");
     items.insert("没有消息", "No Message");
-    items.insert("输入关键字", "input keyword");
+    items.insert("输入关键字", "Input keyword");
 
     if let Some(txt) = items.get(text) {
         return txt.to_string();

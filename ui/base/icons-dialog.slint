@@ -4,7 +4,6 @@ import { Store } from "../store.slint";
 import { Logic } from "../logic.slint";
 
 export component IconsDialog inherits Dialog {
-    visible: Store.icons-dialog-setting.show;
     title: Logic.tr(Store.is-cn, "图标库");
     title-bg: Theme.brand-color;
     width: (icon-size + icon-spacing) * column-count - icon-spacing + Theme.padding * 2;

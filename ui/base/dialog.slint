@@ -9,11 +9,11 @@ export component Dialog inherits Rectangle {
     in-out property title <=> txt.text;
     in-out property<color> title-bg: Theme.brand-color;
     in-out property<bool> is-hide-btns: false;
+    in-out property<bool> is-hide-close-btns: false;
 
     callback cancel-clicked();
     callback ok-clicked();
 
-    visible: false;
     width: 800px;
     height: vbox.preferred-height;
     background: Theme.base-background-light;
@@ -29,7 +29,7 @@ export component Dialog inherits Rectangle {
                 font-size: Theme.title3-font-size;
             }
 
-            if (is-hide-btns) : HorizontalLayout {
+            if is-hide-btns && !is-hide-close-btns : HorizontalLayout {
                 alignment: end;
                 padding-right: Theme.padding;
                 CenterLayout {
@@ -47,7 +47,7 @@ export component Dialog inherits Rectangle {
             @children
         }
 
-        if (!is-hide-btns) : HorizontalLayout {
+        if !is-hide-btns : HorizontalLayout {
             alignment: center;
             spacing: Theme.spacing * 8;
             padding: Theme.padding * 2;

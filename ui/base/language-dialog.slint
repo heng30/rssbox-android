@@ -1,0 +1,65 @@
+import { CheckBox } from "std-widgets.slint";
+import { Dialog } from "./dialog.slint";
+import { Theme } from "../theme.slint";
+import { Store } from "../store.slint";
+import { Logic } from "../logic.slint";
+import { ConfirmBtn } from "./btn.slint";
+
+export component LanguageDialog inherits Dialog {
+    title: Logic.tr(Store.is-cn, "请选择语言");
+    is-hide-btns: true;
+
+    in-out property<string> language: "cn";
+
+    VerticalLayout {
+        padding: Theme.padding * 4;
+        spacing: Theme.spacing * 4;
+
+        VerticalLayout {
+            alignment: center;
+            spacing: Theme.spacing * 4;
+
+            cn-checkbox := CheckBox {
+                width: 50%; text: "中文";
+                checked: root.language != "en";
+                toggled => {
+                    if (!self.checked) {
+                        self.checked = true;
+                        return;
+                    }
+
+                    en-checkbox.checked = !self.checked;
+                    root.language = "cn";
+                }
+            }
+
+            en-checkbox := CheckBox {
+                text: "English";
+                checked: root.language == "en";
+                toggled => {
+                    if (!self.checked) {
+                        self.checked = true;
+                        return;
+                    }
+
+                    cn-checkbox.checked = !self.checked;
+                    root.language = "en";
+                }
+            }
+        }
+
+        HorizontalLayout {
+            alignment: end;
+
+            ConfirmBtn {
+                text: Logic.tr(Store.is-cn, "确认");
+                clicked => {
+                    Store.setting-ui.language = root.language;
+                    Logic.set-setting-ui(Store.setting-ui);
+                    Store.is-first-run = false;
+                }
+            }
+        }
+    }
+
+}

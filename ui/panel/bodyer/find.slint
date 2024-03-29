@@ -32,7 +32,7 @@ component FHead inherits Head {
                 search-lineedit := LineEdit {
                     height: 100%; width: 100%;
                     horizontal-stretch: 1;
-                    placeholder-text: Logic.tr(Store.is-cn, "关键字");
+                    placeholder-text: Logic.tr(Store.is-cn, "输入关键字");
                     accepted => { Logic.update-find-entrylist(self.text); }
                 }
             }

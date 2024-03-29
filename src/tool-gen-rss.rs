@@ -4,7 +4,7 @@ use anyhow::Result;
 use atom_syndication::Feed;
 use rss::Channel;
 use rssbox::{logic::top_rss_list_cn, util::http};
-use std::{io::BufReader, time::Duration};
+use std::{collections::HashSet, io::BufReader, time::Duration};
 use tokio::{fs::File, io::AsyncWriteExt, sync::mpsc};
 
 const TOP_RSS_LIST_CN: &str = include_str!("../data/top-rss-list.json");
@@ -16,8 +16,7 @@ async fn main() -> Result<()> {
     log::info!("start...");
     rssbox::init_logger();
 
-    // let mut file = File::create(TOP_RSS_LIST_CN_VALID).await?;
-    // file.write_all(b"[]").await?;
+    let _assert = File::create(TOP_RSS_LIST_CN_VALID).await?;
 
     let items = top_rss_list_cn(TOP_RSS_LIST_CN)?;
     let total_len = items.len();
@@ -42,10 +41,12 @@ async fn main() -> Result<()> {
     }
 
     drop(tx);
-    let mut valid_items = vec![];
+
+    let mut valid_items = HashSet::new();
     while let Some(item) = rx.recv().await {
-        valid_items.push(item);
+        valid_items.insert(item);
     }
+    let valid_items = valid_items.into_iter().collect::<Vec<_>>();
 
     let text = serde_json::to_string::<Vec<_>>(&valid_items)?;
     log::info!("{text}");

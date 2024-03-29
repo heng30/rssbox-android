@@ -230,6 +230,10 @@ export component Entry inherits Rectangle {
             text: root.summary;
         }
 
+        if root.summary == "" : Rectangle {
+            height: 20px;
+        }
+
         HorizontalLayout {
             alignment: end;
             spacing: Theme.padding * 4;

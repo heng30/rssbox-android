@@ -18,6 +18,9 @@ const FEEDBACK_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/feedback";
 pub fn init(ui: &AppWindow) {
     init_setting(&ui);
 
+    ui.global::<Store>()
+        .set_is_first_run(config::is_first_run());
+
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_get_setting_ui(move || {
         let ui = ui_handle.unwrap();

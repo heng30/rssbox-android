@@ -42,6 +42,10 @@ pub fn appid() -> String {
     CONFIG.lock().unwrap().appid.clone()
 }
 
+pub fn is_first_run() -> bool {
+    CONFIG.lock().unwrap().is_first_run
+}
+
 pub fn all() -> data::Config {
     CONFIG.lock().unwrap().clone()
 }
@@ -115,15 +119,21 @@ impl Config {
                     self.sync = c.sync;
                     Ok(())
                 }
-                Err(_) => match toml::to_string_pretty(self) {
+                Err(_) => {
+                    self.is_first_run = true;
+                    match toml::to_string_pretty(self) {
+                        Ok(text) => Ok(fs::write(&self.config_path, text)?),
+                        Err(e) => Err(e.into()),
+                    }
+                }
+            },
+            Err(_) => {
+                self.is_first_run = true;
+                match toml::to_string_pretty(self) {
                     Ok(text) => Ok(fs::write(&self.config_path, text)?),
                     Err(e) => Err(e.into()),
-                },
-            },
-            Err(_) => match toml::to_string_pretty(self) {
-                Ok(text) => Ok(fs::write(&self.config_path, text)?),
-                Err(e) => Err(e.into()),
-            },
+                }
+            }
         }
     }
 

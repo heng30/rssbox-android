@@ -23,3 +23,4 @@ It is a remote bitcoin wallet. Using blockstream API to broadcast transaction an
 - [Viewer for Slint](https://github.com/slint-ui/slint/tree/master/tools/viewer)
 - [LSP (Language Server Protocol) Server for Slint](https://github.com/slint-ui/slint/tree/master/tools/lsp)
 - [top-rss-list](https://github.com/weekend-project-space/top-rss-list)
+- [rss-list](https://github.com/saveweb/rss-list)
