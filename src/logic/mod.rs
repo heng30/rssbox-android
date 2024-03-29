@@ -6,12 +6,14 @@ mod about;
 mod cache;
 mod clipboard;
 mod entry;
+mod find;
 mod message;
 mod ok_cancel_dialog;
 mod rss;
 mod setting;
 mod util;
-mod find;
+
+pub use find::{top_rss_list_cn, FindEntry};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ReqData {

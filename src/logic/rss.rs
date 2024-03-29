@@ -8,7 +8,7 @@ use crate::{
     message_info, message_success, store_rss_entrys,
     util::{self, crypto::md5_hex, http, translator::tr},
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
 use atom_syndication::{Feed, FixedDateTime, Link, TextType};
 use html2text;
 use rss::Channel;
@@ -597,7 +597,7 @@ fn parse_summary(summary: &str, is_text: bool) -> String {
 
 fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
     let mut entrys = vec![];
-    let ch = Channel::read_from(&content[..])?;
+    let ch = Channel::read_from(&content[..]).context("failed to parse rss xml")?;
 
     for item in ch.items() {
         let url = item.link().unwrap_or_default().to_string();
@@ -606,7 +606,7 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
         let pub_date = item.pub_date().unwrap_or_default().to_string();
 
         let summary = match item.description() {
-            Some(s) => parse_summary(s, true),
+            Some(s) => parse_summary(s, false),
             _ => String::default(),
         };
 
@@ -640,7 +640,7 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
 
 fn parse_atom(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
     let mut entrys = vec![];
-    let feed = Feed::read_from(BufReader::new(&content[..]))?;
+    let feed = Feed::read_from(BufReader::new(&content[..])).context("failed to parse atom xml")?;
 
     for item in feed.entries() {
         let url = item
@@ -711,12 +711,12 @@ async fn fetch_entrys(sync_item: SyncItem) -> Result<Vec<RssEntry>> {
         .to_vec();
 
     let entrys = match sync_item.feed_format.to_lowercase().as_str() {
-        "auto" => match parse_rss(sync_item.suuid.as_str(), content.clone()) {
+        "rss" => parse_rss(sync_item.suuid.as_str(), content)?,
+        "atom" => parse_atom(sync_item.suuid.as_str(), content)?,
+        _ => match parse_rss(sync_item.suuid.as_str(), content.clone()) {
             Ok(v) => v,
             _ => parse_atom(sync_item.suuid.as_str(), content)?,
         },
-        "rss" => parse_rss(sync_item.suuid.as_str(), content)?,
-        _ => parse_atom(sync_item.suuid.as_str(), content)?,
     };
 
     let mut unique_entrys = vec![];

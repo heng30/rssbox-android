@@ -41,8 +41,6 @@ fn init_cache(ui: &AppWindow) {
         match db::trash::row_count().await {
             Err(e) => log::warn!("Cache size error: {e:?}"),
             Ok(count) => {
-                log::debug!("trash count: {count}");
-
                 let _ = slint::invoke_from_event_loop(move || {
                     ui.clone()
                         .unwrap()

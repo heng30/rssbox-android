@@ -13,13 +13,22 @@ build-release:
 	$(build-evn) cargo apk build --lib --release
 
 run:
-	$(build-evn) $(run-evn) cargo apk run --lib
+	RUST_BACKTRACE=1 $(run-evn) cargo apk run --lib
 
 install:
 	$(build-evn) $(run-evn) cargo apk run --lib --release
 
 debug:
-	$(build-evn) $(run-evn) cargo run --bin rssbox --features=desktop
+	$(build-evn) $(run-evn) cargo run --bin rssbox-desktop --features=desktop
+
+tool-gen-rss-build:
+	cargo build --bin tool-gen-rss --features=tool-gen-rss
+
+tool-gen-rss-run:
+	RUST_BACKTRACE=1 RUST_LOG=error,warn,info cargo run --bin tool-gen-rss --features=tool-gen-rss
+
+tool-gen-rss-build:
+	RUST_LOG=error,warn,info cargo build --bin tool-gen-rss --features=tool-gen-rss
 
 test:
 	$(build-evn) $(run-evn) cargo test -- --nocapture

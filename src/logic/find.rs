@@ -10,13 +10,13 @@ use slint::{ComponentHandle, Model, VecModel, Weak};
 use std::time::Duration;
 
 const FIND_UUID: &str = "find-uuid";
-const RSS_ENTRY_URL: &str = "https://heng30.xyz/apisvr/rssbox/rss/entrys";
-const TOP_RSS_LIST_CN: &str = include_str!("../../data/top-rss-list.json");
+const RSS_ENTRY_URL: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
+const TOP_RSS_LIST_CN: &str = include_str!("../../data/top-rss-list-valid.json");
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct FindEntry {
-    name: String,
-    url: String,
+pub struct FindEntry {
+    pub name: String,
+    pub url: String,
 }
 
 impl From<FindEntry> for UIFindEntry {
@@ -137,14 +137,14 @@ async fn _inner_fetch_all_find_entrys() -> Result<Vec<FindEntry>> {
         .await?)
 }
 
-fn top_rss_list_cn() -> Result<Vec<FindEntry>> {
-    Ok(serde_json::from_str::<Vec<_>>(TOP_RSS_LIST_CN)?)
+pub fn top_rss_list_cn(text: &str) -> Result<Vec<FindEntry>> {
+    Ok(serde_json::from_str::<Vec<_>>(text)?)
 }
 
 fn _fetch_all_find_entrys(ui: Weak<AppWindow>) {
     tokio::spawn(async move {
         let items = match _inner_fetch_all_find_entrys().await {
-            Err(e) => match top_rss_list_cn() {
+            Err(e) => match top_rss_list_cn(TOP_RSS_LIST_CN) {
                 Ok(items) => items,
                 _ => {
                     async_message_warn(

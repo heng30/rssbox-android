@@ -33,6 +33,7 @@ impl AppDirs {
 
 pub fn init() {
     if let Err(e) = CONFIG.lock().unwrap().init() {
+        log::error!("{e:?}");
         panic!("{:?}", e);
     }
 }
@@ -81,7 +82,7 @@ impl Config {
         let app_name = if cfg!(not(target_os = "android")) {
             "rssbox-android"
         } else {
-            "xyz.heng30.rssbox_dev"
+            "xyz.heng30.rssbox"
         };
 
         let app_dirs = AppDirs::new(Some(app_name), true).unwrap();

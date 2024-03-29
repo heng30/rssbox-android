@@ -6,6 +6,7 @@ export global Util {
     callback open-url(string);
 
     pure callback text-len(string) -> int; // text
+    pure callback rand-int(int, int) -> int; // low-bound, up-bound
 
     pure callback local-now(string) -> string;
     local-now => { return "12:34:45"; }

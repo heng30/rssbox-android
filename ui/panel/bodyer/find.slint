@@ -84,7 +84,7 @@ component EntryList inherits Rectangle {
             padding: Theme.padding;
             padding-right: Theme.padding * 2;
 
-            HorizontalLayout {
+            CenterLayout {
                 horizontal-stretch: 1;
                 Link {
                     width: 100%;
@@ -100,14 +100,18 @@ component EntryList inherits Rectangle {
                 }
             }
 
-            IconBtn {
-                icon: Icons.add-in-rect;
-                icon-width: Theme.icon-size * 1.2;
-                clicked => {
-                    Logic.new-rss({
-                        name: item.name,
-                        url: item.url
-                    });
+            CenterLayout {
+                IconBtn {
+                    icon: Icons.add-in-rect;
+                    icon-width: Theme.icon-size * 1.2;
+                    clicked => {
+                        Logic.new-rss({
+                            feed_format: "AUTO",
+                            name: item.name,
+                            url: item.url,
+                            icon-index: Util.rand-int(0, Store.icons-dialog-setting.icons.length),
+                        });
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@ use crate::{
     config, message_warn,
     slint_generatedAppWindow::{AppWindow, Logic, Util},
 };
+use rand::Rng;
 use slint::ComponentHandle;
 use std::str::FromStr;
 use webbrowser::{self, Browser};
@@ -46,6 +47,9 @@ pub fn init(ui: &AppWindow) {
         let chars_text = text.chars().collect::<Vec<_>>();
         chars_text.len() as i32
     });
+
+    ui.global::<Util>()
+        .on_rand_int(move |low, up| rand::thread_rng().gen_range(low..up) as i32);
 
     ui.global::<Util>()
         .on_split_and_join_string(move |input, length, sep| {

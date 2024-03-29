@@ -3,14 +3,12 @@ name = "rssbox"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-crate-type = ["cdylib"]
-
 [dependencies]
 log = "0.4"
 rss = "2.0"
 md5 = "0.7"
 toml = "0.8"
+rand = "0.8"
 chrono = "0.4"
 anyhow = "1.0"
 html2text = "0.6"
@@ -52,14 +50,23 @@ embed-resource = "2.4"
 [features]
 default = []
 desktop = []
+tool-gen-rss = []
+
+[lib]
+crate-type = ["cdylib", "lib"]
 
 [[bin]]
-path = "src/lib.rs"
-name = "rssbox"
+path = "src/desktop.rs"
+name = "rssbox-desktop"
 required-features = ["desktop"]
 
+[[bin]]
+path = "src/tool-gen-rss.rs"
+name = "tool-gen-rss"
+required-features = ["tool-gen-rss"]
+
 [package.metadata.android]
-package = "xyz.heng30.rssbox_dev"
+package = "xyz.heng30.rssbox"
 build_targets = ["aarch64-linux-android"]
 resources = "./res"
 strip = "strip"

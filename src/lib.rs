@@ -14,14 +14,14 @@ use std::{
 
 mod config;
 mod db;
-mod logic;
-mod util;
+pub mod logic;
+pub mod util;
 mod version;
 
 static SYNC_TIMESTAMP_CACHE: AtomicI64 = AtomicI64::new(0);
 
 #[cfg(not(target_os = "android"))]
-fn init_logger() {
+pub fn init_logger() {
     use chrono::Local;
     use env_logger::fmt::Color;
     use std::io::Write;
@@ -102,11 +102,13 @@ fn sync_rss_timer(ui: &AppWindow) -> Timer {
     timer
 }
 
-#[cfg(not(target_os = "android"))]
+#[cfg(target_os = "android")]
+#[no_mangle]
 #[tokio::main]
-async fn main() {
+async fn android_main(app: slint::android::AndroidApp) {
     log::debug!("start...");
 
+    slint::android::init(app).unwrap();
     ui_before().await;
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
@@ -117,13 +119,10 @@ async fn main() {
     log::debug!("exit...");
 }
 
-#[cfg(target_os = "android")]
-#[no_mangle]
-#[tokio::main]
-async fn android_main(app: slint::android::AndroidApp) {
+#[cfg(not(target_os = "android"))]
+pub async fn desktop_main() {
     log::debug!("start...");
 
-    slint::android::init(app).unwrap();
     ui_before().await;
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
