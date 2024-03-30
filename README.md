@@ -7,7 +7,7 @@
 [中文文档](./README.zh-CN.md)
 
 #### Introduction
-It is a RSS client. It is designed for android platform. However, you can compile it for Linux/Windows, maybe Macos(I'm not verify it), platform. It is a pure Rust project. UI based on `Slint UI`. Feel free to use it. If you encounter any problem, sending me a feedback.
+It is a RSS reader. It is designed for android platform. However, you can compile it for Linux/Windows, maybe Macos(I'm not verify it), platform. It is a pure Rust project. UI based on `Slint UI`. Feel free to use it. If you encounter any problem, sending me a feedback.
 
 #### Features
 - [x] Show RSS new message.
