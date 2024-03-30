@@ -81,8 +81,8 @@ keystore_password = "123456"
 
 [package.metadata.android.sdk]
 min_sdk_version = 23
-max_sdk_version = 29
-target_sdk_version = 30
+max_sdk_version = 34
+target_sdk_version = 32
 
 [[package.metadata.android.uses_permission]]
 name = "android.permission.WRITE_EXTERNAL_STORAGE"

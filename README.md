@@ -1,20 +1,30 @@
-![screenshot](./screenshot/bitbox-en.png)
+<div style="display: flex, margin: 8px">
+    <img src="./screenshot/rssbox-en.png" width="100"/>
+    <img src="./screenshot/rssbox2-en.png" width="100"/>
+</div>
 
 [中文文档](./README.zh-CN.md)
 
 #### Introduction
-It is a remote bitcoin wallet. Using blockstream API to broadcast transaction and fetch on chain information. I test it only in bitcoin **test network**, so you take you only risk to use this bitcoin light wallet on the bitcoin man network.
+It is a RSS client. It is designed for android platform. However, you can compile it for Linux/Windows, maybe Macos(I'm not verify it), platform. It is a pure Rust project. UI based on `Slint UI`. Feel free to use it. If you encounter any problem, sending me a feedback.
 
 #### Features
-- [x] new wallet account
-- [x] recover wallet account
-- [x] send and receive bitcoin
-- [x] show transations activity
-- [x] address book
+- [x] Show RSS new message.
+- [x] Collect the message you like.
+- [x] Add, edit and delete a RSS.
+- [x] Add RSS from the [Find] page. Maybe support online search latterly.
+- [x] Setting for UI, reading, sync, proxy, clear cache and others.
+
+##### Android platform build information
+- `min-sdk-version = 23`
+- `max-sdk-version = 34`
+- `target-sdk-version = 32`
 
 #### How to build?
 - Install `Rust` and `Cargo`
-- Run `make`
+- Install Android `sdk`, `ndk`, `jdk17`, and set environment variables
+- Run `make` to build a release version android APK
+- Run `make debug` to run it on desktop platform
 - Refer to [Makefile](./Makefile) for more information
 
 #### Reference
@@ -24,3 +34,4 @@ It is a remote bitcoin wallet. Using blockstream API to broadcast transaction an
 - [LSP (Language Server Protocol) Server for Slint](https://github.com/slint-ui/slint/tree/master/tools/lsp)
 - [top-rss-list](https://github.com/weekend-project-space/top-rss-list)
 - [rss-list](https://github.com/saveweb/rss-list)
+- [developer.android.com](https://developer.android.com/guide)
