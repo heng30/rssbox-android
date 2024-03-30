@@ -1,9 +1,8 @@
-<table>
-  <tr>
-    <td><img src="./screenshot/rssbox-en.png" width="100"/></td>
-    <td><img src="./screenshot/rssbox2-en.png" width="100"/></td>
-  </tr>
-</table>
+<div style="display: flex, margin: 8px">
+    <img src="./screenshot/rssbox-en.png" width="100"/>
+    <img src="./screenshot/rssbox2-en.png" width="100"/>
+    <img src="./screenshot/rssbox-show-rss-list.png" width="100"/>
+</div>
 
 [中文文档](./README.zh-CN.md)
 

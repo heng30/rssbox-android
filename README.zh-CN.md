@@ -1,6 +1,7 @@
 <div style="display: flex, margin: 8px">
     <img src="./screenshot/rssbox-cn.png" width="100"/>
     <img src="./screenshot/rssbox2-cn.png" width="100"/>
+    <img src="./screenshot/rssbox-show-rss-list.png" width="100"/>
 </div>
 
 [English Documentation](./README.md)
