@@ -133,8 +133,6 @@ component RssListBtns inherits HorizontalLayout {
 }
 
 component AddEdit inherits Rectangle {
-    in-out property<int> icon-index: 0;
-
     public function get() -> RssConfig {
         return {
             name: line-edit-name.text,
@@ -142,7 +140,7 @@ component AddEdit inherits Rectangle {
             use-http-proxy: use-http-proxy-checkbox.checked,
             use-socks5-proxy: use-socks5-proxy-checkbox.checked,
             is-favorite: favorite-checkbox.checked,
-            icon-index: root.icon-index,
+            icon-index: Store.icon-index,
             feed-format: feed-format-combobox.current-value,
         };
     }
@@ -153,7 +151,7 @@ component AddEdit inherits Rectangle {
         use-http-proxy-checkbox.checked = config.use-http-proxy;
         use-socks5-proxy-checkbox.checked = config.use-socks5-proxy;
         favorite-checkbox.checked = config.is-favorite;
-        root.icon-index = config.icon-index;
+        Store.icon-index = config.icon-index;
 
         feed-format-combobox.current-value = config.feed-format;
         if (config.feed-format == "") {
@@ -177,7 +175,7 @@ component AddEdit inherits Rectangle {
 
                 rss-icon := IconBtn {
                     width: self.height;
-                    icon: Store.icons-dialog-setting.icons[Math.max(0, Math.min(root.icon-index, Store.icons-dialog-setting.icons.length - 1))];
+                    icon: Store.icons-dialog-setting.icons[Math.max(0, Math.min(Store.icon-index, Store.icons-dialog-setting.icons.length - 1))];
                     clicked => { Store.icons-dialog-setting.show = true; }
                 }
             }
@@ -268,7 +266,6 @@ component AddEditBtns inherits HorizontalLayout {
 
 component Body inherits Rectangle {
     private property <BtnIndex> rss-list-btns-index: BtnIndex.New;
-    in-out property icon-index <=> ae.icon-index;
 
     rsslist-vbox := VerticalLayout {
         Head {
@@ -348,10 +345,7 @@ component Body inherits Rectangle {
 }
 
 export component Add inherits VerticalLayout {
-    visible: TabIndex.Add == Store.current-tab-index;
     spacing: Theme.spacing;
-
-    in-out property icon-index <=> body.icon-index;
 
     body := Body {}
 }

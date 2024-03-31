@@ -28,7 +28,7 @@ pub struct Config {
     pub proxy: Proxy,
 }
 
-fn appid_default() -> String {
+pub fn appid_default() -> String {
     Uuid::new_v4().to_string()
 }
 

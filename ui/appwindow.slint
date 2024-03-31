@@ -22,7 +22,7 @@ export component AppWindow inherits Window {
 
     Rectangle {
         background: Theme.base-background-light;
-        panel := Panel { }
+        Panel { }
     }
 
     if Store.icons-dialog-setting.show ||
@@ -30,7 +30,7 @@ export component AppWindow inherits Window {
        Store.is-first-run : Blanket { }
 
     if Store.icons-dialog-setting.show : IconsDialog {
-        select-index(index) => { panel.icon-index = index; }
+        select-index(index) => { Store.icon-index = index; }
     }
 
     if Store.ok-cancel-dialog-setting.body-text != "" : OkCancelDialog {
@@ -42,7 +42,7 @@ export component AppWindow inherits Window {
         width: Math.min(300px, root.width * 0.8);
     }
 
-    Message {
+    if Store.message.text != "" : Message {
         x: root.width / 2 - self.width / 2; y: 50px;
         inner-max-width: root.width * 80%;
         text: Store.message.text;

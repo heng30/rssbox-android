@@ -112,7 +112,6 @@ async fn android_main(app: slint::android::AndroidApp) {
     ui_before().await;
     let ui = AppWindow::new().unwrap();
     ui_after(&ui);
-
     let _timer = sync_rss_timer(&ui);
     ui.run().unwrap();
 

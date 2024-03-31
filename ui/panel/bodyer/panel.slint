@@ -1,5 +1,5 @@
 import { Theme } from "../../theme.slint";
-import { Store } from "../../store.slint";
+import { Store, TabIndex } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { Rss } from "./rss.slint";
@@ -9,12 +9,10 @@ import { Setting } from "./setting.slint";
 import { Find } from "./find.slint";
 
 export component Bodyer inherits Rectangle {
-    in-out property icon-index <=> add.icon-index;
-
-    Rss {}
-    Favorite {}
-    add := Add {}
-    Find {}
-    Setting {}
+    if TabIndex.Rss == Store.current-tab-index : Rss {}
+    if TabIndex.Favorite == Store.current-tab-index : Favorite {}
+    if TabIndex.Add == Store.current-tab-index : Add {}
+    if TabIndex.Find == Store.current-tab-index : Find {}
+    if TabIndex.Setting == Store.current-tab-index : Setting {}
 }
 

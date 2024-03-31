@@ -2,7 +2,7 @@ import { LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { Store, TabIndex, SettingUI, SettingSync, SettingProxy, SettingReading } from "../../store.slint";
+import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading } from "../../store.slint";
 import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn } from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
@@ -601,8 +601,6 @@ component Body inherits VerticalLayout {
 }
 
 export component Setting inherits Rectangle {
-    visible: TabIndex.Setting == Store.current-tab-index;
-
     body := Body {
         switch(index) => {
             if (index == SettingDetailIndex.UI) {

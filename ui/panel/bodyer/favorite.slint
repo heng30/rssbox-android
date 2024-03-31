@@ -1,6 +1,6 @@
 import { ListView } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
-import { Store, TabIndex } from "../../store.slint";
+import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { IconBtn, Head, Label, Tag, Link, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
@@ -193,8 +193,6 @@ component Body inherits Rectangle {
 }
 
 export component Favorite inherits VerticalLayout {
-    visible: TabIndex.Favorite == Store.current-tab-index;
-
     head := FHead {
         scroll-to-top => { body.entrylist-scroll-to-top(); }
     }

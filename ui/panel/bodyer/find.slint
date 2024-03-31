@@ -1,6 +1,6 @@
 import { LineEdit, ListView } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
-import { Store, TabIndex, FindEntry } from "../../store.slint";
+import { Store, FindEntry } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
@@ -137,8 +137,6 @@ component Body inherits Rectangle {
 }
 
 export component Find inherits VerticalLayout {
-    visible: TabIndex.Find == Store.current-tab-index;
-
     head := FHead { }
     Body { is-search: head.is-search; }
 }

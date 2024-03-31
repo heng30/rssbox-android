@@ -101,6 +101,10 @@ impl Config {
         self.config_path = app_dirs.config_dir.join("rssbox.toml");
         self.cache_dir = app_dirs.data_dir.join("cache");
 
+        if self.appid.is_empty() {
+            self.appid = super::data::appid_default();
+        }
+
         fs::create_dir_all(&app_dirs.data_dir)?;
         fs::create_dir_all(&app_dirs.config_dir)?;
         fs::create_dir_all(&self.cache_dir)?;
