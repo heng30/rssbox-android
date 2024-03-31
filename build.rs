@@ -30,5 +30,5 @@ fn write_app_version() -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg(target_os = "windows")]
 fn set_win_info() {
-    embed_resource::compile("../win/icon.rc", embed_resource::NONE);
+    embed_resource::compile("./win/icon.rc", embed_resource::NONE);
 }
