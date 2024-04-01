@@ -17,7 +17,6 @@ pub struct RssConfig {
     pub use_http_proxy: bool,
     pub use_socks5_proxy: bool,
     pub is_favorite: bool,
-    pub update_time: String,
 
     #[serde(default = "feed_format_default")]
     pub feed_format: String,
@@ -33,7 +32,6 @@ impl From<UIRssConfig> for RssConfig {
             use_http_proxy: conf.use_http_proxy,
             use_socks5_proxy: conf.use_socks5_proxy,
             is_favorite: conf.is_favorite,
-            update_time: conf.update_time.into(),
             feed_format: conf.feed_format.into(),
         }
     }
@@ -49,7 +47,6 @@ impl From<RssConfig> for UIRssConfig {
             use_http_proxy: conf.use_http_proxy,
             use_socks5_proxy: conf.use_socks5_proxy,
             is_favorite: conf.is_favorite,
-            update_time: conf.update_time.into(),
             feed_format: conf.feed_format.into(),
             entry: ModelRc::new(VecModel::<UIRssEntry>::default()),
             ..Default::default()

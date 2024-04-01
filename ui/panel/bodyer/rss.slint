@@ -126,6 +126,16 @@ component RssListItems inherits Rectangle {
                         padding-left: Theme.padding;
                         padding-right: Theme.padding;
 
+                        if data.is-update-failed : VerticalLayout {
+                            alignment: center;
+                            IconBtn {
+                                icon: Icons.sync-failed;
+                                icon-width: Theme.icon-size * 0.8;
+                                colorize: Theme.danger-color;
+                                border-radius: Theme.border-radius;
+                            }
+                        }
+
                         VerticalLayout {
                             alignment: center;
                             height: root.item-height;

@@ -27,11 +27,14 @@ async fn main() -> Result<()> {
         tokio::spawn(async move {
             match fetch_rss(&item.url).await {
                 Ok(content) => {
-                    if Feed::read_from(BufReader::new(&content[..])).is_ok()
-                        || Channel::read_from(&content[..]).is_ok()
-                    {
-                        log::info!("{item:?}");
-                        _ = tx.send(item).await;
+                    if let Ok(channel) = Channel::read_from(&content[..]) {
+                        if !channel.items.is_empty() {
+                            _ = tx.send(item).await;
+                        }
+                    } else if let Ok(feed) = Feed::read_from(BufReader::new(&content[..])) {
+                        if !feed.entries.is_empty() {
+                            _ = tx.send(item).await;
+                        }
                     }
                 }
                 _ => (),

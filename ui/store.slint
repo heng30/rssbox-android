@@ -34,6 +34,7 @@ export struct RssConfig {
     is-favorite: bool,
     update-time: string,
 
+    is-update-failed: bool,
     unread-counts: int,
     entry: [RssEntry],
 }
@@ -98,6 +99,7 @@ export global Store  {
             uuid: "uuid-1",
             is-favorite: true,
             use-http-proxy: false,
+            is-update-failed: true,
             icon-index: 0,
             name: "测试-1",
         },
@@ -105,6 +107,7 @@ export global Store  {
             uuid: "uuid-2",
             is-favorite: false,
             use-socks5-proxy: true,
+            is-update-failed: false,
             icon-index: 0,
             name: "测试-2",
         },

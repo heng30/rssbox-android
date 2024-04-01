@@ -502,6 +502,7 @@ pub fn init(ui: &AppWindow) {
                 continue;
             }
 
+            rss.is_update_failed = true;
             rss.update_time = util::time::local_now("%H:%M:%S").into();
             ui.global::<Store>()
                 .get_rss_lists()
@@ -697,7 +698,7 @@ fn parse_atom(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
 }
 
 async fn fetch_entrys(sync_item: SyncItem) -> Result<Vec<RssEntry>> {
-    let request_timeout = u64::min(config::sync().sync_timeout as u64, 10_u64);
+    let request_timeout = u64::max(config::sync().sync_timeout as u64, 10_u64);
 
     let client = http::client(Some(sync_item.proxy_type.as_str().into()))?;
     let content = client
@@ -737,8 +738,7 @@ async fn sync_rss(ui: Weak<AppWindow>, items: Vec<SyncItem>) -> Vec<ErrorMsg> {
     let mut error_msgs = vec![];
 
     for item in items.into_iter() {
-        let suuid = item.suuid.clone();
-        let url = item.url.clone();
+        let (suuid, url) = (item.suuid.clone(), item.url.clone());
 
         match fetch_entrys(item).await {
             Ok(entrys) => {

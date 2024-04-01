@@ -271,6 +271,7 @@ pub fn update_new_entrys(ui: &AppWindow, suuid: &str, entrys: Vec<RssEntry>) {
             }
         }
 
+        rss.is_update_failed = false;
         rss.unread_counts += unfound_list.len() as i32;
 
         for mut item in unfound_list.into_iter() {

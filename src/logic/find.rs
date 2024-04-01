@@ -13,11 +13,19 @@ const FIND_UUID: &str = "find-uuid";
 const RSS_ENTRY_URL: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
 const TOP_RSS_LIST_CN: &str = include_str!("../../data/top-rss-list-valid.json");
 
-#[derive(Serialize, Deserialize, Hash, Eq, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, Hash, Debug, Clone)]
 pub struct FindEntry {
     pub name: String,
     pub url: String,
 }
+
+impl PartialEq for FindEntry {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name || self.url == other.url
+    }
+}
+
+impl Eq for FindEntry {}
 
 impl From<FindEntry> for UIFindEntry {
     fn from(entry: FindEntry) -> Self {
