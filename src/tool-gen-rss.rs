@@ -1,12 +1,17 @@
 extern crate rssbox;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use atom_syndication::Feed;
+use opml::OPML;
 use rss::Channel;
-use rssbox::{logic::top_rss_list_cn, util::http};
+use rssbox::{
+    logic::{top_rss_list_cn, FindEntry},
+    util::http,
+};
 use std::{collections::HashSet, io::BufReader, time::Duration};
 use tokio::{fs::File, io::AsyncWriteExt, sync::mpsc};
 
+const TOP_RSS_LIST_CN_OPML: &str = include_str!("../data/rss-list.opml");
 const TOP_RSS_LIST_CN: &str = include_str!("../data/top-rss-list.json");
 const TOP_RSS_LIST_CN_VALID: &str = "./data/top-rss-list-valid.json";
 
@@ -18,7 +23,23 @@ async fn main() -> Result<()> {
 
     let _assert = File::create(TOP_RSS_LIST_CN_VALID).await?;
 
-    let items = top_rss_list_cn(TOP_RSS_LIST_CN)?;
+    let json_items = top_rss_list_cn(TOP_RSS_LIST_CN).context("parse json file error")?;
+    log::info!("{}", json_items.len());
+    assert!(!json_items.is_empty());
+
+    let opml_items = parse_opml(TOP_RSS_LIST_CN_OPML).context("parse opml file error")?;
+    log::info!("{}", opml_items.len());
+    assert!(!opml_items.is_empty());
+
+    let items = json_items
+        .into_iter()
+        .chain(opml_items)
+        .into_iter()
+        .collect::<Vec<_>>();
+
+    log::info!("{}", items.len());
+    assert!(!items.is_empty());
+
     let total_len = items.len();
     let (tx, mut rx) = mpsc::channel(total_len);
 
@@ -67,10 +88,25 @@ async fn fetch_rss(url: &str) -> Result<Vec<u8>> {
     Ok(http::client(None)?
         .get(url)
         .headers(http::headers())
-        .timeout(Duration::from_secs(15))
+        .timeout(Duration::from_secs(30))
         .send()
         .await?
         .bytes()
         .await?
         .to_vec())
+}
+
+fn parse_opml(text: &str) -> Result<Vec<FindEntry>> {
+    Ok(OPML::from_str(text)?
+        .body
+        .outlines
+        .into_iter()
+        // .filter(|item| !item.text.is_empty())
+        .map(|item| {
+            FindEntry {
+                name: item.text,
+                url: item.xml_url.unwrap_or_default(),
+            }
+        })
+        .collect())
 }

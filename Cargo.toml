@@ -17,6 +17,7 @@ serde_json = "1.0"
 lazy_static = "1.4"
 atom_syndication = "0.12"
 
+opml = { version = "1.1", optional = true }
 uuid = { version = "1.6", features = ["v4"] }
 tokio = { version = "1.35", features = ["full"] }
 serde = { version = "1.0", features = ["serde_derive"] }
@@ -50,7 +51,7 @@ embed-resource = "2.4"
 [features]
 default = []
 desktop = []
-tool-gen-rss = []
+tool-gen-rss = ["dep:opml"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -64,6 +65,7 @@ required-features = ["desktop"]
 path = "src/tool-gen-rss.rs"
 name = "tool-gen-rss"
 required-features = ["tool-gen-rss"]
+
 
 [package.metadata.android]
 package = "xyz.heng30.rssbox"
