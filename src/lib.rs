@@ -13,7 +13,7 @@ use std::{
 };
 
 mod config;
-mod db;
+pub mod db;
 pub mod logic;
 pub mod util;
 mod version;

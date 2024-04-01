@@ -11,6 +11,8 @@ component FHead inherits Head {
     icon: Icons.find-light;
     title: Logic.tr(Store.is-cn, "发现");
 
+    callback scroll-to_top();
+
     Rectangle {
         horizontal-stretch: 1;
         if !is-search : HorizontalLayout {
@@ -20,6 +22,10 @@ component FHead inherits Head {
                 color: Theme.placeholder-text-color;
                 text: Logic.find-entrys-counts(Store.find-entrys-counts-flag);
             }
+        }
+
+        if !is-search : TouchArea {
+            clicked => {root.scroll-to-top();}
         }
 
         HorizontalLayout {
@@ -74,8 +80,7 @@ component EntryList inherits Rectangle {
     }
 
     lv := ListView {
-        x: 0px;
-        width: root.width + Theme.scroll-width + Theme.padding;
+        x: 0px; width: root.width + Theme.scroll-width + 3px;
 
         for item[index] in items: HorizontalLayout {
             height: root.item-length;
@@ -121,7 +126,10 @@ component EntryList inherits Rectangle {
 component Body inherits Rectangle {
     in property <bool> is-search;
 
-    if !is-search && Store.find-entrys.length != 0 : EntryList {
+    public function scroll-to-top()  { elist.scroll-to-top(); }
+
+    elist := EntryList {
+        visible: !is-search && Store.find-entrys.length != 0;
         items: Store.find-entrys;
     }
 
@@ -137,8 +145,8 @@ component Body inherits Rectangle {
 }
 
 export component Find inherits VerticalLayout {
-    head := FHead { }
-    Body { is-search: head.is-search; }
+    head := FHead { scroll-to_top => { body.scroll-to-top(); } }
+    body := Body { is-search: head.is-search; }
 }
 
 

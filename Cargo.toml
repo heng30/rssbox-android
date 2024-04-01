@@ -21,6 +21,7 @@ opml = { version = "1.1", optional = true }
 uuid = { version = "1.6", features = ["v4"] }
 tokio = { version = "1.35", features = ["full"] }
 serde = { version = "1.0", features = ["serde_derive"] }
+clap = { version = "4.5", features = ["derive"], optional = true }
 sqlx = { version = "=0.7.3", features = ["runtime-tokio", "sqlite"] }
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
@@ -51,7 +52,10 @@ embed-resource = "2.4"
 [features]
 default = []
 desktop = []
-tool-gen-rss = ["dep:opml"]
+tool-gen-rss = [
+    "dep:opml",
+    "dep:clap"
+]
 
 [lib]
 crate-type = ["cdylib", "lib"]

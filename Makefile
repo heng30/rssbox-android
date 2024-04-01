@@ -24,11 +24,20 @@ debug:
 tool-gen-rss-build:
 	cargo build --bin tool-gen-rss --features=tool-gen-rss
 
-tool-gen-rss-run:
-	RUST_BACKTRACE=1 RUST_LOG=error,warn,info cargo run --bin tool-gen-rss --features=tool-gen-rss
+tool-gen-rss-run-generate:
+	RUST_BACKTRACE=1 RUST_LOG=error,warn,info cargo run --bin tool-gen-rss --features=tool-gen-rss -- -g
 
-tool-gen-rss-run-local:
-	RUST_LOG=error,warn,info ./target/debug/tool-gen-rss
+tool-gen-rss-run-local-generate:
+	RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -g
+
+tool-gen-rss-run-send:
+	RUST_BACKTRACE=1 RUST_LOG=error,warn,info cargo run --bin tool-gen-rss --features=tool-gen-rss -- -r http://0.0.0.0:8004
+
+tool-gen-rss-run-local-send:
+	RUST_BACKTRACE=1 RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -r http://0.0.0.0:8004
+
+tool-gen-rss-run-local-send-to-remote:
+	RUST_BACKTRACE=1 RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -r https://heng30.xyz/apisvr
 
 test:
 	$(build-evn) $(run-evn) cargo test -- --nocapture

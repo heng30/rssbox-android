@@ -1,7 +1,8 @@
 use super::message::async_message_warn;
 use crate::slint_generatedAppWindow::{AppWindow, FindEntry as UIFindEntry, Logic, Store};
 use crate::{
-    db, message_info, message_success,
+    db::{self, ComEntry},
+    message_info, message_success,
     util::{http, translator::tr},
 };
 use anyhow::Result;
@@ -11,7 +12,7 @@ use std::time::Duration;
 
 const FIND_UUID: &str = "find-uuid";
 const RSS_ENTRY_URL: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
-const TOP_RSS_LIST_CN: &str = include_str!("../../data/top-rss-list-valid.json");
+const TOP_RSS_LIST_CN_VALID: &str = include_str!("../../data/top-rss-list-valid.json");
 
 #[derive(Serialize, Deserialize, Hash, Debug, Clone)]
 pub struct FindEntry {
@@ -138,11 +139,14 @@ pub fn init(ui: &AppWindow) {
 async fn _inner_fetch_all_find_entrys() -> Result<Vec<FindEntry>> {
     Ok(http::client(None)?
         .get(RSS_ENTRY_URL)
-        .timeout(Duration::from_secs(15))
+        .timeout(Duration::from_secs(30))
         .send()
         .await?
-        .json::<Vec<FindEntry>>()
-        .await?)
+        .json::<Vec<ComEntry>>()
+        .await?
+        .into_iter()
+        .filter_map(|item| serde_json::from_str::<FindEntry>(&item.data).ok())
+        .collect::<Vec<_>>())
 }
 
 pub fn top_rss_list_cn(text: &str) -> Result<Vec<FindEntry>> {
@@ -151,26 +155,22 @@ pub fn top_rss_list_cn(text: &str) -> Result<Vec<FindEntry>> {
 
 fn _fetch_all_find_entrys(ui: Weak<AppWindow>) {
     tokio::spawn(async move {
-        let items = match _inner_fetch_all_find_entrys().await {
-            Err(e) => match top_rss_list_cn(TOP_RSS_LIST_CN) {
-                Ok(items) => items,
-                _ => {
+        let mut items = match _inner_fetch_all_find_entrys().await {
+            Ok(v) => v,
+            _ => vec![],
+        };
+
+        if items.is_empty() {
+            match top_rss_list_cn(TOP_RSS_LIST_CN_VALID) {
+                Ok(v) => items = v,
+                Err(e) => {
                     async_message_warn(
                         ui.clone(),
                         format!("{}. {}: {e:?}", tr("刷新失败"), tr("原因")),
                     );
                     return;
                 }
-            },
-            Ok(items) => items,
-        };
-
-        if items.is_empty() {
-            async_message_warn(
-                ui.clone(),
-                format!("{}. {}: {}", tr("刷新失败"), tr("原因"), tr("返回为空")),
-            );
-            return;
+            }
         }
 
         _ = db::entry::delete_all(FIND_UUID).await;

@@ -10,6 +10,7 @@ use crate::{
     util::{http, translator::tr},
 };
 use anyhow::Result;
+use reqwest::header::{HeaderMap, CONTENT_TYPE};
 use slint::ComponentHandle;
 use std::time::Duration;
 
@@ -153,9 +154,12 @@ async fn _send_feedback(text: String) -> Result<()> {
         ..Default::default()
     };
 
+    let mut headers = HeaderMap::new();
+    headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
     let res = http::client(None)?
         .post(FEEDBACK_URL)
         .timeout(Duration::from_secs(15))
+        .headers(headers)
         .json(&req)
         .send()
         .await?;
