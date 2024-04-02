@@ -61,7 +61,7 @@ component FHead inherits Head {
             }
         }
 
-        CenterLayout {
+        if !root.is-search : CenterLayout {
             refresh-icon := IconBtn {
                 icon: Icons.refresh;
                 icon-width: Theme.icon-size * 1.2;

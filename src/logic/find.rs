@@ -1,6 +1,7 @@
 use super::message::async_message_warn;
 use crate::slint_generatedAppWindow::{AppWindow, FindEntry as UIFindEntry, Logic, Store};
 use crate::{
+    config,
     db::{self, ComEntry},
     message_info, message_success,
     util::{http, translator::tr},
@@ -11,7 +12,8 @@ use slint::{ComponentHandle, Model, VecModel, Weak};
 use std::time::Duration;
 
 const FIND_UUID: &str = "find-uuid";
-const RSS_ENTRY_URL: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
+const RSS_ENTRY_URL_CN: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
+const RSS_ENTRY_URL_EN: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/en";
 const TOP_RSS_LIST_CN_VALID: &str = include_str!("../../data/top-rss-list-valid.json");
 
 #[derive(Serialize, Deserialize, Hash, Debug, Clone)]
@@ -137,8 +139,14 @@ pub fn init(ui: &AppWindow) {
 }
 
 async fn _inner_fetch_all_find_entrys() -> Result<Vec<FindEntry>> {
+    let url = if config::ui().language == "cn" {
+        RSS_ENTRY_URL_CN
+    } else {
+        RSS_ENTRY_URL_EN
+    };
+
     Ok(http::client(None)?
-        .get(RSS_ENTRY_URL)
+        .get(url)
         .timeout(Duration::from_secs(30))
         .send()
         .await?
