@@ -86,7 +86,12 @@ impl Config {
         let app_name = if cfg!(not(target_os = "android")) {
             "rssbox-android"
         } else {
-            "xyz.heng30.rssbox"
+            if cfg!(debug_assertions) {
+                // "xyz.heng30.rssbox.dev"
+                "xyz.heng30.rssbox"
+            } else {
+                "xyz.heng30.rssbox"
+            }
         };
 
         let app_dirs = AppDirs::new(Some(app_name), true).unwrap();

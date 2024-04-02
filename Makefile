@@ -12,8 +12,17 @@ build:
 build-release:
 	$(build-evn) cargo apk build --lib --release
 
+# not work well
+xbuild:
+	$(build-evn) x build --debug --platform android --format apk --arch arm64
+
+# not work well
+xbuild-release:
+	$(build-evn) x build --release --platform android --format apk --arch arm64
+
 run:
 	RUST_BACKTRACE=1 $(run-evn) cargo apk run --lib
+
 
 install:
 	$(build-evn) $(run-evn) cargo apk run --lib --release

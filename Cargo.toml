@@ -52,10 +52,7 @@ embed-resource = "2.4"
 [features]
 default = []
 desktop = []
-tool-gen-rss = [
-    "dep:opml",
-    "dep:clap"
-]
+tool-gen-rss = ["dep:opml", "dep:clap"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -70,14 +67,13 @@ path = "src/tool-gen-rss.rs"
 name = "tool-gen-rss"
 required-features = ["tool-gen-rss"]
 
-
 [package.metadata.android]
 package = "xyz.heng30.rssbox"
 build_targets = ["aarch64-linux-android"]
 resources = "./res"
 strip = "strip"
 
-[package.metadata.android.signing.debug]
+[package.metadata.android.signing.dev]
 path = "./keystore/debug.keystore"
 keystore_password = "123456"
 
