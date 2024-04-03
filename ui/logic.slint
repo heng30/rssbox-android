@@ -1,4 +1,4 @@
-import { RssConfig, RssEntry, SettingUI, SettingReading, SettingSync, SettingProxy } from "./store.slint";
+import { RssConfig, RssEntry, SettingUI, SettingReading, SettingSync, SettingProxy, SettingBackupRecover } from "./store.slint";
 
 export global Logic {
     callback new-rss(RssConfig);
@@ -52,6 +52,11 @@ export global Logic {
 
     callback get-setting-proxy() -> SettingProxy;
     callback set-setting-proxy(SettingProxy);
+
+    callback get-setting-backup-recover() -> SettingBackupRecover;
+    callback set-setting-backup-recover(SettingBackupRecover);
+    callback backup-to-remote(SettingBackupRecover);
+    callback recover-from-remote(SettingBackupRecover);
 
     callback send-feedback(string); // feedback message
 

@@ -30,6 +30,9 @@ install:
 debug:
 	$(build-evn) $(run-evn) cargo run --bin rssbox-desktop --features=desktop
 
+debug-local:
+	$(run-evn) ./target/debug/rssbox-desktop
+
 tool-gen-rss-build:
 	cargo build --bin tool-gen-rss --features=tool-gen-rss
 

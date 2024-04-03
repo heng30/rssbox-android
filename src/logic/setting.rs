@@ -1,20 +1,37 @@
 use super::{
+    entry,
     message::{async_message_success, async_message_warn},
-    ReqData,
+    rss, ReqData,
 };
 use crate::slint_generatedAppWindow::{
-    AppWindow, Logic, SettingProxy, SettingReading, SettingSync, Store,
+    AppWindow, Logic, SettingBackupRecover, SettingProxy, SettingReading, SettingSync, Store,
 };
 use crate::{
-    config, message_warn,
+    config::{self, Config},
+    db::{self, entry::RssEntry, rss::RssConfig},
+    message_warn,
     util::{http, translator::tr},
 };
 use anyhow::Result;
-use reqwest::header::{HeaderMap, CONTENT_TYPE};
-use slint::ComponentHandle;
+use reqwest::header::{HeaderMap, AUTHORIZATION, CONTENT_TYPE};
+use serde::{Deserialize, Serialize};
+use slint::{ComponentHandle, Weak};
 use std::time::Duration;
+use uuid::Uuid;
 
 const FEEDBACK_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/feedback";
+const BACKUP_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/backup";
+const RECOVER_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/recover";
+
+// const BACKUP_URL: &str = "http://127.0.0.1:8004/rssbox/android/backup";
+// const RECOVER_URL: &str = "http://127.0.0.1:8004/rssbox/android/recover";
+
+#[derive(Serialize, Deserialize, Default, Debug, Clone)]
+struct BackupRecoverData {
+    rss: Vec<RssConfig>,
+    collection: Vec<RssEntry>,
+    setting: Config,
+}
 
 pub fn init(ui: &AppWindow) {
     init_setting(&ui);
@@ -126,6 +143,54 @@ pub fn init(ui: &AppWindow) {
             }
         });
     });
+
+    ui.global::<Logic>().on_get_setting_backup_recover(move || {
+        let config = config::backup_recover();
+
+        SettingBackupRecover {
+            api_token: config.api_token.into(),
+            favorite: config.favorite,
+            rss: config.rss,
+            setting: config.setting,
+        }
+    });
+
+    ui.global::<Logic>()
+        .on_set_setting_backup_recover(move |setting| {
+            let mut all = config::all();
+
+            all.backup_recover.api_token = setting.api_token.into();
+            all.backup_recover.favorite = setting.favorite;
+            all.backup_recover.rss = setting.rss;
+            all.backup_recover.setting = setting.setting;
+
+            _ = config::save(all);
+        });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_backup_to_remote(move |options| {
+        let ui = ui_handle.unwrap();
+        let mut data = BackupRecoverData::default();
+
+        if options.rss {
+            data.rss = rss::get_rss_configs(&ui);
+        }
+
+        if options.favorite {
+            data.collection = entry::get_favorite_entrys(&ui);
+        }
+
+        if options.setting {
+            data.setting = config::all();
+        }
+
+        backup_to_remote(ui.as_weak(), options.api_token.into(), data);
+    });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_recover_from_remote(move |options| {
+        recover_from_remote(ui_handle.clone(), options);
+    });
 }
 
 fn init_setting(ui: &AppWindow) {
@@ -172,4 +237,114 @@ async fn _send_feedback(text: String) -> Result<()> {
     }
 
     Ok(())
+}
+
+fn backup_to_remote(ui: Weak<AppWindow>, api_token: String, data: BackupRecoverData) {
+    tokio::spawn(async move {
+        match _send_backup_to_remove(api_token, data).await {
+            Err(e) => async_message_warn(
+                ui.clone(),
+                format!("{}. {}: {e:?}", tr("备份失败"), tr("原因")),
+            ),
+            _ => async_message_success(ui.clone(), tr("备份成功")),
+        }
+    });
+}
+
+async fn _send_backup_to_remove(api_token: String, data: BackupRecoverData) -> Result<()> {
+    let mut headers = HeaderMap::new();
+    headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+    headers.insert(
+        AUTHORIZATION,
+        format!("Bearer {api_token}").parse().unwrap(),
+    );
+
+    let url = format!("{BACKUP_URL}?api_token={api_token}");
+    let res = http::client(None)?
+        .post(&url)
+        .timeout(Duration::from_secs(15))
+        .headers(headers)
+        .json(&data)
+        .send()
+        .await?;
+
+    if !res.status().is_success() {
+        return Err(anyhow::anyhow!(
+            "http error code: {}",
+            res.status().as_str()
+        ));
+    }
+
+    Ok(())
+}
+
+async fn _fetch_backup_from_remove(api_token: String) -> Result<BackupRecoverData> {
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        AUTHORIZATION,
+        format!("Bearer {api_token}").parse().unwrap(),
+    );
+
+    let url = format!("{RECOVER_URL}?api_token={api_token}");
+    Ok(http::client(None)?
+        .get(&url)
+        .timeout(Duration::from_secs(15))
+        .headers(headers)
+        .send()
+        .await?
+        .json::<BackupRecoverData>()
+        .await?)
+}
+
+fn recover_from_remote(ui: Weak<AppWindow>, options: SettingBackupRecover) {
+    tokio::spawn(async move {
+        match _fetch_backup_from_remove(options.api_token.into()).await {
+            Ok(data) => {
+                if options.setting {
+                    config::reset(data.setting);
+
+                    let ui = ui.clone();
+                    let _ = slint::invoke_from_event_loop(move || {
+                        init_setting(&ui.unwrap());
+                    });
+                }
+
+                let rss = data.rss;
+                if options.rss {
+                    _ = db::rss::delete_all().await;
+
+                    let ui = ui.clone();
+                    let _ = slint::invoke_from_event_loop(move || {
+                        let ui = ui.unwrap();
+                        rss::remove_all_rss(&ui);
+
+                        for item in rss.into_iter() {
+                            ui.global::<Logic>().invoke_new_rss(item.into());
+                        }
+                    });
+                }
+
+                if options.favorite {
+                    _ = db::entry::delete_all(entry::FAVORITE_UUID).await;
+                    for item in data.collection.into_iter() {
+                        let uuid = Uuid::new_v4().to_string();
+                        if let Ok(text) = serde_json::to_string(&item) {
+                            _ = db::entry::insert(entry::FAVORITE_UUID, &uuid, &text).await;
+                        };
+                    }
+
+                    let ui = ui.clone();
+                    let _ = slint::invoke_from_event_loop(move || {
+                        entry::init_favorite(ui.clone());
+                    });
+                }
+
+                async_message_success(ui.clone(), tr("恢复成功"));
+            }
+            Err(e) => async_message_warn(
+                ui.clone(),
+                format!("{}. {}: {e:?}", tr("恢复失败"), tr("原因")),
+            ),
+        }
+    });
 }

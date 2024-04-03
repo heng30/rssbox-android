@@ -8,7 +8,7 @@ use crate::{
 use anyhow::Result;
 use slint::{ComponentHandle, Model, SharedString, VecModel, Weak};
 
-const FAVORITE_UUID: &str = "favorite-uuid";
+pub const FAVORITE_UUID: &str = "favorite-uuid";
 
 #[macro_export]
 macro_rules! store_rss_entrys {
@@ -47,7 +47,15 @@ pub async fn get_from_db(suuid: &str) -> Vec<UIRssEntry> {
     }
 }
 
-fn init_favorite(ui: Weak<AppWindow>) {
+pub fn get_favorite_entrys(ui: &AppWindow) -> Vec<RssEntry> {
+    ui.global::<Store>()
+        .get_rss_favorite_entrys()
+        .iter()
+        .map(|item| item.clone().into())
+        .collect()
+}
+
+pub fn init_favorite(ui: Weak<AppWindow>) {
     tokio::spawn(async move {
         db::entry::new(FAVORITE_UUID).await.unwrap();
         let entry_list = get_from_db(FAVORITE_UUID).await;

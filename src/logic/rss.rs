@@ -189,6 +189,19 @@ fn rss_config_sort(ui: &AppWindow) {
     store_rss_lists!(ui).set_vec(list);
 }
 
+pub fn remove_all_rss(ui: &AppWindow) {
+    let uuids = ui
+        .global::<Store>()
+        .get_rss_lists()
+        .iter()
+        .map(|item| item.uuid)
+        .collect::<Vec<_>>();
+
+    for uuid in uuids.into_iter() {
+        ui.global::<Logic>().invoke_remove_rss(uuid);
+    }
+}
+
 fn update_rss_config_from_ui(src_config: &mut UIRssConfig, ui_config: UIRssConfig) {
     src_config.name = ui_config.name;
     src_config.url = ui_config.url;
@@ -199,7 +212,7 @@ fn update_rss_config_from_ui(src_config: &mut UIRssConfig, ui_config: UIRssConfi
     src_config.is_favorite = ui_config.is_favorite;
 }
 
-fn init_rss(ui: &AppWindow) {
+pub fn init_rss(ui: &AppWindow) {
     store_rss_lists!(ui).set_vec(vec![]);
     store_rss_entrys!(ui).set_vec(vec![]);
 
@@ -575,15 +588,29 @@ async fn _toggle_rss_favorite(rss: RssConfig) -> Result<()> {
 }
 
 fn parse_summary(summary: &str, is_text: bool) -> String {
-    let max_counts = 50;
+    let mut max_counts = 100;
     let summary = summary.trim();
 
-    let chars_summary = match is_text {
+    let mut chars_summary = match is_text {
         true => summary.chars().collect::<Vec<_>>(),
-        _ => html2text::from_read(summary.as_bytes(), max_counts * 4)
+        _ => html2text::from_read(summary.as_bytes(), usize::MAX)
             .replace("\n", "")
             .chars()
             .collect::<Vec<_>>(),
+    };
+
+    if chars_summary.len() > max_counts {
+        chars_summary = chars_summary[..max_counts]
+            .into_iter()
+            .map(|v| v.clone())
+            .collect::<Vec<_>>();
+    }
+
+    let summary = chars_summary.iter().collect::<String>();
+
+    // contain none ascii chars
+    if summary.len() > chars_summary.len() {
+        max_counts = 50;
     };
 
     if chars_summary.len() > max_counts {
@@ -592,7 +619,7 @@ fn parse_summary(summary: &str, is_text: bool) -> String {
             chars_summary[..max_counts].iter().collect::<String>()
         )
     } else {
-        summary.to_string()
+        format!("{}...", summary.to_string())
     }
 }
 

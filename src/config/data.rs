@@ -13,11 +13,11 @@ pub struct Config {
     #[serde(skip)]
     pub cache_dir: PathBuf,
 
-    #[serde(default = "appid_default")]
-    pub appid: String,
-
     #[serde(skip)]
     pub is_first_run: bool,
+
+    #[serde(default = "appid_default")]
+    pub appid: String,
 
     pub ui: UI,
 
@@ -26,6 +26,9 @@ pub struct Config {
     pub sync: Sync,
 
     pub proxy: Proxy,
+
+    #[serde(default)]
+    pub backup_recover: BackupRecover,
 }
 
 pub fn appid_default() -> String {
@@ -100,4 +103,12 @@ impl Default for Reading {
             is_delete_after_reading: false,
         }
     }
+}
+
+#[derive(Serialize, Deserialize, Default, Debug, Clone)]
+pub struct BackupRecover {
+    pub api_token: String,
+    pub favorite: bool,
+    pub rss: bool,
+    pub setting: bool,
 }

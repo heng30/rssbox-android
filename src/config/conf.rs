@@ -1,9 +1,7 @@
 use super::data::{self, Config};
 use anyhow::Result;
 use log::debug;
-use std::fs;
-use std::path::PathBuf;
-use std::sync::Mutex;
+use std::{fs, path::PathBuf, sync::Mutex};
 
 lazy_static! {
     pub static ref CONFIG: Mutex<Config> = Mutex::new(Config::default());
@@ -50,6 +48,18 @@ pub fn all() -> data::Config {
     CONFIG.lock().unwrap().clone()
 }
 
+pub fn reset(mut conf: Config) {
+    let mut c = CONFIG.lock().unwrap();
+
+    conf.config_path = c.config_path.clone();
+    conf.db_path = c.db_path.clone();
+    conf.cache_dir = c.cache_dir.clone();
+    conf.is_first_run = c.is_first_run;
+
+    *c = conf;
+    _ = c.save();
+}
+
 pub fn ui() -> data::UI {
     CONFIG.lock().unwrap().ui.clone()
 }
@@ -64,6 +74,10 @@ pub fn proxy() -> data::Proxy {
 
 pub fn sync() -> data::Sync {
     CONFIG.lock().unwrap().sync.clone()
+}
+
+pub fn backup_recover() -> data::BackupRecover {
+    CONFIG.lock().unwrap().backup_recover.clone()
 }
 
 pub fn db_path() -> PathBuf {
@@ -126,6 +140,7 @@ impl Config {
                     self.reading = c.reading;
                     self.proxy = c.proxy;
                     self.sync = c.sync;
+                    self.backup_recover = c.backup_recover;
                     Ok(())
                 }
                 Err(_) => {

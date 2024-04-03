@@ -122,6 +122,19 @@ pub fn tr(text: &str) -> String {
     items.insert("没有消息", "No Message");
     items.insert("输入关键字", "Input keyword");
 
+    items.insert("备份与恢复", "Backup and recover");
+    items.insert("API 令牌", "API token");
+    items.insert("请输入API令牌", "Please input API token");
+    items.insert("备份与恢复选项", "Backup and recover options");
+    items.insert("RSS列表", "RSS list");
+    items.insert("用户设置", "User setting");
+    items.insert("备份", "Backup");
+    items.insert("恢复", "Recover");
+    items.insert("备份成功", "Backup success");
+    items.insert("备份失败", "Backup failed");
+    items.insert("恢复成功", "Recover success");
+    items.insert("恢复失败", "Recover failed");
+
     if let Some(txt) = items.get(text) {
         return txt.to_string();
     }

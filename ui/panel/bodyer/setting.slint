@@ -2,7 +2,7 @@ import { LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading } from "../../store.slint";
+import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover } from "../../store.slint";
 import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn } from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
@@ -14,6 +14,7 @@ enum SettingDetailIndex {
     Help,
     Feedback,
     Donate,
+    BackupRecover,
 }
 
 component UI inherits SettingDetail {
@@ -477,6 +478,104 @@ component Donate inherits SettingDetail {
     }
 }
 
+
+component BackupRecover inherits SettingDetail {
+    title: Logic.tr(Store.is-cn, "备份与恢复");
+
+    public function get() -> SettingBackupRecover {
+        return {
+            api-token: token-lineedit.text,
+            rss: rss-checkbox.checked,
+            setting: setting-checkbox.checked,
+            favorite: favorite-checkbox.checked,
+        };
+    }
+
+    public function set(setting: SettingBackupRecover) {
+        token-lineedit.text = setting.api-token;
+        rss-checkbox.checked = setting.rss;
+        setting-checkbox.checked = setting.setting;
+        favorite-checkbox.checked =  setting.favorite;
+    }
+
+    SettingDetailInner {
+        SettingDetailInnerVbox {
+            token-txt := SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "API 令牌");
+            }
+
+            HorizontalLayout {
+                spacing: Theme.spacing;
+
+                token-lineedit := LineEdit {
+                    height: token-txt.preferred-height * 1.6;
+                    placeholder-text: Logic.tr(Store.is-cn, "请输入API令牌");
+                }
+
+                IconBtn {
+                    width: token-lineedit.height;
+                    icon: Icons.paste;
+                    icon-width: Theme.icon-size * 1.2;
+
+                    clicked => {
+                        token-lineedit.text = "";
+                        token-lineedit.paste();
+                    }
+                }
+            }
+        }
+
+        SettingDetailInnerVbox {
+            spacing: Theme.spacing * 2;
+
+            content-label := SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "备份与恢复选项");
+            }
+
+            favorite-checkbox := CheckBox {
+                text: Logic.tr(Store.is-cn, "收藏夹");
+                checked: true;
+            }
+
+            rss-checkbox := CheckBox {
+                text: Logic.tr(Store.is-cn, "RSS列表");
+                checked: true;
+            }
+
+            setting-checkbox := CheckBox {
+                text: Logic.tr(Store.is-cn, "用户设置");
+                checked: true;
+            }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: Theme.spacing * 8;
+            padding: Theme.padding * 2;
+
+            cancel-btn := CancelBtn {
+                text: Logic.tr(Store.is-cn, "备份");
+                icon: Icons.upload-cloud;
+                clicked => {
+                    root.back();
+                    Logic.backup-to-remote(root.get());
+                }
+            }
+
+            ConfirmBtn  {
+                text: Logic.tr(Store.is-cn, "恢复");
+                icon: Icons.download-cloud;
+
+                clicked => {
+                    root.back();
+                    Logic.recover-from-remote(root.get());
+                }
+            }
+        }
+    }
+}
+
+
 component Body inherits VerticalLayout {
     alignment: start;
     spacing: Theme.spacing;
@@ -596,12 +695,23 @@ component Body inherits VerticalLayout {
                     Util.open-url("https://github.com/Heng30/rssbox-android");
                 }
             }
+
+            SettingEntry {
+                text: Logic.tr(Store.is-cn, "备份与恢复");
+                icon: Icons.backup-recover;
+                clicked => {
+                    root.visible = false;
+                    root.current-setting-detail-index = SettingDetailIndex.BackupRecover;
+                    root.switch(SettingDetailIndex.BackupRecover);
+                }
+            }
         }
     }
 }
 
 export component Setting inherits Rectangle {
     body := Body {
+        // visible: false;
         switch(index) => {
             if (index == SettingDetailIndex.UI) {
                 ui.set(Logic.get-setting-ui());
@@ -613,6 +723,8 @@ export component Setting inherits Rectangle {
                 proxy.set(Logic.get-setting-proxy());
             } else if (index == SettingDetailIndex.Feedback) {
                 feedback.focus();
+            } else if (index == SettingDetailIndex.BackupRecover) {
+                backup-recover.set(Logic.get-setting-backup-recover());
             }
         }
     }
@@ -665,6 +777,14 @@ export component Setting inherits Rectangle {
         feedback := Feedback {
             visible: body.current-setting-detail-index == SettingDetailIndex.Feedback;
             back => { body.visible = true; }
+        }
+
+        backup-recover := BackupRecover {
+            visible: body.current-setting-detail-index == SettingDetailIndex.BackupRecover ;
+            back => {
+                body.visible = true;
+                Logic.set-setting-backup-recover(self.get());
+            }
         }
     }
 

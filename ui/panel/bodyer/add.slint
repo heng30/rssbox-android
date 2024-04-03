@@ -210,7 +210,10 @@ component AddEdit inherits Rectangle {
                     icon: Icons.paste;
                     icon-width: Theme.icon-size * 1.2;
 
-                    clicked => { line-edit-url.text = Logic.copy-from-clipboard(); }
+                    clicked => {
+                        line-edit-url.text = "";
+                        line-edit-url.paste();
+                    }
                 }
             }
         }
