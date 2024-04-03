@@ -7,14 +7,14 @@
 [English Documentation](./README.md)
 
 #### 简介
-这是一个RSS客户端。专门为安卓端写的，当然你也可以编译Linux, Windows (也许Macos)平台的程序。这是一个纯Rust项目，界面基于`Slint UI`。 遇到任何问题都可以给我反馈。
+这是一个RSS阅读客户端。专门为安卓端写的，当然你也可以编译Linux, Windows (也许Macos)平台的程序。这是一个纯Rust项目，界面基于`Slint UI`。 遇到任何问题都可以给我反馈。
 
 #### 功能
-- [x] 生成钱包账号
-- [x] 恢复钱包
-- [x] 发送和接收BTC
-- [x] 展示交易活动
-- [x] 地址簿
+- [x] 展示RSS信息
+- [x] 收藏RSS信息
+- [x] 添加，编辑和删除RSS
+- [x] 可以从[发现]页面添加RSS
+- [x] 可[设置]页面界面，阅读，同步，代理，清除缓存等其他设置选项
 
 ##### 安卓平台编译信息
 - `min-sdk-version = 23`
@@ -36,4 +36,5 @@
 - [top-rss-list](https://github.com/weekend-project-space/top-rss-list)
 - [rss-list](https://github.com/saveweb/rss-list)
 - [developer.android.com](https://developer.android.com/guide)
+- [Activity 设置全屏显示的两种方式及系统自带 theme 属性解析](https://www.cnblogs.com/developer-wang/p/6771115.html)
 

@@ -13,7 +13,7 @@ It is a RSS reader. It is designed for android platform. However, you can compil
 - [x] Show RSS new message.
 - [x] Collect the message you like.
 - [x] Add, edit and delete a RSS.
-- [x] Add RSS from the [Find] page. Maybe support online search latterly.
+- [x] Add RSS from the [Find] page.
 - [x] Setting for UI, reading, sync, proxy, clear cache and others.
 
 ##### Android platform build information

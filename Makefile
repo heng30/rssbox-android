@@ -45,9 +45,6 @@ tool-gen-rss-run-send:
 tool-gen-rss-run-local-send:
 	RUST_BACKTRACE=1 RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -r http://0.0.0.0:8004
 
-tool-gen-rss-run-local-send-to-remote:
-	RUST_BACKTRACE=1 RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -r https://heng30.xyz/apisvr
-
 test:
 	$(build-evn) $(run-evn) cargo test -- --nocapture
 
