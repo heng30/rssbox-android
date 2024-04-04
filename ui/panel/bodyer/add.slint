@@ -2,12 +2,27 @@ import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex, RssConfig } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { CancelBtn, ConfirmBtn, Tag, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel } from "../../base/widgets.slint";
+import { CancelBtn, ConfirmBtn, Tag, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel, CenterLayout } from "../../base/widgets.slint";
 
 enum BtnIndex {
     New,
     Edit,
     Delete,
+}
+
+component AHead inherits Head {
+    icon: Icons.add-small;
+    title: Logic.tr(Store.is-cn, "添加");
+    hbox-alignment: LayoutAlignment.space-between;
+
+    CenterLayout {
+        IconBtn {
+            icon: Icons.refresh;
+            icon-width: Theme.icon-size * 1.2;
+            background: Colors.transparent;
+            clicked => { Logic.sync-rss-all(); }
+        }
+    }
 }
 
 component RssList inherits Rectangle {
@@ -281,11 +296,7 @@ component Body inherits Rectangle {
     private property <BtnIndex> rss-list-btns-index: BtnIndex.New;
 
     rsslist-vbox := VerticalLayout {
-        Head {
-            hbox-alignment: LayoutAlignment.start;
-            icon: Icons.add-small;
-            title: Logic.tr(Store.is-cn, "添加");
-        }
+        AHead { }
 
         rsslist := RssList { }
 
