@@ -557,8 +557,12 @@ component BackupRecover inherits SettingDetail {
                 text: Logic.tr(Store.is-cn, "备份");
                 icon: Icons.upload-cloud;
                 clicked => {
-                    root.back();
-                    Logic.backup-to-remote(root.get());
+                    Logic.set-setting-backup-recover(root.get());
+
+                    Store.ok-cancel-dialog-setting.title-type = "warning";
+                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否备份？");
+                    Store.ok-cancel-dialog-setting.handle-type = "backup-to-remote";
                 }
             }
 
@@ -567,8 +571,12 @@ component BackupRecover inherits SettingDetail {
                 icon: Icons.download-cloud;
 
                 clicked => {
-                    root.back();
-                    Logic.recover-from-remote(root.get());
+                    Logic.set-setting-backup-recover(root.get());
+
+                    Store.ok-cancel-dialog-setting.title-type = "warning";
+                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
+                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否恢复？");
+                    Store.ok-cancel-dialog-setting.handle-type = "recover-from-remote";
                 }
             }
         }

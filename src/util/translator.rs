@@ -134,6 +134,8 @@ pub fn tr(text: &str) -> String {
     items.insert("备份失败", "Backup failed");
     items.insert("恢复成功", "Recover success");
     items.insert("恢复失败", "Recover failed");
+    items.insert("是否备份？", "Backup or not?");
+    items.insert("是否恢复？", "Recover or not?");
 
     if let Some(txt) = items.get(text) {
         return txt.to_string();

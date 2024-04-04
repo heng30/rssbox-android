@@ -20,6 +20,14 @@ pub fn init(ui: &AppWindow) {
                 "remove-all-cache" => {
                     ui.global::<Logic>().invoke_remove_all_cache();
                 }
+                "backup-to-remote" => {
+                    let setting = ui.global::<Logic>().invoke_get_setting_backup_recover();
+                    ui.global::<Logic>().invoke_backup_to_remote(setting);
+                }
+                "recover-from-remote" => {
+                    let setting = ui.global::<Logic>().invoke_get_setting_backup_recover();
+                    ui.global::<Logic>().invoke_recover_from_remote(setting);
+                }
                 _ => (),
             }
         });
