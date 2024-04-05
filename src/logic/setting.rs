@@ -4,13 +4,15 @@ use super::{
     rss, ReqData,
 };
 use crate::slint_generatedAppWindow::{
-    AppWindow, Logic, SettingBackupRecover, SettingProxy, SettingReading, SettingSync, Store,
+    AppWindow, Logic, SettingBackupRecover, SettingProxy, SettingReading, SettingSync,
+    SettingUpdate, Store,
 };
 use crate::{
     config::{self, Config},
     db::{self, entry::RssEntry, rss::RssConfig},
     message_warn,
     util::{http, translator::tr},
+    version,
 };
 use anyhow::Result;
 use reqwest::header::{HeaderMap, AUTHORIZATION, CONTENT_TYPE};
@@ -22,6 +24,7 @@ use uuid::Uuid;
 const FEEDBACK_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/feedback";
 const BACKUP_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/backup";
 const RECOVER_URL: &str = "https://heng30.xyz/apisvr/rssbox/android/recover";
+const LATEST_VERSION_URL: &str = "https://heng30.xyz/apisvr/latest/version?q=rssbox-android";
 
 // const BACKUP_URL: &str = "http://127.0.0.1:8004/rssbox/android/backup";
 // const RECOVER_URL: &str = "http://127.0.0.1:8004/rssbox/android/recover";
@@ -33,11 +36,38 @@ struct BackupRecoverData {
     setting: Config,
 }
 
+#[derive(Serialize, Deserialize, Default, Debug, Clone)]
+struct SettingUpdateData {
+    current_version: String,
+    latest_version: String,
+    detail_cn: String,
+    detail_en: String,
+    url: String,
+}
+
+impl From<SettingUpdateData> for SettingUpdate {
+    fn from(setting: SettingUpdateData) -> Self {
+        Self {
+            current_version: setting.current_version.into(),
+            latest_version: setting.latest_version.into(),
+            detail_cn: setting.detail_cn.into(),
+            detail_en: setting.detail_en.into(),
+            url: setting.url.into(),
+        }
+    }
+}
+
 pub fn init(ui: &AppWindow) {
     init_setting(&ui);
 
     ui.global::<Store>()
         .set_is_first_run(config::is_first_run());
+
+    ui.global::<Store>().set_setting_update(SettingUpdate {
+        current_version: version::VERSION.into(),
+        latest_version: version::VERSION.into(),
+        ..Default::default()
+    });
 
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_get_setting_ui(move || {
@@ -190,6 +220,11 @@ pub fn init(ui: &AppWindow) {
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_recover_from_remote(move |options| {
         recover_from_remote(ui_handle.clone(), options);
+    });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_get_setting_update(move || {
+        _get_setting_update(ui_handle.clone());
     });
 }
 
@@ -345,6 +380,35 @@ fn recover_from_remote(ui: Weak<AppWindow>, options: SettingBackupRecover) {
                 ui.clone(),
                 format!("{}. {}: {e:?}", tr("恢复失败"), tr("原因")),
             ),
+        }
+    });
+}
+
+async fn _inner_get_setting_update() -> Result<SettingUpdateData> {
+    Ok(http::client(None)?
+        .get(LATEST_VERSION_URL)
+        .timeout(Duration::from_secs(15))
+        .send()
+        .await?
+        .json::<SettingUpdateData>()
+        .await?)
+}
+
+fn _get_setting_update(ui: Weak<AppWindow>) {
+    tokio::spawn(async move {
+        match _inner_get_setting_update().await {
+            Err(e) => async_message_warn(
+                ui.clone(),
+                format!("{}. {}: {e:?}", tr("获取最新版本信息失败"), tr("原因")),
+            ),
+            Ok(mut v) => {
+                v.current_version = version::VERSION.into();
+
+                let ui = ui.clone();
+                let _ = slint::invoke_from_event_loop(move || {
+                    ui.unwrap().global::<Store>().set_setting_update(v.into());
+                });
+            }
         }
     });
 }

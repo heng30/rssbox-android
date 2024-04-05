@@ -90,6 +90,14 @@ export struct SettingBackupRecover {
     setting: bool,
 }
 
+export struct SettingUpdate {
+    current-version: string,
+    latest-version: string,
+    detail-cn: string,
+    detail-en: string,
+    url: string,
+}
+
 export struct AboutDialog {
     show: bool,
     title: string,
@@ -177,7 +185,7 @@ export global Store  {
     in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
 
     in-out property <int> icon-index: 0;
-    in-out property <bool> is-first-run: false;
+    in-out property <bool> is-first-run;
     in-out property <bool> rss-update-time-flag;
     in-out property <bool> rss-unread-counts-flag;
     in-out property <bool> find-entrys-counts-flag;
@@ -187,6 +195,16 @@ export global Store  {
         font-size: "16",
         font-family: "SourceHanSerifCN",
         language: "cn",
+    };
+
+    in-out property <SettingUpdate> setting-update : {
+        current-version: "v1.0.0",
+        latest-version: "v1.1.0",
+        url: "https://example.com",
+        detail-cn: "1. 更新内容 1\n"
+                 + "2. 更新内容 2\n",
+        detail-en: "1. update message 1\n"
+                 + "2. update message 2\n",
     };
 
     in-out property<AboutDialog> about-dialog: {

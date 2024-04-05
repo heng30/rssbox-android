@@ -2,7 +2,7 @@ import { LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover } from "../../store.slint";
+import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover, SettingUpdate } from "../../store.slint";
 import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn } from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
@@ -15,6 +15,7 @@ enum SettingDetailIndex {
     Feedback,
     Donate,
     BackupRecover,
+    Update,
 }
 
 component UI inherits SettingDetail {
@@ -583,6 +584,53 @@ component BackupRecover inherits SettingDetail {
     }
 }
 
+component Update inherits SettingDetail {
+    private property <SettingUpdate> setting: Store.setting-update;
+
+    title: Logic.tr(Store.is-cn, "获取最新版本");
+
+    SettingDetailInner {
+        SettingDetailInnerVbox {
+            version-txt := SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "版本信息");
+            }
+
+            HorizontalLayout {
+                current-txt := Label { width: 50%;
+                    text: Logic.tr(Store.is-cn, "当前版本") + ": " + root.setting.current-version;
+                }
+
+                latest-txt := Label {
+                    text: Logic.tr(Store.is-cn, "最新版本") + ": " + root.setting.latest-version;
+                }
+            }
+        }
+
+        SettingDetailInnerVbox {
+            SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "更新信息");
+            }
+
+            detail-txt := Label {
+                wrap: word-wrap;
+                text: Store.is-cn ? setting.detail-cn : setting.detail-en;
+            }
+        }
+
+        if root.setting.url != "" && root.setting.current-version != root.setting.latest-version : HorizontalLayout {
+            alignment: end;
+            padding: Theme.padding * 2;
+
+            ConfirmBtn {
+                icon: Icons.download;
+                text: Logic.tr(Store.is-cn, "下载最新版本");
+
+                clicked => { Util.open-url(root.setting.url); }
+            }
+        }
+    }
+}
+
 
 component Body inherits VerticalLayout {
     alignment: start;
@@ -713,6 +761,16 @@ component Body inherits VerticalLayout {
                     root.switch(SettingDetailIndex.BackupRecover);
                 }
             }
+
+            SettingEntry {
+                text: Logic.tr(Store.is-cn, "获取最新版本");
+                icon: Icons.version;
+                clicked => {
+                    root.visible = false;
+                    root.current-setting-detail-index = SettingDetailIndex.Update;
+                    root.switch(SettingDetailIndex.Update);
+                }
+            }
         }
     }
 }
@@ -733,6 +791,8 @@ export component Setting inherits Rectangle {
                 feedback.focus();
             } else if (index == SettingDetailIndex.BackupRecover) {
                 backup-recover.set(Logic.get-setting-backup-recover());
+            } else if (index == SettingDetailIndex.Update) {
+                Logic.get-setting-update();
             }
         }
     }
@@ -793,6 +853,11 @@ export component Setting inherits Rectangle {
                 body.visible = true;
                 Logic.set-setting-backup-recover(self.get());
             }
+        }
+
+        update := Update {
+            visible: body.current-setting-detail-index == SettingDetailIndex.Update;
+            back => { body.visible = true; }
         }
     }
 

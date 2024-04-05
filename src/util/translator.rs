@@ -137,6 +137,12 @@ pub fn tr(text: &str) -> String {
     items.insert("是否备份？", "Backup or not?");
     items.insert("是否恢复？", "Recover or not?");
 
+    items.insert("获取最新版本", "Latest version");
+    items.insert("版本信息", "Current version");
+    items.insert("当前版本", "Latest version");
+    items.insert("更新信息", "Update detail");
+    items.insert("下载最新版本", "Download");
+
     if let Some(txt) = items.get(text) {
         return txt.to_string();
     }
