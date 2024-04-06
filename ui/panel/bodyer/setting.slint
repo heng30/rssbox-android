@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover, SettingUpdate } from "../../store.slint";
-import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn } from "../../base/widgets.slint";
+import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn, NoDataImg, Tag} from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
     UI,
@@ -586,6 +586,8 @@ component BackupRecover inherits SettingDetail {
 
 component Update inherits SettingDetail {
     private property <SettingUpdate> setting: Store.setting-update;
+    private property <bool> is-same-version: setting.current-version == setting.latest-version;
+    private property <bool> is-show-detail : (Store.is-cn && setting.detail-cn != "") || (!Store.is-cn && setting.detail-en != "");
 
     title: Logic.tr(Store.is-cn, "获取最新版本");
 
@@ -596,12 +598,22 @@ component Update inherits SettingDetail {
             }
 
             HorizontalLayout {
-                current-txt := Label { width: 50%;
-                    text: Logic.tr(Store.is-cn, "当前版本") + ": " + root.setting.current-version;
+                HorizontalLayout {
+                    alignment: start;
+                    current-txt := Tag {
+                        background: Theme.tag-colors[0];
+                        text-color: self.background.darker(100%);
+                        text: Logic.tr(Store.is-cn, "当前版本") + ": " + root.setting.current-version;
+                    }
                 }
 
-                latest-txt := Label {
-                    text: Logic.tr(Store.is-cn, "最新版本") + ": " + root.setting.latest-version;
+                HorizontalLayout {
+                    alignment: start;
+                    latest-txt := Tag {
+                        background: root.is-same-version ? Theme.tag-colors[0] : Theme.tag-colors[1];
+                        text-color: self.background.darker(100%);
+                        text: Logic.tr(Store.is-cn, "最新版本") + ": " + root.setting.latest-version;
+                    }
                 }
             }
         }
@@ -611,13 +623,20 @@ component Update inherits SettingDetail {
                 text: Logic.tr(Store.is-cn, "更新信息");
             }
 
-            detail-txt := Label {
+            if is-show-detail : Label {
                 wrap: word-wrap;
                 text: Store.is-cn ? setting.detail-cn : setting.detail-en;
             }
+
+            if !is-show-detail : Rectangle {
+                NoDataImg {
+                    width: root.width * 0.5;
+                    text: Logic.tr(Store.is-cn, "没有数据");
+                }
+            }
         }
 
-        if root.setting.url != "" && root.setting.current-version != root.setting.latest-version : HorizontalLayout {
+        if root.setting.url != "" && !root.is-same-version : HorizontalLayout {
             alignment: end;
             padding: Theme.padding * 2;
 

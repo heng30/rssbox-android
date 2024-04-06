@@ -38,6 +38,7 @@ struct BackupRecoverData {
 
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 struct SettingUpdateData {
+    #[serde(skip)]
     current_version: String,
     latest_version: String,
     detail_cn: String,
