@@ -623,10 +623,14 @@ component Update inherits SettingDetail {
                 text: Logic.tr(Store.is-cn, "更新信息");
             }
 
-            if is-show-detail : Label {
-                wrap: word-wrap;
-                text: Store.is-cn ? setting.detail-cn : setting.detail-en;
-                color: Theme.secondary-text-color;
+            if is-show-detail : HorizontalLayout {
+                padding-left: Theme.padding * 2;
+
+                Label {
+                    wrap: word-wrap;
+                    text: Store.is-cn ? setting.detail-cn : setting.detail-en;
+                    color: Theme.secondary-text-color;
+                }
             }
 
             if !is-show-detail : Rectangle {

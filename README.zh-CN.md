@@ -18,7 +18,6 @@
 
 ##### 安卓平台编译信息
 - `min-sdk-version = 23`
-- `max-sdk-version = 34`
 - `target-sdk-version = 32`
 
 #### 如何构建?

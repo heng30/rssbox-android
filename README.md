@@ -18,7 +18,6 @@ It is a RSS reader. It is designed for android platform. However, you can compil
 
 ##### Android platform build information
 - `min-sdk-version = 23`
-- `max-sdk-version = 34`
 - `target-sdk-version = 32`
 
 #### How to build?
