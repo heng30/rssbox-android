@@ -8,15 +8,17 @@ use reqwest::header::{HeaderMap, CONTENT_TYPE};
 use rss::Channel;
 use rssbox::{
     db::ComEntry,
-    logic::{top_rss_list_cn, FindEntry},
+    logic::{rss_valid, FindEntry},
     util::http,
 };
 use std::{collections::HashSet, fs, io::BufReader, time::Duration};
 use tokio::{fs::File, io::AsyncWriteExt, sync::mpsc};
 
-const TOP_RSS_LIST_CN_OPML: &str = include_str!("../data/rss-list.opml");
-const TOP_RSS_LIST_CN: &str = include_str!("../data/top-rss-list.json");
-const TOP_RSS_LIST_CN_VALID_PATH: &str = "./data/top-rss-list-valid.json";
+const RSS_CN_OPML: &str = include_str!("../data/rss-cn.opml");
+const RSS_EN_OPML: &str = include_str!("../data/rss-en.opml");
+const RSS_CN: &str = include_str!("../data/rss-cn.json");
+const RSS_CN_VALID_PATH: &str = "./data/rss-valid-cn.json";
+const RSS_EN_VALID_PATH: &str = "./data/rss-valid-en.json";
 
 /// Tool program to generate valid rss and send to api server
 #[derive(Parser, Debug)]
@@ -25,6 +27,10 @@ struct Args {
     /// Generate valid rss
     #[arg(short, long, default_value_t = false)]
     generate: bool,
+
+    /// Send chinese rss to remote
+    #[arg(short, long, default_value_t = false)]
+    is_cn: bool,
 
     /// API server root url
     #[arg(short, long, default_value_t = String::default())]
@@ -44,7 +50,7 @@ async fn main() -> Result<()> {
     }
 
     if !args.root_url.is_empty() {
-        update_apisvr_rss(&args.root_url)
+        update_apisvr_rss(&args.root_url, args.is_cn)
             .await
             .context("update apisvr rss failed")?;
     }
@@ -52,10 +58,13 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn update_apisvr_rss(root_url: &str) -> Result<()> {
+async fn update_apisvr_rss(root_url: &str, is_cn: bool) -> Result<()> {
     log::info!("update start...");
 
-    let get_url = format!("{root_url}/rssbox/rss/list/cn");
+    let get_url = format!(
+        "{root_url}/rssbox/rss/list/{}",
+        if is_cn { "cn" } else { "en" }
+    );
 
     log::info!("get url: {}", get_url);
 
@@ -72,23 +81,21 @@ async fn update_apisvr_rss(root_url: &str) -> Result<()> {
 
     log::info!("remote_items: {}", remote_items.len());
 
-    let json_text =
-        fs::read_to_string(TOP_RSS_LIST_CN_VALID_PATH).context("read valid json file failed")?;
+    let json_text = fs::read_to_string(if is_cn {
+        RSS_CN_VALID_PATH
+    } else {
+        RSS_EN_VALID_PATH
+    })
+    .context("read valid json file failed")?;
 
-    let local_items = top_rss_list_cn(&json_text)
+    let local_items = rss_valid(&json_text)
         .context("parse json file error")?
         .into_iter()
         .collect::<HashSet<_>>();
 
     log::info!("local_items: {}", local_items.len());
 
-    let difference_items_rl: HashSet<_> = remote_items.difference(&local_items).cloned().collect();
-    let difference_items_lr: HashSet<_> = local_items.difference(&remote_items).cloned().collect();
-
-    let difference_items = difference_items_rl
-        .into_iter()
-        .chain(difference_items_lr.into_iter())
-        .collect::<Vec<_>>();
+    let difference_items: Vec<_> = local_items.difference(&remote_items).cloned().collect();
 
     let difference_items_len = difference_items.len();
     log::info!("difference_items: {}", difference_items_len);
@@ -103,7 +110,10 @@ async fn update_apisvr_rss(root_url: &str) -> Result<()> {
         let (root_url, tx) = (root_url.to_string(), tx.clone());
 
         tokio::spawn(async move {
-            let post_url = format!("{root_url}/rssbox/rss/list/cn");
+            let post_url = format!(
+                "{root_url}/rssbox/rss/list/{}",
+                if is_cn { "cn" } else { "en" }
+            );
             let mut headers = HeaderMap::new();
             headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
 
@@ -134,15 +144,27 @@ async fn update_apisvr_rss(root_url: &str) -> Result<()> {
 }
 
 async fn generate_valid_rss() -> Result<()> {
-    log::info!("generate start...");
+    _ = generate_valid_rss_cn()
+        .await
+        .context("generate valid rss cn failed")?;
 
-    let _assert = File::create(TOP_RSS_LIST_CN_VALID_PATH).await?;
+    _ = generate_valid_rss_en()
+        .await
+        .context("generate valid rss en failed")?;
 
-    let json_items = top_rss_list_cn(TOP_RSS_LIST_CN).context("parse json file error")?;
+    Ok(())
+}
+
+async fn generate_valid_rss_cn() -> Result<()> {
+    log::info!("generate rss cn start...");
+
+    let _assert = File::create(RSS_CN_VALID_PATH).await?;
+
+    let json_items = rss_valid(RSS_CN).context("parse json file error")?;
     log::info!("{}", json_items.len());
     assert!(!json_items.is_empty());
 
-    let opml_items = parse_opml(TOP_RSS_LIST_CN_OPML).context("parse opml file error")?;
+    let opml_items = parse_opml(RSS_CN_OPML).context("parse opml cn file error")?;
     log::info!("{}", opml_items.len());
     assert!(!opml_items.is_empty());
 
@@ -155,6 +177,29 @@ async fn generate_valid_rss() -> Result<()> {
     log::info!("{}", items.len());
     assert!(!items.is_empty());
 
+    _ = save_valid_rss(items, RSS_CN_VALID_PATH).await;
+    log::info!("generate rss cn exit...");
+
+    Ok(())
+}
+
+async fn generate_valid_rss_en() -> Result<()> {
+    log::info!("generate rss en start...");
+
+    let _assert = File::create(RSS_EN_VALID_PATH).await?;
+
+    let opml_items = parse_opml(RSS_EN_OPML).context("parse opml en file error")?;
+    log::info!("{}", opml_items.len());
+    assert!(!opml_items.is_empty());
+
+    _ = save_valid_rss(opml_items, RSS_EN_VALID_PATH).await;
+
+    log::info!("generate rss en exit...");
+
+    Ok(())
+}
+
+async fn save_valid_rss(items: Vec<FindEntry>, save_path: &str) -> Result<()> {
     let total_len = items.len();
     let (tx, mut rx) = mpsc::channel(total_len);
 
@@ -191,10 +236,8 @@ async fn generate_valid_rss() -> Result<()> {
     // log::info!("{text}");
     log::info!("total items: {}", valid_items.len());
 
-    let mut file = File::create(TOP_RSS_LIST_CN_VALID_PATH).await?;
+    let mut file = File::create(save_path).await?;
     file.write_all(text.as_bytes()).await?;
-
-    log::info!("generate exit...");
 
     Ok(())
 }

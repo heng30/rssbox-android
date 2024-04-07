@@ -42,11 +42,14 @@ tool-gen-rss-run-generate:
 tool-gen-rss-run-local-generate:
 	RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -g
 
-tool-gen-rss-run-send:
+tool-gen-rss-run-send-cn:
 	RUST_BACKTRACE=1 RUST_LOG=error,warn,info cargo run --bin tool-gen-rss --features=tool-gen-rss -- -r http://0.0.0.0:8004
 
-tool-gen-rss-run-local-send:
+tool-gen-rss-run-local-send-cn:
 	RUST_BACKTRACE=1 RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -r http://0.0.0.0:8004
+
+tool-gen-rss-run-local-send-en:
+	RUST_BACKTRACE=1 RUST_LOG=error,warn,info ./target/debug/tool-gen-rss -r --is_cn http://0.0.0.0:8004
 
 test:
 	$(build-evn) $(run-evn) cargo test -- --nocapture

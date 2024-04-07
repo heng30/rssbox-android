@@ -13,7 +13,7 @@ mod rss;
 mod setting;
 mod util;
 
-pub use find::{top_rss_list_cn, FindEntry};
+pub use find::{rss_valid, FindEntry};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ReqData {

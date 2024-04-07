@@ -1,0 +1,182 @@
+[
+  { "name": "andrew chen", "url": "https://andrewchen.com/feed/" },
+  { "name": "Shariq Raza Qadri", "url": "https://cosmicqbit.dev/index.xml" },
+  { "name": "eighty twenty", "url": "https://eighty-twenty.org/index.atom" },
+  { "name": "Vikrant Singh", "url": "https://ivikrant.net/feed/" },
+  { "name": "Sarah Tavel", "url": "https://www.sarahtavel.com/feed" },
+  {
+    "name": "The Intrinsic Perspective",
+    "url": "https://www.theintrinsicperspective.com/feed"
+  },
+  { "name": "Abigail Pain", "url": "https://www.akpain.net/blog/feed.atom" },
+  { "name": "Dense Discovery", "url": "https://www.densediscovery.com/feed/" },
+  { "name": "Good Enough", "url": "https://goodenough.us/feed.xml" },
+  { "name": "Chris Hannah", "url": "https://chrishannah.me/feed" },
+  { "name": "Xe Iaso", "url": "https://xeiaso.net/blog.rss" },
+  { "name": "anhvn", "url": "https://anhvn.com/feed.xml" },
+  { "name": "Gizmodo", "url": "https://gizmodo.com/rss" },
+  { "name": "Ahrefs SEO", "url": "https://ahrefs.com/blog/feed/" },
+  { "name": "Julia Evans", "url": "https://jvns.ca/atom.xml" },
+  {
+    "name": "Uncharted Territories",
+    "url": "https://unchartedterritories.tomaspueyo.com/feed"
+  },
+  {
+    "name": "MIT Technology Review",
+    "url": "https://www.technologyreview.com/feed/"
+  },
+  { "name": "Ness Labs", "url": "https://nesslabs.com/feed" },
+  { "name": "MacRumors", "url": "https://feeds.macrumors.com/MacRumors-All" },
+  { "name": "xkcd", "url": "https://xkcd.com/rss.xml" },
+  { "name": "Astro Blog", "url": "https://astro.build/rss.xml" },
+  { "name": "Frank Meeuwsen", "url": "https://frankmeeuwsen.com/feed.xml" },
+  { "name": "Michael Burkhardt ", "url": "https://mihobu.lol/rss.xml" },
+  { "name": "Felix Krause ", "url": "https://krausefx.com/feed.xml" },
+  { "name": "MacStories", "url": "https://www.macstories.net/feed/" },
+  { "name": "FlowingData", "url": "https://flowingdata.com/feed" },
+  { "name": "Digital Inspiration", "url": "https://www.labnol.org/rss.xml" },
+  {
+    "name": "Spencer Greenberg",
+    "url": "https://www.spencergreenberg.com/feed/"
+  },
+  { "name": "Kevin Kelly", "url": "https://feedpress.me/thetechnium" },
+  { "name": "Cooltools by KK", "url": "https://kk.org/cooltools/feed/" },
+  { "name": "Scott Galloway", "url": "https://www.profgalloway.com/feed/" },
+  { "name": "Liz Danzico", "url": "https://bobulate.com/feed/" },
+  { "name": "Josh Comeau", "url": "https://www.joshwcomeau.com/rss.xml" },
+  { "name": "Troy Hunt", "url": "https://www.troyhunt.com/rss/" },
+  { "name": "Andreas", "url": "https://82mhz.net/index.xml" },
+  {
+    "name": "Bear Blog Trending Posts",
+    "url": "https://bearblog.dev/discover/feed/?type=rss"
+  },
+  { "name": "David Walsh", "url": "https://davidwalsh.name/feed" },
+  { "name": "Tim Bray", "url": "https://www.tbray.org/ongoing/ongoing.atom" },
+  { "name": "Dan Luu", "url": "https://danluu.com/atom.xml" },
+  { "name": "A learning a day", "url": "https://alearningaday.blog/feed/" },
+  { "name": "Jason Fried", "url": "https://world.hey.com/jason/feed.atom" },
+  { "name": "Derek Sivers", "url": "https://sive.rs/en.atom" },
+  { "name": "Pedro Lopes", "url": "https://lopespm.com/atom.xml" },
+  { "name": "Alberto Marinucci ", "url": "https://alby.xyz/index.php/feed/" },
+  {
+    "name": "David Heinemeier Hansson",
+    "url": "https://world.hey.com/dhh/feed.atom"
+  },
+  {
+    "name": "Colin Percival",
+    "url": "https://www.daemonology.net/blog/index.rss"
+  },
+  { "name": "Wade Urry", "url": "https://iwader.co.uk/feed.xml" },
+  {
+    "name": "Simon Willison",
+    "url": "https://simonwillison.net/atom/everything/"
+  },
+  { "name": "Jonathan Snook", "url": "https://snook.ca/jonathan/index.rdf" },
+  { "name": "Steve Blank", "url": "https://steveblank.com/feed/" },
+  { "name": "Wired", "url": "https://www.wired.com/feed/rss" },
+  { "name": "Tobias Ahlin", "url": "https://tobiasahlin.com/feed.xml" },
+  { "name": "Daniel Lemire", "url": "https://lemire.me/blog/feed/" },
+  {
+    "name": "Evan Martin",
+    "url": "http://neugierig.org/software/blog/atom.xml"
+  },
+  { "name": "Arne Bahlo", "url": "https://arne.me/feed.xml" },
+  { "name": "ShinChven", "url": "https://atlassc.net/rss.xml" },
+  { "name": "Tomasz Tunguz", "url": "https://www.tomtunguz.com/index.xml" },
+  { "name": "Streamline Blog", "url": "https://blog.streamlinehq.com/rss/" },
+  { "name": "Alec Muffett", "url": "https://alecmuffett.com/feed" },
+  { "name": "Naval Ravikant", "url": "https://nav.al/feed" },
+  { "name": "Thomas Rigby", "url": "https://thomasrigby.com/feed.xml" },
+  { "name": "Nir Eyal", "url": "https://www.nirandfar.com/feed" },
+  { "name": "Dynomight", "url": "https://dynomight.net/feed.xml" },
+  { "name": "Mark Nichols", "url": "https://zanshin.net/atom.xml" },
+  { "name": "Yuri Cunha", "url": "https://yuricunha.bearblog.dev/feed/" },
+  { "name": "Matt Fantinel", "url": "https://fantinel.dev/rss.xml" },
+  { "name": "Tim Bornholdt", "url": "https://timbornholdt.com/blog/feed.rss" },
+  {
+    "name": "Strange Loop Canon",
+    "url": "https://www.strangeloopcanon.com/feed"
+  },
+  { "name": " Ellie Huxtable", "url": "https://ellie.wtf/index.xml" },
+  {
+    "name": "Victor Kropp ",
+    "url": "https://victor.kropp.name/blog/index.xml"
+  },
+  {
+    "name": "Jose Munoz",
+    "url": "https://www.josemunozmatos.com/blog/rss.xml"
+  },
+  { "name": "Robin Opletal", "url": "https://robinopletal.com/rss.xml" },
+  { "name": "Steph Ango", "url": "https://stephango.com/feed.xml" },
+  { "name": "Daily Infographic", "url": "http://dailyinfographic.com/feed" },
+  {
+    "name": "Ars Technica",
+    "url": "http://feeds.arstechnica.com/arstechnica/index"
+  },
+  { "name": "Recomendo by KK", "url": "https://www.recomendo.com/feed" },
+  { "name": "Jarrod Blundy", "url": "https://heydingus.net/feed.rss" },
+  { "name": "Cédric Aellen", "url": "https://alienlebarge.ch/feed.xml" },
+  { "name": "Stay SaaSy", "url": "https://staysaasy.com/feed.xml" },
+  { "name": "Tim Ferriss", "url": "https://tim.blog/feed/" },
+  { "name": "Tatiana Mac", "url": "https://tatianamac.com/feed/feed.xml" },
+  { "name": "Six Colors", "url": "http://feedpress.me/sixcolors" },
+  { "name": "Ersei", "url": "https://ersei.net/en/blog.atom" },
+  { "name": "Bryce Wray", "url": "https://www.brycewray.com/index.xml" },
+  { "name": "Psyche", "url": "https://psyche.co/feed" },
+  {
+    "name": "Chris ODonnell ",
+    "url": "https://odonnellweb.com/pelican/feeds/all.atom.xml"
+  },
+  { "name": "Anders Norén", "url": "https://andersnoren.se/feed/" },
+  { "name": "Jakob Greenfeld", "url": "https://jakobgreenfeld.com/feed" },
+  {
+    "name": "Basic Apple Guy",
+    "url": "https://basicappleguy.com/basicappleblog?format=rss"
+  },
+  { "name": "Sidebar", "url": "https://sidebar.io/feed.xml" },
+  { "name": "Pieter Levels", "url": "https://levels.io/rss/" },
+  { "name": "David Perell", "url": "https://perell.com/feed/" },
+  { "name": "Riccardo Mori", "url": "http://morrick.me/feed" },
+  {
+    "name": "Hacker News Daily",
+    "url": "https://www.daemonology.net/hn-daily/index.rss"
+  },
+  {
+    "name": "SLIME MOLD TIME MOLD",
+    "url": "https://slimemoldtimemold.com/feed/"
+  },
+  {
+    "name": "Christian Heilmann",
+    "url": "https://christianheilmann.com/feed/"
+  },
+  {
+    "name": "Building Pika Out Loud",
+    "url": "https://pika.pika.page/posts_feed"
+  },
+  { "name": "Manuel Moreale ", "url": "https://manuelmoreale.com/feed/rss" },
+  {
+    "name": "Ask Hacker News Weekly",
+    "url": "https://www.daemonology.net/hn-weekly-ask/index.rss"
+  },
+  { "name": "Spyglass ", "url": "https://spyglass.org/rss/" },
+  { "name": "The Verge ", "url": "https://www.theverge.com/rss/index.xml" },
+  { "name": "Seth Godin", "url": "https://seths.blog/feed/" },
+  { "name": "Thord D. Hedengren", "url": "https://bored.horse/feed.xml" },
+  {
+    "name": "Nicolas F. R. A. Prado",
+    "url": "https://nfraprado.net/feeds/all.atom.xml"
+  },
+  { "name": "Tableau Blog", "url": "http://www.tableausoftware.com/blog/feed" },
+  { "name": "Singularity HUB", "url": "https://singularityhub.com/feed/" },
+  { "name": "Rachel Kroll", "url": "http://rachelbythebay.com/w/atom.xml" },
+  { "name": "Hypercritical", "url": "https://hypercritical.co/feeds/main" },
+  { "name": "Robb Knight", "url": "https://rknight.me/feed.xml" },
+  {
+    "name": "Paul Graham",
+    "url": "http://www.aaronsw.com/2002/feeds/pgessays.rss"
+  },
+  { "name": "Andrew Canion", "url": "https://canion.blog/feed.xml" },
+  { "name": "Aeon", "url": "https://aeon.co/feed.rss" },
+  { "name": "SEMrush Blog", "url": "https://www.semrush.com/blog/feed/" },
+  { "name": "Noah Smith", "url": "https://www.noahpinion.blog/feed" }
+]

@@ -37,4 +37,4 @@
 - [rss-list](https://github.com/saveweb/rss-list)
 - [developer.android.com](https://developer.android.com/guide)
 - [Activity 设置全屏显示的两种方式及系统自带 theme 属性解析](https://www.cnblogs.com/developer-wang/p/6771115.html)
-
+- [More RSS](https://morerss.com/zh.php?tag=Blog)

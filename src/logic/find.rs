@@ -14,7 +14,8 @@ use std::time::Duration;
 const FIND_UUID: &str = "find-uuid";
 const RSS_ENTRY_URL_CN: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
 const RSS_ENTRY_URL_EN: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/en";
-const TOP_RSS_LIST_CN_VALID: &str = include_str!("../../data/top-rss-list-valid.json");
+const RSS_VALID_CN: &str = include_str!("../../data/rss-valid-cn.json");
+const RSS_VALID_EN: &str = include_str!("../../data/rss-valid-en.json");
 
 #[derive(Serialize, Deserialize, Hash, Debug, Clone)]
 pub struct FindEntry {
@@ -157,7 +158,7 @@ async fn _inner_fetch_all_find_entrys() -> Result<Vec<FindEntry>> {
         .collect::<Vec<_>>())
 }
 
-pub fn top_rss_list_cn(text: &str) -> Result<Vec<FindEntry>> {
+pub fn rss_valid(text: &str) -> Result<Vec<FindEntry>> {
     Ok(serde_json::from_str::<Vec<_>>(text)?)
 }
 
@@ -169,7 +170,13 @@ fn _fetch_all_find_entrys(ui: Weak<AppWindow>) {
         };
 
         if items.is_empty() {
-            match top_rss_list_cn(TOP_RSS_LIST_CN_VALID) {
+            let rss_json = if config::ui().language == "cn" {
+                RSS_VALID_CN
+            } else {
+                RSS_VALID_EN
+            };
+
+            match rss_valid(rss_json) {
                 Ok(v) => items = v,
                 Err(e) => {
                     async_message_warn(
