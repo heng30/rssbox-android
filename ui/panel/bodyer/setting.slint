@@ -626,6 +626,7 @@ component Update inherits SettingDetail {
             if is-show-detail : Label {
                 wrap: word-wrap;
                 text: Store.is-cn ? setting.detail-cn : setting.detail-en;
+                color: Theme.secondary-text-color;
             }
 
             if !is-show-detail : Rectangle {
