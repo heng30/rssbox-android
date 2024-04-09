@@ -1,9 +1,9 @@
-import { CheckBox } from "std-widgets.slint";
-import { Dialog } from "./dialog.slint";
 import { Theme } from "../theme.slint";
 import { Store } from "../store.slint";
 import { Logic } from "../logic.slint";
+import { Dialog } from "./dialog.slint";
 import { ConfirmBtn } from "./btn.slint";
+import { RadioBtn } from "./radio-btn.slint";
 
 export component LanguageDialog inherits Dialog {
     title: Logic.tr(Store.is-cn, "请选择语言");
@@ -19,30 +19,20 @@ export component LanguageDialog inherits Dialog {
             alignment: center;
             spacing: Theme.spacing * 4;
 
-            cn-checkbox := CheckBox {
-                width: 50%; text: "中文";
+            cn-radio := RadioBtn {
+                text: "中文";
                 checked: root.language != "en";
-                toggled => {
-                    if (!self.checked) {
-                        self.checked = true;
-                        return;
-                    }
-
-                    en-checkbox.checked = !self.checked;
+                check => {
+                    en-radio.checked = !self.checked;
                     root.language = "cn";
                 }
             }
 
-            en-checkbox := CheckBox {
+            en-radio := RadioBtn {
                 text: "English";
                 checked: root.language == "en";
-                toggled => {
-                    if (!self.checked) {
-                        self.checked = true;
-                        return;
-                    }
-
-                    cn-checkbox.checked = !self.checked;
+                check => {
+                    cn-radio.checked = !self.checked;
                     root.language = "en";
                 }
             }

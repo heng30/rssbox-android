@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover, SettingUpdate } from "../../store.slint";
-import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn, NoDataImg, Tag} from "../../base/widgets.slint";
+import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn, NoDataImg, Tag, RadioBtn} from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
     UI,
@@ -41,11 +41,11 @@ component UI inherits SettingDetail {
         }
 
         if (setting.language == "en") {
-            cn-checkbox.checked = false;
-            en-checkbox.checked = true;
+            cn-radio.checked = false;
+            en-radio.checked = true;
         } else {
-            cn-checkbox.checked = true;
-            en-checkbox.checked = false;
+            cn-radio.checked = true;
+            en-radio.checked = false;
         }
     }
 
@@ -81,34 +81,25 @@ component UI inherits SettingDetail {
             }
 
             HorizontalLayout {
-                cn-checkbox := CheckBox {
-                    width: 50%; text: "中文";
-                    checked: root.language != "en";
-                    toggled => {
-                        if (!self.checked) {
-                            self.checked = true;
-                            return;
+                HorizontalLayout {
+                    width: 50%;
+                    cn-radio := RadioBtn {
+                        text: "中文";
+                        checked: root.language != "en";
+                        check => {
+                            root.language = "cn";
+                            en-radio.checked = !self.checked;
+                            Logic.set-setting-ui(root.get());
                         }
-
-                        en-checkbox.checked = !self.checked;
-                        root.language = "cn";
-
-                        Logic.set-setting-ui(root.get());
                     }
                 }
 
-                en-checkbox := CheckBox {
+                en-radio := RadioBtn {
                     text: "English";
                     checked: root.language == "en";
-                    toggled => {
-                        if (!self.checked) {
-                            self.checked = true;
-                            return;
-                        }
-
-                        cn-checkbox.checked = !self.checked;
+                    check => {
                         root.language = "en";
-
+                        cn-radio.checked = !self.checked;
                         Logic.set-setting-ui(root.get());
                     }
                 }

@@ -1,0 +1,50 @@
+import { Theme } from "../theme.slint";
+import { Label } from "./label.slint";
+
+export component RadioBtn inherits Rectangle {
+    in-out property text <=> txt.text;
+    in-out property enabled <=> ta.enabled;
+    in-out property <bool> checked;
+
+    width: hbox.preferred-width;
+    height: hbox.preferred-height;
+
+    callback check();
+
+    hbox := HorizontalLayout {
+        spacing: Theme.spacing * 4;
+        alignment: start;
+
+        VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: Theme.default-font-size * 1.1;
+                height: self.width;
+                border-width: 2px;
+                border-radius: self.width / 2;
+                border-color: root.checked ? Theme.brand-color : Theme.secondary-text-color;
+
+                if root.checked : Rectangle {
+                    width: 60%;
+                    height: self.width;
+                    background: Theme.brand-color;
+                    border-radius: self.width / 2;
+                }
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            txt := Label {}
+        }
+    }
+
+    ta := TouchArea {
+        clicked => {
+            if (!root.checked) {
+                root.checked = true;
+                root.check();
+            }
+        }
+    }
+}
