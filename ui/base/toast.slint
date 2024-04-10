@@ -3,7 +3,7 @@ import { Util } from "../util.slint";
 import { Label } from "./label.slint";
 import { CenterLayout } from "./center-layout.slint";
 
-export component Message inherits Rectangle {
+export component Toast inherits Rectangle {
     in-out property<string> type: "success";
     in-out property<length> inner-max-width: 300px;
     in-out property text <=> txt.text;

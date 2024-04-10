@@ -21,20 +21,14 @@ export component LanguageDialog inherits Dialog {
 
             cn-radio := RadioBtn {
                 text: "中文";
-                checked: root.language != "en";
-                check => {
-                    en-radio.checked = !self.checked;
-                    root.language = "cn";
-                }
+                checked: root.language == "cn";
+                check => { root.language = "cn"; }
             }
 
             en-radio := RadioBtn {
                 text: "English";
                 checked: root.language == "en";
-                check => {
-                    cn-radio.checked = !self.checked;
-                    root.language = "en";
-                }
+                check => { root.language = "en"; }
             }
         }
 

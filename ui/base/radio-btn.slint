@@ -51,7 +51,6 @@ export component RadioBtn inherits Rectangle {
     ta := TouchArea {
         clicked => {
             if (!root.checked) {
-                root.checked = true;
                 root.check();
             }
         }

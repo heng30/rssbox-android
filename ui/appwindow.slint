@@ -3,7 +3,7 @@ import { Logic } from "./logic.slint";
 import { Store } from "./store.slint";
 import { Util } from "./util.slint";
 import { Panel } from "./panel/panel.slint";
-import { Message, IconsDialog, OkCancelDialog, Blanket, LanguageDialog } from "./base/widgets.slint";
+import { Toast, IconsDialog, OkCancelDialog, Blanket, LanguageDialog } from "./base/widgets.slint";
 
 export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
@@ -42,7 +42,7 @@ export component AppWindow inherits Window {
         width: Math.min(300px, root.width * 0.8);
     }
 
-    if Store.message.text != "" : Message {
+    if Store.message.text != "" : Toast {
         x: root.width / 2 - self.width / 2; y: 50px;
         inner-max-width: root.width * 80%;
         text: Store.message.text;

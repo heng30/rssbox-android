@@ -40,12 +40,8 @@ component UI inherits SettingDetail {
             fonts-combox.current-value = "SystemDefault";
         }
 
-        if (setting.language == "en") {
-            cn-radio.checked = false;
-            en-radio.checked = true;
-        } else {
-            cn-radio.checked = true;
-            en-radio.checked = false;
+        if (root.language == "") {
+            root.language = "cn";
         }
     }
 
@@ -85,10 +81,9 @@ component UI inherits SettingDetail {
                     width: 50%;
                     cn-radio := RadioBtn {
                         text: "中文";
-                        checked: root.language != "en";
+                        checked: root.language == "cn";
                         check => {
                             root.language = "cn";
-                            en-radio.checked = !self.checked;
                             Logic.set-setting-ui(root.get());
                         }
                     }
@@ -99,7 +94,6 @@ component UI inherits SettingDetail {
                     checked: root.language == "en";
                     check => {
                         root.language = "en";
-                        cn-radio.checked = !self.checked;
                         Logic.set-setting-ui(root.get());
                     }
                 }
