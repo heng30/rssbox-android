@@ -1,12 +1,12 @@
-import { TextEdit } from "std-widgets.slint";
+import { TextEdit, Palette } from "std-widgets.slint";
 import { Theme } from "../theme.slint";
 
 export component TxtEdit inherits Rectangle {
     clip: true;
     forward-focus: edit;
-    border-width: 1px;
+    border-width: edit.has-focus ? 2px : 1px;
     border-radius: Theme.border-radius;
-    border-color: edit.has-focus ? Theme.brand-color : Theme.placeholder-text-color;
+    border-color: edit.has-focus ? Palette.accent-background : Palette.border;
 
     in-out property text <=> edit.text;
     callback edited <=> edit.edited;
@@ -22,15 +22,5 @@ export component TxtEdit inherits Rectangle {
         edit := TextEdit {
             font-size: Theme.default-font-size;
         }
-
-        // Flickable {
-        //     viewport-height: edit.preferred-height;
-
-            // edit := TextInput {
-                // font-size: Theme.default-font-size;
-                // single-line: false;
-                // wrap: word-wrap;
-            // }
-        // }
     }
 }

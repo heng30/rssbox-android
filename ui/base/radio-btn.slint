@@ -1,5 +1,6 @@
 import { Theme } from "../theme.slint";
 import { Label } from "./label.slint";
+import { Palette } from "std-widgets.slint";
 
 export component RadioBtn inherits Rectangle {
     in-out property text <=> txt.text;
@@ -11,23 +12,31 @@ export component RadioBtn inherits Rectangle {
 
     callback check();
 
+    Rectangle {
+        x: hbox.x - (self.width - inner.width) / 2;
+        width: inner.width + Theme.spacing * 4;
+        height: self.width;
+        border-radius: self.width / 2;
+        background: ta.has-hover ? Palette.background : Colors.transparent;
+    }
+
     hbox := HorizontalLayout {
         spacing: Theme.spacing * 4;
         alignment: start;
 
         VerticalLayout {
             alignment: center;
-            Rectangle {
+            inner := Rectangle {
                 width: Theme.default-font-size * 1.1;
                 height: self.width;
                 border-width: 2px;
                 border-radius: self.width / 2;
-                border-color: root.checked ? Theme.brand-color : Theme.secondary-text-color;
+                border-color: root.checked ? Palette.accent-background : Theme.secondary-text-color;
 
                 if root.checked : Rectangle {
                     width: 60%;
                     height: self.width;
-                    background: Theme.brand-color;
+                    background: parent.border-color;
                     border-radius: self.width / 2;
                 }
             }
