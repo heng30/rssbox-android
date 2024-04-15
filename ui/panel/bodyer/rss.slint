@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component RHead inherits Head {
@@ -106,7 +106,7 @@ component RssListItems inherits Rectangle {
                         VerticalLayout {
                             alignment: center;
                             Image {
-                                source: Store.icons-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icons-dialog-setting.icons.length - 1))];
+                                source: IconsDialogSetting.icons[Math.max(0, Math.min(data.icon-index, IconsDialogSetting.icons.length - 1))];
                                 colorize: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
                                 width: Theme.enlarge-font-size * 1.2;
                             }

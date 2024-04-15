@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store, FindEntry } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, IconsDialogSetting, CenterLayout } from "../../base/widgets.slint";
 
 component FHead inherits Head {
     in-out property <bool> is-search;
@@ -15,7 +15,7 @@ component FHead inherits Head {
 
     Rectangle {
         horizontal-stretch: 1;
-        if !is-search : HorizontalLayout {
+        if !is-search: HorizontalLayout {
             padding-left: Theme.padding * 4;
 
             Label {
@@ -24,8 +24,10 @@ component FHead inherits Head {
             }
         }
 
-        if !is-search : TouchArea {
-            clicked => {root.scroll-to-top();}
+        if !is-search: TouchArea {
+            clicked => {
+                root.scroll-to-top();
+            }
         }
 
         HorizontalLayout {
@@ -36,10 +38,13 @@ component FHead inherits Head {
 
             Rectangle {
                 search-lineedit := LineEdit {
-                    height: 100%; width: 100%;
+                    height: 100%;
+                    width: 100%;
                     horizontal-stretch: 1;
                     placeholder-text: Logic.tr(Store.is-cn, "输入关键字");
-                    accepted => { Logic.update-find-entrylist(self.text); }
+                    accepted => {
+                        Logic.update-find-entrylist(self.text);
+                    }
                 }
             }
         }
@@ -61,26 +66,29 @@ component FHead inherits Head {
             }
         }
 
-        if !root.is-search : CenterLayout {
+        if !root.is-search: CenterLayout {
             refresh-icon := IconBtn {
                 icon: Icons.refresh;
                 icon-width: Theme.icon-size * 1.2;
-                clicked => { Logic.fetch-all-find-entrys(); }
+                clicked => {
+                    Logic.fetch-all-find-entrys();
+                }
             }
         }
     }
 }
 
 component EntryList inherits Rectangle {
-    private property<length> item-length: 40px;
-    in property<[FindEntry]> items: [];
+    private property <length> item-length: 40px;
+    in property <[FindEntry]> items: [];
 
-    public function scroll-to-top()  {
+    public function scroll-to-top(){
         lv.viewport-y = 0;
     }
 
     lv := ListView {
-        x: 0px; width: root.width + Theme.scroll-width + 3px;
+        x: 0px;
+        width: root.width + Theme.scroll-width + 3px;
 
         for item[index] in items: HorizontalLayout {
             height: root.item-length;
@@ -114,7 +122,7 @@ component EntryList inherits Rectangle {
                             feed_format: "AUTO",
                             name: item.name,
                             url: item.url,
-                            icon-index: Util.rand-int(0, Store.icons-dialog-setting.icons.length),
+                            icon-index: Util.rand-int(0, IconsDialogSetting.icons.length),
                         });
                     }
                 }
@@ -126,27 +134,33 @@ component EntryList inherits Rectangle {
 component Body inherits Rectangle {
     in property <bool> is-search;
 
-    public function scroll-to-top()  { elist.scroll-to-top(); }
+    public function scroll-to-top(){
+        elist.scroll-to-top();
+    }
 
     elist := EntryList {
         visible: !is-search && Store.find-entrys.length != 0;
         items: Store.find-entrys;
     }
 
-    if is-search && Store.find-entrys-keyword.length != 0 : EntryList {
+    if is-search && Store.find-entrys-keyword.length != 0: EntryList {
         items: Store.find-entrys-keyword;
     }
 
-    if (!is-search && Store.find-entrys.length == 0) ||
-       (is-search && Store.find-entrys-keyword.length == 0) : NoDataImg {
+    if (!is-search && Store.find-entrys.length == 0) || (is-search && Store.find-entrys-keyword.length == 0): NoDataImg {
         width: root.width * 0.6;
         text: Logic.tr(Store.is-cn, "没有消息");
     }
 }
 
 export component Find inherits VerticalLayout {
-    head := FHead { scroll-to_top => { body.scroll-to-top(); } }
-    body := Body { is-search: head.is-search; }
+    head := FHead {
+        scroll-to_top => {
+            body.scroll-to-top();
+        }
+    }
+
+    body := Body {
+        is-search: head.is-search;
+    }
 }
-
-

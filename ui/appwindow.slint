@@ -3,7 +3,7 @@ import { Logic } from "./logic.slint";
 import { Store } from "./store.slint";
 import { Util } from "./util.slint";
 import { Panel } from "./panel/panel.slint";
-import { Toast, IconsDialog, OkCancelDialog, Blanket, LanguageDialog } from "./base/widgets.slint";
+import { Toast, IconsDialog, IconsDialogSetting, OkCancelDialog, Blanket, LanguageDialog } from "./base/widgets.slint";
 
 export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
@@ -18,36 +18,40 @@ export component AppWindow inherits Window {
     icon: Icons.brand;
     title: "rssbox";
 
-    init => { }
+    init => {
+    }
 
     Rectangle {
         background: Theme.base-background-light;
         Panel { }
     }
 
-    if Store.icons-dialog-setting.show ||
-       Store.ok-cancel-dialog-setting.body-text != "" ||
-       Store.is-first-run : Blanket { }
+    if IconsDialogSetting.show || Store.ok-cancel-dialog-setting.body-text != "" || Store.is-first-run: Blanket { }
 
-    if Store.icons-dialog-setting.show : IconsDialog {
-        select-index(index) => { Store.icon-index = index; }
+    if IconsDialogSetting.show: IconsDialog {
+        select-index(index) => {
+            Store.icon-index = index;
+        }
     }
 
-    if Store.ok-cancel-dialog-setting.body-text != "" : OkCancelDialog {
+    if Store.ok-cancel-dialog-setting.body-text != "": OkCancelDialog {
         width: Math.min(root.width * 0.95, 380px);
     }
 
-    if Store.is-first-run : LanguageDialog {
+    if Store.is-first-run: LanguageDialog {
         is-hide-close-btns: true;
         width: Math.min(300px, root.width * 0.8);
     }
 
-    if Store.message.text != "" : Toast {
-        x: root.width / 2 - self.width / 2; y: 50px;
+    if Store.message.text != "": Toast {
+        x: root.width / 2 - self.width / 2;
+        y: 50px;
         inner-max-width: root.width * 80%;
         text: Store.message.text;
         type: Store.message.text-type;
-        clicked => { Logic.copy-to-clipboard(self.text); }
+        clicked => {
+            Logic.copy-to-clipboard(self.text);
+        }
     }
 }
 

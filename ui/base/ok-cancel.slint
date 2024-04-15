@@ -3,6 +3,7 @@ import { Store } from "../store.slint";
 import { Util } from "../util.slint";
 import { Logic } from "../logic.slint";
 import { Theme } from "../theme.slint";
+import { Label } from "./label.slint";
 
 export component OkCancelDialog inherits Dialog {
     title: Store.ok-cancel-dialog-setting.title-text;
@@ -13,10 +14,9 @@ export component OkCancelDialog inherits Dialog {
 
     rect := Rectangle {
         background: Theme.base-background-light;
-        Text {
+        Label {
             width: 100%;
             horizontal-alignment: center;
-            color: Theme.primary-text-color;
             text: Store.ok-cancel-dialog-setting.body-text;
             wrap: word-wrap;
             font-size: Theme.title4-font-size;

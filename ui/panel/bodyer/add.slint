@@ -2,7 +2,7 @@ import { CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store, TabIndex, RssConfig } from "../../store.slint";
 import { Logic } from "../../logic.slint";
-import { CancelBtn, ConfirmBtn, Tag, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel, CenterLayout } from "../../base/widgets.slint";
+import { IconsDialogSetting, CancelBtn, ConfirmBtn, Tag, IconBtn, NoMessageImg, Label, Head, SettingDetailInner, SettingDetailInnerVbox, SettingDetailLabel, CenterLayout } from "../../base/widgets.slint";
 
 enum BtnIndex {
     New,
@@ -20,17 +20,19 @@ component AHead inherits Head {
             icon: Icons.refresh;
             icon-width: Theme.icon-size * 1.2;
             background: Colors.transparent;
-            clicked => { Logic.sync-rss-all(); }
+            clicked => {
+                Logic.sync-rss-all();
+            }
         }
     }
 }
 
 component RssList inherits Rectangle {
-    private property<length> item-height: 40px;
-    private property<color> selected-item-color: Theme.lighter-border-color;
-    out property<string> current-uuid;
+    private property <length> item-height: 40px;
+    private property <color> selected-item-color: Theme.lighter-border-color;
+    out property <string> current-uuid;
 
-    if Store.rss-lists.length == 0 : Rectangle {
+    if Store.rss-lists.length == 0: Rectangle {
         NoMessageImg {
             width: parent.width * 0.6;
             text: Logic.tr(Store.is-cn, "没有订阅");
@@ -40,14 +42,16 @@ component RssList inherits Rectangle {
     Flickable {
         viewport-height: Store.rss-lists.length * root.item-height;
 
-        for data[index] in Store.rss-lists : Rectangle {
+        for data[index] in Store.rss-lists: Rectangle {
             y: index * item-height;
             height: root.item-height;
 
             background: data.uuid == root.current-uuid ? root.selected-item-color : Colors.transparent;
 
             touch := TouchArea {
-                clicked => { root.current-uuid = data.uuid; }
+                clicked => {
+                    root.current-uuid = data.uuid;
+                }
             }
 
             HorizontalLayout {
@@ -59,7 +63,7 @@ component RssList inherits Rectangle {
                     VerticalLayout {
                         alignment: center;
                         IconBtn {
-                            icon: Store.icons-dialog-setting.icons[Math.max(0, Math.min(data.icon-index, Store.icons-dialog-setting.icons.length - 1))];
+                            icon: IconsDialogSetting.icons[Math.max(0, Math.min(data.icon-index, IconsDialogSetting.icons.length - 1))];
                             width: Theme.icon-size * 1.2;
                             background: Colors.transparent;
                         }
@@ -77,7 +81,7 @@ component RssList inherits Rectangle {
                     padding-left: Theme.padding;
                     padding-right: Theme.padding;
 
-                    if data.is-update-failed : VerticalLayout {
+                    if data.is-update-failed: VerticalLayout {
                         alignment: center;
                         IconBtn {
                             icon: Icons.sync-failed;
@@ -102,7 +106,9 @@ component RssList inherits Rectangle {
                         IconBtn {
                             icon: Icons.star;
                             colorize: data.is-favorite ? Theme.mark-color : Theme.unmark-color;
-                            clicked => { Logic.toggle-rss-favorite(data.uuid); }
+                            clicked => {
+                                Logic.toggle-rss-favorite(data.uuid);
+                            }
                         }
                     }
                 }
@@ -112,7 +118,7 @@ component RssList inherits Rectangle {
 }
 
 component RssListBtns inherits HorizontalLayout {
-    in property<string> current-uuid;
+    in property <string> current-uuid;
 
     alignment: center;
     spacing: Theme.spacing * 4;
@@ -129,7 +135,9 @@ component RssListBtns inherits HorizontalLayout {
         bg-pressed-color: self.bg-color.darker(30%);
         colorize: Theme.basic-white-color;
 
-        clicked => { current-btn-index(BtnIndex.New); }
+        clicked => {
+            current-btn-index(BtnIndex.New);
+        }
     }
 
     IconBtn {
@@ -141,7 +149,9 @@ component RssListBtns inherits HorizontalLayout {
         bg-pressed-color: self.bg-color.darker(30%);
         colorize: self.bg-pressed-color.darker(100%);
 
-        clicked => { current-btn-index(BtnIndex.Edit); }
+        clicked => {
+            current-btn-index(BtnIndex.Edit);
+        }
     }
 
     IconBtn {
@@ -153,7 +163,9 @@ component RssListBtns inherits HorizontalLayout {
         bg-pressed-color: self.bg-color.darker(30%);
         colorize: self.bg-pressed-color.darker(100%);
 
-        clicked => { current-btn-index(BtnIndex.Delete); }
+        clicked => {
+            current-btn-index(BtnIndex.Delete);
+        }
     }
 }
 
@@ -170,7 +182,7 @@ component AddEdit inherits Rectangle {
         };
     }
 
-    public function set(config: RssConfig) {
+    public function set(config: RssConfig){
         line-edit-name.text = config.name;
         line-edit-url.text = config.url;
         use-http-proxy-checkbox.checked = config.use-http-proxy;
@@ -200,8 +212,10 @@ component AddEdit inherits Rectangle {
 
                 rss-icon := IconBtn {
                     width: self.height;
-                    icon: Store.icons-dialog-setting.icons[Math.max(0, Math.min(Store.icon-index, Store.icons-dialog-setting.icons.length - 1))];
-                    clicked => { Store.icons-dialog-setting.show = true; }
+                    icon: IconsDialogSetting.icons[Math.max(0, Math.min(Store.icon-index, IconsDialogSetting.icons.length - 1))];
+                    clicked => {
+                        IconsDialogSetting.show = true;
+                    }
                 }
             }
         }
@@ -282,15 +296,18 @@ component AddEditBtns inherits HorizontalLayout {
 
     CancelBtn {
         text: Logic.tr(Store.is-cn, "取消");
-        clicked => { root.cancel-clicked(); }
+        clicked => {
+            root.cancel-clicked();
+        }
     }
 
     ConfirmBtn {
         text: Logic.tr(Store.is-cn, "确认");
-        clicked => { root.ok-clicked(); }
+        clicked => {
+            root.ok-clicked();
+        }
     }
 }
-
 
 component Body inherits Rectangle {
     private property <BtnIndex> rss-list-btns-index: BtnIndex.New;
@@ -308,13 +325,12 @@ component Body inherits Rectangle {
 
                 if (index == BtnIndex.New) {
                     rsslist-vbox.visible = false;
-                    ae.set({});
+                    ae.set({ });
                 } else if (index == BtnIndex.Edit) {
                     if (!Logic.exist-rss(rsslist.current-uuid)) {
                         Logic.show-message(Logic.tr(Store.is-cn, "请选择条目"), "info");
                         return;
                     }
-
                     rsslist-vbox.visible = false;
                     ae.set(Logic.get-rss-config-to-ui(rsslist.current-uuid));
                 } else if (index == BtnIndex.Delete) {
@@ -322,7 +338,6 @@ component Body inherits Rectangle {
                         Logic.show-message(Logic.tr(Store.is-cn, "请选择条目"), "info");
                         return;
                     }
-
                     Store.ok-cancel-dialog-setting.title-type = "warning";
                     Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
                     Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除？");
@@ -340,10 +355,12 @@ component Body inherits Rectangle {
         ad-head := Head {
             hbox-alignment: LayoutAlignment.start;
             title: root.rss-list-btns-index == BtnIndex.New ? Logic.tr(Store.is-cn, "新建") : Logic.tr(Store.is-cn, "编辑");
-            clicked => { rsslist-vbox.visible = true; }
+            clicked => {
+                rsslist-vbox.visible = true;
+            }
         }
 
-        ae := AddEdit {}
+        ae := AddEdit { }
 
         AddEditBtns {
             cancel-clicked => {
@@ -355,7 +372,6 @@ component Body inherits Rectangle {
                     Logic.show-message(Logic.tr(Store.is-cn, "非法输入"), "warning");
                     return;
                 }
-
                 rsslist-vbox.visible = true;
 
                 if (root.rss-list-btns-index == BtnIndex.New) {
@@ -371,5 +387,5 @@ component Body inherits Rectangle {
 export component Add inherits VerticalLayout {
     spacing: Theme.spacing;
 
-    body := Body {}
+    body := Body { }
 }

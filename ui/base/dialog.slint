@@ -6,10 +6,10 @@ import { CenterLayout } from "./center-layout.slint";
 import { CancelBtn, ConfirmBtn } from "./btn.slint";
 
 export component Dialog inherits Rectangle {
-    in-out property title <=> txt.text;
-    in-out property<color> title-bg: Theme.secondary-brand-color;
-    in-out property<bool> is-hide-btns: false;
-    in-out property<bool> is-hide-close-btns: false;
+    in-out property <string> title;
+    in-out property <color> title-bg: Theme.secondary-brand-color;
+    in-out property <bool> is-hide-btns: false;
+    in-out property <bool> is-hide-close-btns: false;
 
     callback cancel-clicked();
     callback ok-clicked();
@@ -21,15 +21,16 @@ export component Dialog inherits Rectangle {
     vbox := VerticalLayout {
         alignment: space-between;
 
-        Rectangle {
+        if root.title != "": Rectangle {
             height: txt.preferred-height * 1.33;
             background: root.title-bg;
             txt := Text {
                 color: Colors.white;
                 font-size: Theme.title3-font-size;
+                text: root.title;
             }
 
-            if is-hide-btns && !is-hide-close-btns : HorizontalLayout {
+            if is-hide-btns && !is-hide-close-btns: HorizontalLayout {
                 alignment: end;
                 padding-right: Theme.padding;
                 CenterLayout {
@@ -37,29 +38,35 @@ export component Dialog inherits Rectangle {
                         width: Theme.icon-size;
                         icon: Icons.close;
                         colorize: txt.color;
-                        clicked => { root.cancel-clicked(); }
+                        clicked => {
+                            root.cancel-clicked();
+                        }
                     }
                 }
-             }
+            }
         }
 
         VerticalLayout {
             @children
         }
 
-        if !is-hide-btns : HorizontalLayout {
+        if !is-hide-btns: HorizontalLayout {
             alignment: center;
             spacing: Theme.spacing * 8;
             padding: Theme.padding * 2;
 
             cancel-btn := CancelBtn {
                 text: Logic.tr(Store.is-cn, "取消");
-                clicked => { root.cancel-clicked(); }
+                clicked => {
+                    root.cancel-clicked();
+                }
             }
 
             ConfirmBtn {
                 text: Logic.tr(Store.is-cn, "确认");
-                clicked => { root.ok-clicked(); }
+                clicked => {
+                    root.ok-clicked();
+                }
             }
         }
     }

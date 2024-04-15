@@ -39,11 +39,6 @@ export struct RssConfig {
     entry: [RssEntry],
 }
 
-export struct IconDialogSetting {
-    show: bool,
-    icons: [image],
-}
-
 export struct MessageItem {
     text: string,
     text-type: string,
@@ -182,7 +177,11 @@ export global Store  {
     ];
 
     in-out property<MessageItem> message;
-    in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting;
+    in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting:  {
+        // title-type: "warning",
+        // title-text: "警告",
+        body-text: "",
+    };
 
     in-out property <int> icon-index: 0;
     in-out property <bool> is-first-run;
@@ -228,36 +227,6 @@ export global Store  {
         + "- Swipe right on the [RSS] and [Collection] items to collect or delete items.\n\n"
         + "- After setting, click the back button in the upper left corner. Save the settings.\n\n"
         + "- In case of don't show the same articles, It will cache the articles after syncing. You can enter the [Setting] selected card to clear cache.\n\n",
-    };
-
-    in-out property<IconDialogSetting> icons-dialog-setting: {
-        show: false,
-        icons : [
-            @image-url("./icons/1.svg"), @image-url("./icons/2.svg"),
-            @image-url("./icons/3.svg"), @image-url("./icons/4.svg"),
-            @image-url("./icons/5.svg"), @image-url("./icons/6.svg"),
-            @image-url("./icons/7.svg"), @image-url("./icons/8.svg"),
-            @image-url("./icons/9.svg"), @image-url("./icons/10.svg"),
-            @image-url("./icons/11.svg"), @image-url("./icons/12.svg"),
-            @image-url("./icons/13.svg"), @image-url("./icons/14.svg"),
-            @image-url("./icons/15.svg"), @image-url("./icons/16.svg"),
-            @image-url("./icons/17.svg"), @image-url("./icons/18.svg"),
-            @image-url("./icons/19.svg"), @image-url("./icons/20.svg"),
-            @image-url("./icons/21.svg"), @image-url("./icons/22.svg"),
-            @image-url("./icons/23.svg"), @image-url("./icons/24.svg"),
-            @image-url("./icons/25.svg"), @image-url("./icons/26.svg"),
-            @image-url("./icons/27.svg"), @image-url("./icons/28.svg"),
-            @image-url("./icons/29.svg"), @image-url("./icons/30.svg"),
-            @image-url("./icons/31.svg"), @image-url("./icons/32.svg"),
-            @image-url("./icons/33.svg"), @image-url("./icons/34.svg"),
-            @image-url("./icons/35.svg"), @image-url("./icons/36.svg"),
-            @image-url("./icons/37.svg"), @image-url("./icons/38.svg"),
-            @image-url("./icons/39.svg"), @image-url("./icons/40.svg"),
-            @image-url("./icons/41.svg"), @image-url("./icons/42.svg"),
-            @image-url("./icons/43.svg"), @image-url("./icons/44.svg"),
-            @image-url("./icons/45.svg"), @image-url("./icons/46.svg"),
-            @image-url("./icons/47.svg"), @image-url("./icons/48.svg"),
-        ],
     };
 
     public function switch-tab(tab-index: TabIndex) {
