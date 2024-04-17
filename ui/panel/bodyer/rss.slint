@@ -164,7 +164,7 @@ component RssListItems inherits Rectangle {
 
 
 component RssList inherits Rectangle {
-    in-out property <bool> is-show-list : false;
+    in-out property is-show-list <=> Store.is-show-side-rsslist;
 
     rect := Rectangle {
         animate width {

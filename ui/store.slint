@@ -100,11 +100,11 @@ export struct AboutDialog {
     sponsor: string,
 }
 
-export global Store  {
-    out property<TabIndex> current-tab-index: TabIndex.Rss;
-    in-out property<string> current-rss-uuid;
+export global Store {
+    out property <TabIndex> current-tab-index: TabIndex.Rss;
+    in-out property <string> current-rss-uuid;
 
-    in-out property<[RssConfig]> rss-lists: [
+    in-out property <[RssConfig]> rss-lists: [
         {
             uuid: "uuid-1",
             is-favorite: true,
@@ -123,7 +123,7 @@ export global Store  {
         },
     ];
 
-    in-out property<[RssEntry]> rss-entrys: [
+    in-out property <[RssEntry]> rss-entrys: [
         {
             uuid: "42342e2jkfjk",
             url: "https://www.zhihu.com/rss",
@@ -144,7 +144,7 @@ export global Store  {
         },
     ];
 
-    in-out property<[RssEntry]> rss-favorite-entrys: [
+    in-out property <[RssEntry]> rss-favorite-entrys: [
         {
             uuid: "42342e2jkfjk",
             url: "https://www.zhihu.com/rss",
@@ -166,18 +166,18 @@ export global Store  {
         },
     ];
 
-    in-out property<[FindEntry]> find-entrys: [
+    in-out property <[FindEntry]> find-entrys: [
         { name: "find name 1", url: "url-1" },
         { name: "find name 2", url: "url-2" },
     ];
 
-    in-out property<[FindEntry]> find-entrys-keyword: [
+    in-out property <[FindEntry]> find-entrys-keyword: [
         { name: "keyword name 1", url: "url-1" },
         { name: "keyword name 2", url: "url-1" },
     ];
 
-    in-out property<MessageItem> message;
-    in-out property<OkCancelDialogSetting> ok-cancel-dialog-setting:  {
+    in-out property <MessageItem> message;
+    in-out property <OkCancelDialogSetting> ok-cancel-dialog-setting:  {
         // title-type: "warning",
         // title-text: "警告",
         body-text: "",
@@ -188,48 +188,39 @@ export global Store  {
     in-out property <bool> rss-update-time-flag;
     in-out property <bool> rss-unread-counts-flag;
     in-out property <bool> find-entrys-counts-flag;
-    in-out property<string> cache-size: "0M";
-    in-out property<bool> is-cn: setting-ui.language == "cn";
-    in-out property<SettingUI> setting-ui: {
+    in-out property <bool> is-show-side-rsslist;
+    in-out property <string> cache-size: "0M";
+    in-out property <bool> is-cn: setting-ui.language == "cn";
+    in-out property <SettingUI> setting-ui: {
         font-size: "16",
         font-family: "SourceHanSerifCN",
         language: "cn",
     };
 
-    in-out property <SettingUpdate> setting-update : {
+    in-out property <SettingUpdate> setting-update: {
         current-version: "v1.0.0",
         latest-version: "v1.1.0",
         url: "https://example.com",
-        detail-cn: "1. 更新内容 1\n"
-                 + "2. 更新内容 2\n",
-        detail-en: "1. update message 1\n"
-                 + "2. update message 2\n",
+        detail-cn: "1. 更新内容 1\n" + "2. 更新内容 2\n",
+        detail-en: "1. update message 1\n" + "2. update message 2\n",
     };
 
-    in-out property<AboutDialog> about-dialog: {
+    in-out property <AboutDialog> about-dialog: {
         show: false,
         title: "rssbox v0.0.1",
         text: "Based on Slint-UI. Copyright 2022-2030. All rights reserved. The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.",
         sponsor: "0xf1199999751b1a3A74590adBf95401D19AB30014",
     };
 
-    in-out property<{show: bool, text-cn: string, text-en: string}> help-dialog: {
+    in-out property <{show: bool, text-cn: string, text-en: string}> help-dialog: {
         show: false,
         text-cn:
-          "- 点击[订阅]选项卡右上角的列表图标打开RSS列表。\n\n"
-        + "- 向右滑动[订阅]和[收藏夹]的条目，可收藏或删除条目。\n\n"
-        + "- 设置后，点击左上角的返回按钮。对设置进行保存。\n\n"
-        + "- 曾经下载过的文章会缓存起来，避免文章重复显示。进入到[设置]选项卡可清除缓存。\n\n"
-        + "- 将语言切换为英文后，在[发现]页面刷新可获取英文RSS。",
-
+          "- 点击[订阅]选项卡右上角的列表图标打开RSS列表。\n\n" + "- 向右滑动[订阅]和[收藏夹]的条目，可收藏或删除条目。\n\n" + "- 设置后，点击左上角的返回按钮。对设置进行保存。\n\n" + "- 曾经下载过的文章会缓存起来，避免文章重复显示。进入到[设置]选项卡可清除缓存。\n\n" + "- 将语言切换为英文后，在[发现]页面刷新可获取英文RSS。",
         text-en:
-          "- Click the top-right list icon of the [RSS] selected card to open the RSS list.\n\n"
-        + "- Swipe right on the [RSS] and [Collection] items to collect or delete items.\n\n"
-        + "- After setting, click the back button in the upper left corner. Save the settings.\n\n"
-        + "- In case of don't show the same articles, It will cache the articles after syncing. You can enter the [Setting] selected card to clear cache.\n\n",
+          "- Click the top-right list icon of the [RSS] selected card to open the RSS list.\n\n" + "- Swipe right on the [RSS] and [Collection] items to collect or delete items.\n\n" + "- After setting, click the back button in the upper left corner. Save the settings.\n\n" + "- In case of don't show the same articles, It will cache the articles after syncing. You can enter the [Setting] selected card to clear cache.\n\n",
     };
 
-    public function switch-tab(tab-index: TabIndex) {
+    public function switch-tab(tab-index: TabIndex){
         current-tab-index = tab-index;
     }
 }
