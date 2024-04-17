@@ -43,7 +43,9 @@ component RHead inherits Head {
                 text-color: Theme.placeholder-text-color;
                 background: Colors.transparent;
 
-                clicked => { Logic.sync-rss(Store.current-rss-uuid); }
+                clicked => {
+                    Logic.sync-rss(Store.current-rss-uuid);
+                }
             }
         }
 
@@ -64,15 +66,15 @@ component RHead inherits Head {
 }
 
 component RssListItems inherits Rectangle {
-    private property<length> item-height: 40px;
-    private property<color> selected-item-color: Theme.brand-color.darker(30%);
+    private property <length> item-height: 40px;
+    private property <color> selected-item-color: Theme.brand-color.darker(30%);
 
     callback switch-rss();
 
     Flickable {
         viewport-height: Store.rss-lists.length * root.item-height;
 
-        for data[index] in Store.rss-lists : VerticalLayout {
+        for data[index] in Store.rss-lists: VerticalLayout {
             y: index * item-height;
             height: root.item-height;
 
@@ -96,7 +98,7 @@ component RssListItems inherits Rectangle {
                             width: 3px;
                             height: 60%;
                             border-radius: 2px;
-                            background: data.uuid == Store.current-rss-uuid ?  root.selected-item-color : Colors.transparent;
+                            background: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Colors.transparent;
                         }
                     }
 
@@ -126,7 +128,7 @@ component RssListItems inherits Rectangle {
                         padding-left: Theme.padding;
                         padding-right: Theme.padding;
 
-                        if data.is-update-failed : VerticalLayout {
+                        if data.is-update-failed: VerticalLayout {
                             alignment: center;
                             IconBtn {
                                 icon: Icons.sync-failed;
@@ -149,10 +151,12 @@ component RssListItems inherits Rectangle {
                         VerticalLayout {
                             alignment: center;
                             IconBtn {
-                                icon: Icons.star ;
+                                icon: Icons.star;
                                 colorize: data.is-favorite ? Theme.mark-color : Theme.unmark-color;
                                 border-radius: Theme.border-radius;
-                                clicked => { Logic.toggle-rss-favorite(data.uuid); }
+                                clicked => {
+                                    Logic.toggle-rss-favorite(data.uuid);
+                                }
                             }
                         }
                     }
@@ -161,7 +165,6 @@ component RssListItems inherits Rectangle {
         }
     }
 }
-
 
 component RssList inherits Rectangle {
     in-out property is-show-list <=> Store.is-show-side-rsslist;
@@ -176,9 +179,13 @@ component RssList inherits Rectangle {
         width: root.is-show-list ? 70% : 0%;
         background: Theme.light-fill-color;
 
-        RssListItems { switch-rss => { root.is-show-list = false; } }
+        RssListItems {
+            switch-rss => {
+                root.is-show-list = false;
+            }
+        }
 
-        if Store.rss-lists.length == 0 : Rectangle {
+        if Store.rss-lists.length == 0: Rectangle {
             clip: true;
             width: rect.width;
 
@@ -189,24 +196,31 @@ component RssList inherits Rectangle {
         }
     }
 
-    TouchArea {
-        x: rect.width;
-        width: root.width - rect.width;
+    Rectangle {
         visible: root.is-show-list;
-        clicked => { root.is-show-list = false; }
+        x: rect.width;
+        opacity: 0.3;
+        width: root.width - rect.width;
+        background: Theme.basic-black-color;
+
+        TouchArea {
+            clicked => {
+                root.is-show-list = false;
+            }
+        }
     }
 }
 
 export component Entry inherits Rectangle {
     in-out property title <=> title-txt.text;
     in-out property pub-date-text <=> pub-date-txt.text;
-    in-out property<string> summary;
-    in-out property<string> author;
-    in-out property<string> tag-text;
-    in-out property<bool> is-read;
-    in-out property<string> uuid;
-    in-out property<string> suuid;
-    in-out property<string> url;
+    in-out property <string> summary;
+    in-out property <string> author;
+    in-out property <string> tag-text;
+    in-out property <bool> is-read;
+    in-out property <string> uuid;
+    in-out property <string> suuid;
+    in-out property <string> url;
 
     background: Theme.lighter-fill-color;
     border-radius: Theme.border-radius;
@@ -225,7 +239,6 @@ export component Entry inherits Rectangle {
                 if (!self.is-read) {
                     Logic.set-entry-read(Store.current-rss-uuid, root.uuid);
                 }
-
                 Util.open-url(root.url);
                 if (Logic.get-setting-reading().is-delete-after-reading) {
                     Logic.remove-entry(Store.current-rss-uuid, root.uuid);
@@ -233,14 +246,14 @@ export component Entry inherits Rectangle {
             }
         }
 
-        if root.summary != "" : Text {
+        if root.summary != "": Text {
             font-size: Theme.default-font-size - 1px;
             color: root.is-read ? Theme.have-read-text-color : Theme.regular-text-color;
             wrap: word-wrap;
             text: root.summary;
         }
 
-        if root.summary == "" : Rectangle {
+        if root.summary == "": Rectangle {
             height: 20px;
         }
 
@@ -266,7 +279,7 @@ export component Entry inherits Rectangle {
 export component EntryList inherits Rectangle {
     clip: true;
 
-    public function scroll-to-top()  {
+    public function scroll-to-top(){
         lv.viewport-y = 0;
     }
 
@@ -274,19 +287,19 @@ export component EntryList inherits Rectangle {
         x: 0px;
         width: root.width + Theme.scroll-width;
 
-        for item[index] in Store.rss-entrys : rect := Rectangle {
-            private property<length> max-move-pixels-up-bound: self.width * 0.04;
-            private property<length> max-move-pixels-low-bound: self.width * 0.02;
-            private property<bool> is-show-opt: false;
-            private property<bool> is-hide-opt: true;
+        for item[index] in Store.rss-entrys: rect := Rectangle {
+            private property <length> max-move-pixels-up-bound: self.width * 0.04;
+            private property <length> max-move-pixels-low-bound: self.width * 0.02;
+            private property <bool> is-show-opt: false;
+            private property <bool> is-hide-opt: true;
 
-            public function show-opt() {
+            public function show-opt(){
                 rect.x = -opt.width - Theme.padding;
                 rect.is-show-opt = true;
                 rect.is-hide-opt = false;
             }
 
-            public function hide-opt() {
+            public function hide-opt(){
                 rect.x = 0;
                 rect.is-hide-opt = true;
                 rect.is-show-opt = false;
@@ -299,18 +312,14 @@ export component EntryList inherits Rectangle {
 
             TouchArea {
                 moved => {
-                    if (lv.enabled &&
-                        (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound ||
-                         self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
+                    if (lv.enabled && (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound || self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
                         lv.enabled = false;
                     }
-
                     if (!rect.is-show-opt) {
                         if (self.pressed-x - self.mouse-x > parent.max-move-pixels-up-bound) {
                             rect.show-opt();
                         }
                     }
-
                     if (!rect.is-hide-opt) {
                         if (self.mouse-x - self.pressed-x > parent.max-move-pixels-up-bound) {
                             hide-opt();
@@ -318,7 +327,7 @@ export component EntryList inherits Rectangle {
                     }
                 }
 
-                pointer-event(evt) =>  {
+                pointer-event(evt) => {
                     if (evt.kind == PointerEventKind.up) {
                         lv.enabled = true;
                     }
@@ -382,7 +391,7 @@ export component EntryList inherits Rectangle {
         }
     }
 
-    if Store.rss-entrys.length == 0 : CenterLayout {
+    if Store.rss-entrys.length == 0: CenterLayout {
         NoDataImg {
             width: root.width * 0.6;
             text: Logic.tr(Store.is-cn, "没有消息");
@@ -393,20 +402,24 @@ export component EntryList inherits Rectangle {
 component Body inherits Rectangle {
     in-out property is-show-rsslist <=> rsslist.is-show-list;
 
-    public function entrylist-scroll-to-top() {
+    public function entrylist-scroll-to-top(){
         entrylist.scroll-to-top();
     }
 
-    entrylist := EntryList {}
+    entrylist := EntryList { }
+
     rsslist := RssList { }
 }
 
 export component Rss inherits VerticalLayout {
     head := RHead {
-        clicked => { body.is-show-rsslist = !body.is-show-rsslist; }
-        scroll-to-top => { body.entrylist-scroll-to-top(); }
+        clicked => {
+            body.is-show-rsslist = !body.is-show-rsslist;
+        }
+        scroll-to-top => {
+            body.entrylist-scroll-to-top();
+        }
     }
 
     body := Body { }
 }
-
