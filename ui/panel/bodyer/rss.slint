@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout } from "../../base/widgets.slint";
+import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout , Blanket} from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component RHead inherits Head {
@@ -169,7 +169,14 @@ component RssListItems inherits Rectangle {
 component RssList inherits Rectangle {
     in-out property is-show-list <=> Store.is-show-side-rsslist;
 
-    rect := Rectangle {
+    Blanket {
+        visible: root.is-show-list;
+        clicked => {
+            root.is-show-list = false;
+        }
+    }
+
+    Rectangle {
         animate width {
             duration: Theme.default-animate-duration;
             easing: ease-in-out;
@@ -187,25 +194,11 @@ component RssList inherits Rectangle {
 
         if Store.rss-lists.length == 0: Rectangle {
             clip: true;
-            width: rect.width;
+            width: parent.width;
 
             NoMessageImg {
                 width: parent.width * 0.8;
                 text: Logic.tr(Store.is-cn, "没有订阅");
-            }
-        }
-    }
-
-    Rectangle {
-        visible: root.is-show-list;
-        x: rect.width;
-        opacity: 0.3;
-        width: root.width - rect.width;
-        background: Theme.basic-black-color;
-
-        TouchArea {
-            clicked => {
-                root.is-show-list = false;
             }
         }
     }
