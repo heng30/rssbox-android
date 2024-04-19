@@ -183,8 +183,10 @@ component RssList inherits Rectangle {
         }
 
         x: 0px;
-        width: root.is-show-list ? 70% : 0%;
+        width: root.is-show-list ? Math.min(parent.width * 0.7, 500px) : 0;
         background: Theme.light-fill-color;
+        border-top-right-radius: Theme.border-radius * 4;
+        border-bottom-right-radius: Theme.border-radius * 4;
 
         RssListItems {
             switch-rss => {

@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store, FindEntry } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, IconsDialogSetting, CenterLayout } from "../../base/widgets.slint";
+import { IconBtn, Head, Label, Tag, Link, Label, NoDataImg, NoMessageImg, IconsDialogSetting, CenterLayout, InputBar } from "../../base/widgets.slint";
 
 component FHead inherits Head {
     in-out property <bool> is-search;
@@ -30,32 +30,25 @@ component FHead inherits Head {
             }
         }
 
-        HorizontalLayout {
+        search-lineedit := InputBar {
             visible: is-search;
-            padding: Theme.padding / 2;
+            height: parent.height;
             padding-left: Theme.padding * 4;
-            padding-right: Theme.padding * 2;
 
-            Rectangle {
-                search-lineedit := LineEdit {
-                    height: 100%;
-                    width: 100%;
-                    horizontal-stretch: 1;
-                    placeholder-text: Logic.tr(Store.is-cn, "输入关键字");
-                    accepted => {
-                        Logic.update-find-entrylist(self.text);
-                    }
-                }
+            placeholder-text: Logic.tr(Store.is-cn, "输入关键字");
+            accepted => {
+                Logic.update-find-entrylist(self.text);
             }
         }
     }
 
     HorizontalLayout {
         spacing: Theme.padding * 3;
+        padding-left: Theme.padding * 2;
 
         CenterLayout {
             IconBtn {
-                icon: root.is-search ? Icons.cancel : Icons.search;
+                icon: root.is-search ? Icons.hide : Icons.search;
                 clicked => {
                     root.is-search = !root.is-search;
                     if (root.is-search) {

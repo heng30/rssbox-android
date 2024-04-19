@@ -1,0 +1,38 @@
+import { LineEdit } from "std-widgets.slint";
+import { Theme, Icons } from "../theme.slint";
+import { Logic } from "../logic.slint";
+import { CenterLayout } from "center-layout.slint";
+import { IconBtn } from "icon-btn.slint";
+
+export component InputBar inherits HorizontalLayout {
+    height: lineedit.preferred-height;
+    forward-focus: lineedit;
+
+    callback accepted <=> lineedit.accepted;
+    callback clear();
+
+    in-out property text <=> lineedit.text;
+    in-out property placeholder-text <=> lineedit.placeholder-text;
+
+    Rectangle {
+        lineedit := LineEdit {
+            width: 100%;
+            height: 100%;
+        }
+
+        icon-layout := CenterLayout {
+            alignment: end;
+
+            IconBtn {
+                icon: Icons.cancel;
+                icon-width: Theme.icon-size;
+                colorize: lineedit.has-focus ? Theme.danger-color : Theme.icon-color;
+                clicked => {
+                    lineedit.text = "";
+                    lineedit.focus();
+                    root.clear();
+                }
+            }
+        }
+    }
+}
