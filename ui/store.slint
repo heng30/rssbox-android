@@ -44,14 +44,6 @@ export struct MessageItem {
     text-type: string,
 }
 
-export struct OkCancelDialogSetting {
-    title-type: string,
-    title-text: string,
-    body-text: string,
-    handle-type: string,
-    handle-uuid: string,
-}
-
 export struct SettingUI {
     font-size: string,
     font-family: string,
@@ -177,11 +169,6 @@ export global Store {
     ];
 
     in-out property <MessageItem> message;
-    in-out property <OkCancelDialogSetting> ok-cancel-dialog-setting:  {
-        // title-type: "warning",
-        // title-text: "警告",
-        body-text: "",
-    };
 
     in-out property <int> icon-index: 0;
     in-out property <bool> is-first-run;

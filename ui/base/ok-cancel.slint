@@ -4,10 +4,19 @@ import { Util } from "../util.slint";
 import { Logic } from "../logic.slint";
 import { Theme } from "../theme.slint";
 import { Label } from "./label.slint";
+import { CancelBtn, ConfirmBtn } from "./btn.slint";
+
+export global OkCancelDialogSetting {
+    in-out property <string> title-type: "warning";
+    in-out property <string> title-text: "警告";
+    in-out property <string> body-text;
+    in-out property <string> handle-type;
+    in-out property <string> handle-uuid;
+}
 
 export component OkCancelDialog inherits Dialog {
-    title: Store.ok-cancel-dialog-setting.title-text;
-    title-bg: Util.text-color(Store.ok-cancel-dialog-setting.title-type);
+    title: OkCancelDialogSetting.title-text;
+    title-bg: Util.text-color(OkCancelDialogSetting.title-type);
     preferred-width: 200px;
     height: 200px;
     background: rect.background;
@@ -17,18 +26,70 @@ export component OkCancelDialog inherits Dialog {
         Label {
             width: 100%;
             horizontal-alignment: center;
-            text: Store.ok-cancel-dialog-setting.body-text;
+            text: OkCancelDialogSetting.body-text;
             wrap: word-wrap;
             font-size: Theme.title4-font-size;
         }
     }
 
     ok-clicked => {
-        Logic.handle-ok-cancel-dialog(Store.ok-cancel-dialog-setting.handle-type, Store.ok-cancel-dialog-setting.handle-uuid);
-        Store.ok-cancel-dialog-setting.body-text = "";
+        Logic.handle-ok-cancel-dialog(OkCancelDialogSetting.handle-type, OkCancelDialogSetting.handle-uuid);
+        OkCancelDialogSetting.body-text = "";
     }
 
     cancel-clicked => {
-        Store.ok-cancel-dialog-setting.body-text = "";
+        OkCancelDialogSetting.body-text = "";
+    }
+}
+
+export component OkCancelDialogV2 inherits Rectangle {
+    preferred-width: 200px;
+    height: vbox.preferred-height;
+    background: Theme.lighter-fill-color;
+
+    in-out property <string> title: OkCancelDialogSetting.title-text;
+
+    vbox := VerticalLayout {
+        alignment: start;
+        padding: Theme.padding * 4;
+        spacing: Theme.spacing * 4;
+
+        title-label := Label {
+            text: root.title;
+            color: Theme.primary-text-color;
+            font-size: Theme.title1-font-size;
+        }
+
+        Label {
+            wrap: word-wrap;
+            color: Theme.secondary-text-color;
+            font-size: Theme.title4-font-size;
+            text: OkCancelDialogSetting.body-text;
+        }
+
+        HorizontalLayout {
+            alignment: end;
+            spacing: Theme.spacing * 4;
+
+            CancelBtn {
+                background: Colors.transparent;
+                text: Logic.tr(Store.is-cn, "取消");
+
+                clicked => {
+                    OkCancelDialogSetting.body-text = "";
+                }
+            }
+
+            ConfirmBtn {
+                background: Colors.transparent;
+                text: Logic.tr(Store.is-cn, "确认");
+                colorize: Theme.success-color.darker(30%);
+
+                clicked => {
+                    Logic.handle-ok-cancel-dialog(OkCancelDialogSetting.handle-type, OkCancelDialogSetting.handle-uuid);
+                    OkCancelDialogSetting.body-text = "";
+                }
+            }
+        }
     }
 }

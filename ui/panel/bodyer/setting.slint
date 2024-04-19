@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
 import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover, SettingUpdate } from "../../store.slint";
-import { CenterLayout, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn, NoDataImg, Tag, RadioBtn} from "../../base/widgets.slint";
+import { CenterLayout, OkCancelDialogSetting, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn, NoDataImg, Tag, RadioBtn} from "../../base/widgets.slint";
 
 enum SettingDetailIndex {
     UI,
@@ -21,7 +21,7 @@ enum SettingDetailIndex {
 component UI inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "界 面");
 
-    in-out property<string> language: "cn";
+    in-out property <string> language: "cn";
 
     public function get() -> SettingUI {
         return {
@@ -31,7 +31,7 @@ component UI inherits SettingDetail {
         };
     }
 
-    public function set(setting :SettingUI) {
+    public function set(setting :SettingUI){
         font-size-lineedit.text = setting.font-size;
         fonts-combox.current-value = setting.font-family;
         root.language = setting.language;
@@ -39,7 +39,6 @@ component UI inherits SettingDetail {
         if (setting.font-family == "") {
             fonts-combox.current-value = "SystemDefault";
         }
-
         if (root.language == "") {
             root.language = "cn";
         }
@@ -112,7 +111,7 @@ component Reading inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingReading) {
+    public function set(setting: SettingReading){
         browser-combox.current-value = setting.browser;
         delete-after-reading-checkbox.checked = setting.is-delete-after-reading;
 
@@ -129,20 +128,25 @@ component Reading inherits SettingDetail {
 
             browser-combox := ComboBox {
                 height: browser-label.preferred-height * 1.6;
-                model: [ "Default", "Firefox", "InternetExplorer", "Chrome", "Opera", "Safari", "WebPositive" ];
+                model: [
+                    "Default",
+                    "Firefox",
+                    "InternetExplorer",
+                    "Chrome",
+                    "Opera",
+                    "Safari",
+                    "WebPositive"
+                ];
                 current-value: self.model[0];
                 current-index: 0;
             }
-
         }
 
         delete-after-reading-checkbox := CheckBox {
             text: self.checked ? Logic.tr(Store.is-cn, "已启用阅后即焚") : Logic.tr(Store.is-cn, "未启用阅后即焚");
-
         }
     }
 }
-
 
 component Sync inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "同 步");
@@ -156,7 +160,7 @@ component Sync inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingSync) {
+    public function set(setting: SettingSync){
         sync-interval-lineedit.text = setting.sync-interval;
         sync-timeout-lineedit.text = setting.sync-timeout;
         sync-auto-checkbox.checked = setting.is-auto-sync;
@@ -174,7 +178,6 @@ component Sync inherits SettingDetail {
                 height: sync-interval-txt.preferred-height * 1.6;
                 placeholder-text: Logic.tr(Store.is-cn, "请输入时间间隔");
             }
-
         }
 
         SettingDetailInnerVbox {
@@ -212,7 +215,7 @@ component Proxy inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingProxy) {
+    public function set(setting: SettingProxy){
         type-combox.current-value = setting.proxy-type;
         http-url-lineedit.text = setting.http-url;
         http-port-lineedit.text = setting.http-port;
@@ -241,7 +244,7 @@ component Proxy inherits SettingDetail {
                         text: Logic.tr(Store.is-cn, "代理地址");
                     }
 
-                    http-url-lineedit:= LineEdit {
+                    http-url-lineedit := LineEdit {
                         height: http-url-txt.preferred-height * 1.6;
                         placeholder-text: "127.0.0.1";
                     }
@@ -252,7 +255,7 @@ component Proxy inherits SettingDetail {
                         text: Logic.tr(Store.is-cn, "代理端口");
                     }
 
-                    http-port-lineedit:= LineEdit {
+                    http-port-lineedit := LineEdit {
                         input-type: number;
                         height: http-port-txt.preferred-height * 1.6;
                         placeholder-text: "3128";
@@ -269,7 +272,7 @@ component Proxy inherits SettingDetail {
                         text: Logic.tr(Store.is-cn, "代理地址");
                     }
 
-                    socks5-url-lineedit:= LineEdit {
+                    socks5-url-lineedit := LineEdit {
                         height: socks5-url-txt.preferred-height * 1.6;
                         placeholder-text: "127.0.0.1";
                     }
@@ -280,7 +283,7 @@ component Proxy inherits SettingDetail {
                         text: Logic.tr(Store.is-cn, "代理端口");
                     }
 
-                    socks5-port-lineedit:= LineEdit {
+                    socks5-port-lineedit := LineEdit {
                         input-type: number;
                         height: socks5-port-txt.preferred-height * 1.6;
                         placeholder-text: "1080";
@@ -328,7 +331,9 @@ component About inherits SettingDetail {
 
                 IconBtn {
                     icon: Icons.copy;
-                    clicked => { Logic.copy-to-clipboard(Store.about-dialog.sponsor); }
+                    clicked => {
+                        Logic.copy-to-clipboard(Store.about-dialog.sponsor);
+                    }
                 }
             }
 
@@ -349,7 +354,9 @@ component About inherits SettingDetail {
 
         HorizontalLayout {
             alignment: center;
-            Brand { width: 35%; }
+            Brand {
+                width: 35%;
+            }
         }
     }
 }
@@ -377,7 +384,7 @@ component Feedback inherits SettingDetail {
         edit := TxtEdit {
             vertical-stretch: 1;
 
-            in-out property<int> current-text-len;
+            in-out property <int> current-text-len;
 
             edited => {
                 self.current-text-len = Util.text-len(self.text);
@@ -404,10 +411,13 @@ component Feedback inherits SettingDetail {
                 cancel-btn := CancelBtn {
                     text: Logic.tr(Store.is-cn, "清空");
                     icon: Icons.cache-light;
-                    clicked => { edit.clear(); edit.focus(); }
+                    clicked => {
+                        edit.clear();
+                        edit.focus();
+                    }
                 }
 
-                ConfirmBtn  {
+                ConfirmBtn {
                     text: Logic.tr(Store.is-cn, "发送");
                     icon: Icons.send;
 
@@ -424,7 +434,7 @@ component Feedback inherits SettingDetail {
 component Donate inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "捐 赠");
 
-    private property<bool> is-wechat: true;
+    private property <bool> is-wechat: true;
 
     SettingDetailInner {
         vbox-alignment: LayoutAlignment.stretch;
@@ -436,7 +446,9 @@ component Donate inherits SettingDetail {
                 icon: Icons.wechat-light;
                 text: Logic.tr(Store.is-cn, "微信支付");
                 checked: root.is-wechat;
-                clicked => { root.is-wechat = true; }
+                clicked => {
+                    root.is-wechat = true;
+                }
             }
 
             TabBtn {
@@ -444,18 +456,20 @@ component Donate inherits SettingDetail {
                 icon: Icons.metamask-light;
                 text: Logic.tr(Store.is-cn, "小狐狸（加密）支付");
                 checked: !root.is-wechat;
-                clicked => { root.is-wechat = false; }
+                clicked => {
+                    root.is-wechat = false;
+                }
             }
         }
 
         Rectangle {
-            if root.is-wechat : Image {
+            if root.is-wechat: Image {
                 source: Icons.wechat-pay;
                 width: root.width * 0.6;
                 height: self.width;
             }
 
-            if !root.is-wechat : Image {
+            if !root.is-wechat: Image {
                 source: Icons.metamask-pay;
                 width: root.width * 0.6;
                 height: self.width;
@@ -463,7 +477,6 @@ component Donate inherits SettingDetail {
         }
     }
 }
-
 
 component BackupRecover inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "备份与恢复");
@@ -477,11 +490,11 @@ component BackupRecover inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingBackupRecover) {
+    public function set(setting: SettingBackupRecover){
         token-lineedit.text = setting.api-token;
         rss-checkbox.checked = setting.rss;
         setting-checkbox.checked = setting.setting;
-        favorite-checkbox.checked =  setting.favorite;
+        favorite-checkbox.checked = setting.favorite;
     }
 
     SettingDetailInner {
@@ -545,24 +558,24 @@ component BackupRecover inherits SettingDetail {
                 clicked => {
                     Logic.set-setting-backup-recover(root.get());
 
-                    Store.ok-cancel-dialog-setting.title-type = "warning";
-                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
-                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否备份？");
-                    Store.ok-cancel-dialog-setting.handle-type = "backup-to-remote";
+                    OkCancelDialogSetting.title-type = "warning";
+                    OkCancelDialogSetting.title-text = Logic.tr(Store.is-cn, "警告");
+                    OkCancelDialogSetting.body-text = Logic.tr(Store.is-cn, "是否备份？");
+                    OkCancelDialogSetting.handle-type = "backup-to-remote";
                 }
             }
 
-            ConfirmBtn  {
+            ConfirmBtn {
                 text: Logic.tr(Store.is-cn, "恢复");
                 icon: Icons.download-cloud;
 
                 clicked => {
                     Logic.set-setting-backup-recover(root.get());
 
-                    Store.ok-cancel-dialog-setting.title-type = "warning";
-                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
-                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否恢复？");
-                    Store.ok-cancel-dialog-setting.handle-type = "recover-from-remote";
+                    OkCancelDialogSetting.title-type = "warning";
+                    OkCancelDialogSetting.title-text = Logic.tr(Store.is-cn, "警告");
+                    OkCancelDialogSetting.body-text = Logic.tr(Store.is-cn, "是否恢复？");
+                    OkCancelDialogSetting.handle-type = "recover-from-remote";
                 }
             }
         }
@@ -572,7 +585,7 @@ component BackupRecover inherits SettingDetail {
 component Update inherits SettingDetail {
     private property <SettingUpdate> setting: Store.setting-update;
     private property <bool> is-same-version: setting.current-version == setting.latest-version;
-    private property <bool> is-show-detail : (Store.is-cn && setting.detail-cn != "") || (!Store.is-cn && setting.detail-en != "");
+    private property <bool> is-show-detail: (Store.is-cn && setting.detail-cn != "") || (!Store.is-cn && setting.detail-en != "");
 
     title: Logic.tr(Store.is-cn, "获取最新版本");
 
@@ -608,7 +621,7 @@ component Update inherits SettingDetail {
                 text: Logic.tr(Store.is-cn, "更新信息");
             }
 
-            if is-show-detail : HorizontalLayout {
+            if is-show-detail: HorizontalLayout {
                 padding-left: Theme.padding * 2;
 
                 Label {
@@ -618,7 +631,7 @@ component Update inherits SettingDetail {
                 }
             }
 
-            if !is-show-detail : Rectangle {
+            if !is-show-detail: Rectangle {
                 NoDataImg {
                     width: root.width * 0.5;
                     text: Logic.tr(Store.is-cn, "没有数据");
@@ -626,7 +639,7 @@ component Update inherits SettingDetail {
             }
         }
 
-        if root.setting.url != "" && !root.is-same-version : HorizontalLayout {
+        if root.setting.url != "" && !root.is-same-version: HorizontalLayout {
             alignment: end;
             padding: Theme.padding * 2;
 
@@ -634,19 +647,20 @@ component Update inherits SettingDetail {
                 icon: Icons.download;
                 text: Logic.tr(Store.is-cn, "下载最新版本");
 
-                clicked => { Util.open-url(root.setting.url); }
+                clicked => {
+                    Util.open-url(root.setting.url);
+                }
             }
         }
     }
 }
-
 
 component Body inherits VerticalLayout {
     alignment: start;
     spacing: Theme.spacing;
 
     // TODO
-    in-out property<SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.UI;
+    in-out property <SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.UI;
 
     callback switch(SettingDetailIndex);
 
@@ -709,10 +723,10 @@ component Body inherits VerticalLayout {
                 attach-text: Store.cache-size;
                 icon: Icons.cache-light;
                 clicked => {
-                    Store.ok-cancel-dialog-setting.title-type = "warning";
-                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
-                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部缓存？");
-                    Store.ok-cancel-dialog-setting.handle-type = "remove-all-cache";
+                    OkCancelDialogSetting.title-type = "warning";
+                    OkCancelDialogSetting.title-text = Logic.tr(Store.is-cn, "警告");
+                    OkCancelDialogSetting.body-text = Logic.tr(Store.is-cn, "是否删除全部缓存？");
+                    OkCancelDialogSetting.handle-type = "remove-all-cache";
                 }
             }
 
@@ -816,7 +830,6 @@ export component Setting inherits Rectangle {
                     Logic.show-message(Logic.tr(Store.is-cn, "非法输入，输入不能为空"), "warning");
                     return;
                 }
-
                 body.visible = true;
                 Logic.set-setting-ui(self.get());
             }
@@ -837,7 +850,6 @@ export component Setting inherits Rectangle {
                     Logic.show-message(Logic.tr(Store.is-cn, "非法输入，输入不能为空"), "warning");
                     return;
                 }
-
                 body.visible = true;
                 Logic.set-setting-sync(self.get());
             }
@@ -853,11 +865,13 @@ export component Setting inherits Rectangle {
 
         feedback := Feedback {
             visible: body.current-setting-detail-index == SettingDetailIndex.Feedback;
-            back => { body.visible = true; }
+            back => {
+                body.visible = true;
+            }
         }
 
         backup-recover := BackupRecover {
-            visible: body.current-setting-detail-index == SettingDetailIndex.BackupRecover ;
+            visible: body.current-setting-detail-index == SettingDetailIndex.BackupRecover;
             back => {
                 body.visible = true;
                 Logic.set-setting-backup-recover(self.get());
@@ -866,21 +880,29 @@ export component Setting inherits Rectangle {
 
         update := Update {
             visible: body.current-setting-detail-index == SettingDetailIndex.Update;
-            back => { body.visible = true; }
+            back => {
+                body.visible = true;
+            }
         }
     }
 
-    if !body.visible : Rectangle {
-        if body.current-setting-detail-index == SettingDetailIndex.About : About {
-            back => { body.visible = true; }
+    if !body.visible: Rectangle {
+        if body.current-setting-detail-index == SettingDetailIndex.About: About {
+            back => {
+                body.visible = true;
+            }
         }
 
         if body.current-setting-detail-index == SettingDetailIndex.Help: Help {
-            back => { body.visible = true; }
+            back => {
+                body.visible = true;
+            }
         }
 
-        if body.current-setting-detail-index == SettingDetailIndex.Donate : Donate {
-            back => { body.visible = true; }
+        if body.current-setting-detail-index == SettingDetailIndex.Donate: Donate {
+            back => {
+                body.visible = true;
+            }
         }
     }
 }

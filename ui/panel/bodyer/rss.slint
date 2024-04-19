@@ -3,7 +3,7 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout , Blanket} from "../../base/widgets.slint";
+import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout , Blanket, OkCancelDialogSetting} from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component RHead inherits Head {
@@ -54,11 +54,11 @@ component RHead inherits Head {
                 icon: Icons.delete;
 
                 clicked => {
-                    Store.ok-cancel-dialog-setting.title-type = "warning";
-                    Store.ok-cancel-dialog-setting.title-text = Logic.tr(Store.is-cn, "警告");
-                    Store.ok-cancel-dialog-setting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
-                    Store.ok-cancel-dialog-setting.handle-type = "remove-all-entrys";
-                    Store.ok-cancel-dialog-setting.handle-uuid = Store.current-rss-uuid;
+                    OkCancelDialogSetting.title-type = "warning";
+                    OkCancelDialogSetting.title-text = Logic.tr(Store.is-cn, "警告");
+                    OkCancelDialogSetting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
+                    OkCancelDialogSetting.handle-type = "remove-all-entrys";
+                    OkCancelDialogSetting.handle-uuid = Store.current-rss-uuid;
                 }
             }
         }
