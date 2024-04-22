@@ -294,17 +294,17 @@ component AddEditBtns inherits HorizontalLayout {
     callback cancel-clicked();
     callback ok-clicked();
 
-    CancelBtn {
-        text: Logic.tr(Store.is-cn, "取消");
-        clicked => {
-            root.cancel-clicked();
-        }
-    }
-
     ConfirmBtn {
         text: Logic.tr(Store.is-cn, "确认");
         clicked => {
             root.ok-clicked();
+        }
+    }
+
+    CancelBtn {
+        text: Logic.tr(Store.is-cn, "取消");
+        clicked => {
+            root.cancel-clicked();
         }
     }
 }
