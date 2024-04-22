@@ -2,9 +2,9 @@ import { Dialog } from "./dialog.slint";
 import { Store } from "../store.slint";
 import { Util } from "../util.slint";
 import { Logic } from "../logic.slint";
-import { Theme } from "../theme.slint";
+import { Theme, Icons } from "../theme.slint";
 import { Label } from "./label.slint";
-import { CancelBtn, ConfirmBtn } from "./btn.slint";
+import { CancelBtn, TextBtn } from "./btn.slint";
 
 export global OkCancelDialogSetting {
     in-out property <string> title-type: "warning";
@@ -71,22 +71,21 @@ export component OkCancelDialogV2 inherits Rectangle {
             alignment: end;
             spacing: Theme.spacing * 4;
 
-            CancelBtn {
-                background: Colors.transparent;
-                text: Logic.tr(Store.is-cn, "取消");
+            TextBtn {
+                icon: Icons.success;
+                text: Logic.tr(Store.is-cn, "确认");
 
                 clicked => {
+                    Logic.handle-ok-cancel-dialog(OkCancelDialogSetting.handle-type, OkCancelDialogSetting.handle-uuid);
                     OkCancelDialogSetting.body-text = "";
                 }
             }
 
-            ConfirmBtn {
-                background: Colors.transparent;
-                text: Logic.tr(Store.is-cn, "确认");
-                colorize: Theme.success-color.darker(30%);
+            TextBtn {
+                text: Logic.tr(Store.is-cn, "取消");
+                icon: Icons.cancel;
 
                 clicked => {
-                    Logic.handle-ok-cancel-dialog(OkCancelDialogSetting.handle-type, OkCancelDialogSetting.handle-uuid);
                     OkCancelDialogSetting.body-text = "";
                 }
             }

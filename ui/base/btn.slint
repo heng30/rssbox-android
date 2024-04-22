@@ -13,9 +13,15 @@ export component CancelBtn inherits IconBtn {
 
 export component ConfirmBtn inherits IconBtn {
     use-auto-size: true;
-    icon: Icons.success-fill;
+    icon: Icons.success;
     border-radius: self.height / 2;
     bg-color: Theme.success-color.darker(20%);
     bg-pressed-color: self.bg-color.darker(30%);
     colorize: Theme.basic-white-color;
+}
+
+export component TextBtn inherits IconBtn {
+    use-auto-size: true;
+    background: Colors.transparent;
+    colorize: Theme.secondary-brand-color;
 }
