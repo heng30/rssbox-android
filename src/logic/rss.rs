@@ -310,9 +310,9 @@ pub fn init(ui: &AppWindow) {
                 list.sort_by(rss_config_sort_fn);
 
                 store_rss_lists!(ui).set_vec(list);
-                message_success!(ui, ("新建成功"));
+                message_success!(ui, tr("新建成功"));
 
-                ui.global::<Logic>().invoke_sync_rss(suuid);
+                ui.global::<Logic>().invoke_sync_rss(suuid, true);
             });
         });
     });
@@ -507,56 +507,61 @@ pub fn init(ui: &AppWindow) {
         .on_exist_rss(move |uuid| get_rss_config(&ui_handle.unwrap(), uuid.as_str()).is_some());
 
     let ui_handle = ui.as_weak();
-    ui.global::<Logic>().on_sync_rss(move |suuid| {
-        let ui = ui_handle.unwrap();
+    ui.global::<Logic>()
+        .on_sync_rss(move |suuid, is_show_toast| {
+            let ui = ui_handle.unwrap();
 
-        for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
-            if suuid != rss.uuid {
-                continue;
+            for (index, mut rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
+                if suuid != rss.uuid {
+                    continue;
+                }
+
+                rss.is_update_failed = true;
+                rss.update_time = util::time::local_now("%H:%M:%S").into();
+                ui.global::<Store>()
+                    .get_rss_lists()
+                    .set_row_data(index, rss.clone());
+
+                ui.global::<Store>()
+                    .set_rss_update_time_flag(!ui.global::<Store>().get_rss_update_time_flag());
+
+                let items: Vec<SyncItem> = vec![rss.into()];
+                message_info!(ui, tr("正在同步..."));
+
+                let ui = ui.as_weak();
+                tokio::spawn(async move {
+                    let error_msgs = sync_rss(ui.clone(), items).await;
+
+                    if is_show_toast {
+                        if error_msgs.is_empty() {
+                            async_message_success(ui.clone(), tr("同步成功"));
+                        } else {
+                            let err = format!(
+                                "{}:[{}] {}. {}: {}",
+                                tr("访问"),
+                                error_msgs[0].url,
+                                tr("失败"),
+                                tr("原因"),
+                                error_msgs[0].msg
+                            );
+                            async_message_warn(ui.clone(), err);
+                        }
+                    }
+                });
+
+                return;
             }
 
-            rss.is_update_failed = true;
-            rss.update_time = util::time::local_now("%H:%M:%S").into();
-            ui.global::<Store>()
-                .get_rss_lists()
-                .set_row_data(index, rss.clone());
-
-            ui.global::<Store>()
-                .set_rss_update_time_flag(!ui.global::<Store>().get_rss_update_time_flag());
-
-            let items: Vec<SyncItem> = vec![rss.into()];
-            message_info!(ui, tr("正在同步..."));
-
-            let ui = ui.as_weak();
-            tokio::spawn(async move {
-                let error_msgs = sync_rss(ui.clone(), items).await;
-
-                if error_msgs.is_empty() {
-                    async_message_success(ui.clone(), tr("同步成功"));
-                } else {
-                    let err = format!(
-                        "{}:[{}] {}. {}: {}",
-                        tr("访问"),
-                        error_msgs[0].url,
-                        tr("失败"),
-                        tr("原因"),
-                        error_msgs[0].msg
-                    );
-                    async_message_warn(ui.clone(), err);
-                }
-            });
-
-            return;
-        }
-
-        message_info!(&ui, tr("请添加RSS源"));
-    });
+            message_info!(&ui, tr("请添加RSS源"));
+        });
 
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_sync_rss_all(move || {
         let ui = ui_handle.unwrap();
+        message_info!(ui, tr("正在同步..."));
+
         for item in ui.global::<Store>().get_rss_lists().iter() {
-            ui.global::<Logic>().invoke_sync_rss(item.uuid);
+            ui.global::<Logic>().invoke_sync_rss(item.uuid, false);
         }
     });
 }

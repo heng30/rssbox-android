@@ -44,7 +44,7 @@ component RHead inherits Head {
                 background: Colors.transparent;
 
                 clicked => {
-                    Logic.sync-rss(Store.current-rss-uuid);
+                    Logic.sync-rss(Store.current-rss-uuid, true);
                 }
             }
         }

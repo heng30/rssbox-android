@@ -107,7 +107,7 @@ pub fn init(ui: &AppWindow) {
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_fetch_all_find_entrys(move || {
         let ui = ui_handle.unwrap();
-        message_info!(ui, tr("刷新..."));
+        message_info!(ui, tr("正在刷新..."));
 
         let ui = ui.as_weak();
         _fetch_all_find_entrys(ui);

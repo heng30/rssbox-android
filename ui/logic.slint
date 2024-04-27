@@ -6,7 +6,7 @@ export global Logic {
     callback remove-rss(string); // suuid
     callback switch-rss(string, string); // from_suuid, to_suuid
     callback toggle-rss-favorite(string); // suuid
-    callback sync-rss(string); // suuid
+    callback sync-rss(string, bool); // suuid, is-show-toast
     callback sync-rss-all();
     callback get-rss-config-to-ui(string) -> RssConfig; // suuid
     callback exist-rss(string) -> bool; // suuid

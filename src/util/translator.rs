@@ -48,9 +48,10 @@ pub fn tr(text: &str) -> String {
     items.insert("取消收藏成功", "Cancel favorite success");
     items.insert("取消收藏失败", "Cancel favorite failed");
 
-    items.insert("刷新...", "Refresh...");
-    items.insert("正在同步...", "Refreshing...");
+    items.insert("正在刷新...", "Refreshing...");
+    items.insert("正在同步...", "Syncing...");
     items.insert("同步成功", "Refresh success");
+    items.insert("同步完成", "Refresh finished");
     items.insert("查找完成", "Search finish");
     items.insert("返回为空", "Empty data");
 
