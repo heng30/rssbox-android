@@ -23,6 +23,8 @@ xbuild-release:
 run:
 	RUST_BACKTRACE=1 $(run-evn) cargo apk run --lib
 
+run-release:
+	RUST_BACKTRACE=1 $(run-evn) cargo apk run --lib --release
 
 install:
 	$(build-evn) $(run-evn) cargo apk run --lib --release

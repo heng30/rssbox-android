@@ -14,17 +14,11 @@ export component AppWindow inherits Window {
     // width: Theme.default-width;
     // height: Theme.default-height;
 
-    background: Theme.base-background-dark;
+    background: Theme.base-background-light;
     icon: Icons.brand;
     title: "rssbox";
 
-    init => {
-    }
-
-    Rectangle {
-        background: Theme.base-background-light;
-        Panel { }
-    }
+    Panel { }
 
     if IconsDialogSetting.show || OkCancelDialogSetting.body-text != "" || Store.is-first-run: Blanket { }
 
