@@ -9,6 +9,7 @@ import { Theme } from "../../theme.slint";
 component FHead inherits Head {
     callback scroll-to-top <=> ta.clicked;
 
+    is-show-divider: true;
     icon: Icons.favorite-fill;
     title: Logic.tr(Store.is-cn, "收藏夹");
 
