@@ -6,10 +6,12 @@ import { Footer } from "./footer.slint";
 
 export component Panel inherits VerticalLayout {
     padding: Theme.padding;
+    padding-top: 0;
+    padding-bottom: 0;
 
     bodyer := Bodyer {
         height: parent.height - footer.height - parent.padding;
     }
-    footer := Footer {}
-}
 
+    footer := Footer { }
+}
