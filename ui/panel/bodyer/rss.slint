@@ -88,14 +88,14 @@ component RssListItems inherits Rectangle {
                             Image {
                                 source: IconsDialogSetting.icons[Math.max(0, Math.min(data.icon-index, IconsDialogSetting.icons.length - 1))];
                                 colorize: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
-                                width: Theme.enlarge-font-size * 1.2;
+                                width: name-txt.font-size * 1.2;
                             }
                         }
 
                         name-txt := Label {
                             color: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
                             text: data.name;
-                            font-size: Theme.enlarge-font-size;
+                            font-size: Theme.title5-font-size;
                             overflow: elide;
                         }
                     }
