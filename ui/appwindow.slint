@@ -17,15 +17,24 @@ export component AppWindow inherits Window {
 
     Panel { }
 
-    if IconsDialogSetting.show || OkCancelDialogSetting.body-text != "" || Store.is-first-run: Blanket { }
+    if IconsDialogSetting.show || OkCancelDialogSetting.body-text != "" || Store.is-first-run: Blanket {
+        TouchArea {
+            clicked => {
+                IconsDialogSetting.show = false;
+                OkCancelDialogSetting.body-text = "";
+            }
+        }
+    }
 
     if IconsDialogSetting.show: IconsDialog {
+        is-prevent-event-forward: true;
         select-index(index) => {
             Store.icon-index = index;
         }
     }
 
     if OkCancelDialogSetting.body-text != "": OkCancelDialogV2 {
+        is-prevent-event-forward: true;
         width: Math.min(root.width * 0.9, 380px);
     }
 

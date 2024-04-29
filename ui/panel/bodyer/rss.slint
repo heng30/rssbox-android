@@ -198,37 +198,37 @@ export component Entry inherits Rectangle {
 
     background: Theme.lighter-fill-color;
     border-radius: Theme.border-radius;
-
     drop-shadow-blur: Theme.padding * 2;
     drop-shadow-color: Theme.dark-fill-color;
 
     VerticalLayout {
         padding: Theme.padding * 2;
         spacing: Theme.spacing * 2;
+        alignment: space-between;
 
         title-txt := Link {
+            wrap: no-wrap;
+            overflow: elide;
             is-read: root.is-read;
 
             clicked => {
                 if (!self.is-read) {
                     Logic.set-entry-read(Store.current-rss-uuid, root.uuid);
                 }
+
                 Util.open-url(root.url);
+
                 if (Logic.get-setting-reading().is-delete-after-reading) {
                     Logic.remove-entry(Store.current-rss-uuid, root.uuid);
                 }
             }
         }
 
-        if root.summary != "": Text {
+        Text {
             font-size: Theme.default-font-size - 1px;
             color: root.is-read ? Theme.have-read-text-color : Theme.regular-text-color;
-            wrap: word-wrap;
             text: root.summary;
-        }
-
-        if root.summary == "": Rectangle {
-            height: 20px;
+            overflow: elide;
         }
 
         HorizontalLayout {

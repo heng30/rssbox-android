@@ -46,18 +46,22 @@ export component Entry inherits Rectangle {
     VerticalLayout {
         padding: Theme.padding * 2;
         spacing: Theme.spacing * 2;
+        alignment: space-between;
 
         title-txt := Link {
+            wrap: no-wrap;
+            overflow: elide;
+
             clicked => {
                 Util.open-url(root.url);
             }
         }
 
-        if root.summary != "": Text {
+        Text {
             font-size: Theme.default-font-size - 1px;
             color: Theme.regular-text-color;
-            wrap: word-wrap;
             text: root.summary;
+            overflow: elide;
         }
 
         HorizontalLayout {

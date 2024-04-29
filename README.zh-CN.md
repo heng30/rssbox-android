@@ -1,7 +1,11 @@
 <div style="display: flex, margin: 8px">
-    <img src="./screenshot/rssbox-cn.png" width="100"/>
-    <img src="./screenshot/rssbox2-cn.png" width="100"/>
-    <img src="./screenshot/rssbox-show-rss-list.png" width="100"/>
+    <img src="./screenshot/1.png" width="100"/>
+    <img src="./screenshot/2.png" width="100"/>
+    <img src="./screenshot/3.png" width="100"/>
+    <img src="./screenshot/4.png" width="100"/>
+    <img src="./screenshot/5.png" width="100"/>
+    <img src="./screenshot/6.png" width="100"/>
+    <img src="./screenshot/7.png" width="100"/>
 </div>
 
 [English Documentation](./README.md)
