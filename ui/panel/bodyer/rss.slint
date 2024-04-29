@@ -3,14 +3,15 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, NoMessageImg, CenterLayout , Blanket, OkCancelDialogSetting} from "../../base/widgets.slint";
+import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, ElevatedBtn, NoMessageImg, CenterLayout , Blanket, OkCancelDialogSetting} from "../../base/widgets.slint";
 import { Theme } from "../../theme.slint";
 
 component RHead inherits Head {
     callback scroll-to-top <=> ta.clicked;
 
-    icon: Icons.list;
-    title: Logic.tr(Store.is-cn, "订阅");
+    icon: Icons.menu;
+    icon-width: Theme.icon-size * 1.2;
+    is-show-divider: true;
 
     HorizontalLayout {
         horizontal-stretch: 1;
@@ -30,37 +31,15 @@ component RHead inherits Head {
         }
     }
 
-    HorizontalLayout {
-        spacing: Theme.padding * 3;
+    IconBtn {
+        icon: Icons.delete;
 
-        CenterLayout {
-            refresh-icon := IconBtn {
-                is-ltr: false;
-                icon: Icons.refresh;
-                icon-width: Theme.icon-size * 1.2;
-                text: Logic.update-time-rss(Store.current-rss-uuid, Store.rss-update-time-flag);
-                font-size: Theme.default-font-size - 4px;
-                text-color: Theme.placeholder-text-color;
-                background: Colors.transparent;
-
-                clicked => {
-                    Logic.sync-rss(Store.current-rss-uuid, true);
-                }
-            }
-        }
-
-        CenterLayout {
-            remove-all-icon := IconBtn {
-                icon: Icons.delete;
-
-                clicked => {
-                    OkCancelDialogSetting.title-type = "warning";
-                    OkCancelDialogSetting.title-text = Logic.tr(Store.is-cn, "警告");
-                    OkCancelDialogSetting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
-                    OkCancelDialogSetting.handle-type = "remove-all-entrys";
-                    OkCancelDialogSetting.handle-uuid = Store.current-rss-uuid;
-                }
-            }
+        clicked => {
+            OkCancelDialogSetting.title-type = "warning";
+            OkCancelDialogSetting.title-text = Logic.tr(Store.is-cn, "警告");
+            OkCancelDialogSetting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
+            OkCancelDialogSetting.handle-type = "remove-all-entrys";
+            OkCancelDialogSetting.handle-uuid = Store.current-rss-uuid;
         }
     }
 }
@@ -110,14 +89,14 @@ component RssListItems inherits Rectangle {
                             Image {
                                 source: IconsDialogSetting.icons[Math.max(0, Math.min(data.icon-index, IconsDialogSetting.icons.length - 1))];
                                 colorize: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
-                                width: Theme.enlarge-font-size * 1.2;
+                                width: name-txt.font-size * 1.2;
                             }
                         }
 
                         name-txt := Label {
                             color: data.uuid == Store.current-rss-uuid ? root.selected-item-color : Theme.regular-text-color;
                             text: data.name;
-                            font-size: Theme.enlarge-font-size;
+                            font-size: Theme.title5-font-size;
                             overflow: elide;
                         }
                     }
@@ -183,7 +162,7 @@ component RssList inherits Rectangle {
         }
 
         x: 0px;
-        width: root.is-show-list ? Math.min(parent.width * 0.7, 500px) : 0;
+        width: root.is-show-list ? Math.min(parent.width * 0.8, 500px) : 0;
         background: Theme.light-fill-color;
         border-top-right-radius: Theme.border-radius * 4;
         border-bottom-right-radius: Theme.border-radius * 4;
@@ -219,37 +198,37 @@ export component Entry inherits Rectangle {
 
     background: Theme.lighter-fill-color;
     border-radius: Theme.border-radius;
-
     drop-shadow-blur: Theme.padding * 2;
     drop-shadow-color: Theme.dark-fill-color;
 
     VerticalLayout {
         padding: Theme.padding * 2;
         spacing: Theme.spacing * 2;
+        alignment: space-between;
 
         title-txt := Link {
+            wrap: no-wrap;
+            overflow: elide;
             is-read: root.is-read;
 
             clicked => {
                 if (!self.is-read) {
                     Logic.set-entry-read(Store.current-rss-uuid, root.uuid);
                 }
+
                 Util.open-url(root.url);
+
                 if (Logic.get-setting-reading().is-delete-after-reading) {
                     Logic.remove-entry(Store.current-rss-uuid, root.uuid);
                 }
             }
         }
 
-        if root.summary != "": Text {
+        Text {
             font-size: Theme.default-font-size - 1px;
             color: root.is-read ? Theme.have-read-text-color : Theme.regular-text-color;
-            wrap: word-wrap;
             text: root.summary;
-        }
-
-        if root.summary == "": Rectangle {
-            height: 20px;
+            overflow: elide;
         }
 
         HorizontalLayout {
@@ -390,6 +369,28 @@ export component EntryList inherits Rectangle {
         NoDataImg {
             width: root.width * 0.6;
             text: Logic.tr(Store.is-cn, "没有消息");
+        }
+    }
+
+    VerticalLayout {
+        x: root.width - self.preferred-width - Theme.padding * 4;
+        y: root.height - self.preferred-height - Theme.padding * 4;
+        spacing: Theme.spacing * 2;
+
+        ElevatedBtn {
+            icon: Icons.menu;
+
+            clicked => {
+                Store.is-show-side-rsslist = true;
+            }
+        }
+
+        ElevatedBtn {
+            icon: Icons.refresh;
+
+            clicked => {
+                Logic.sync-rss(Store.current-rss-uuid, true);
+            }
         }
     }
 }

@@ -47,6 +47,7 @@ export component OkCancelDialogV2 inherits Rectangle {
     height: vbox.preferred-height;
     background: Theme.lighter-fill-color;
 
+    in-out property <bool> is-prevent-event-forward: false;
     in-out property <string> title: OkCancelDialogSetting.title-text;
 
     vbox := VerticalLayout {

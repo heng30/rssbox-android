@@ -9,7 +9,6 @@ export component SettingDetail inherits Rectangle {
     in-out property title <=> head.title;
 
     VerticalLayout {
-
         head := Head {
             hbox-alignment: LayoutAlignment.start;
         }
@@ -19,7 +18,7 @@ export component SettingDetail inherits Rectangle {
 }
 
 export component SettingDetailInner inherits Flickable {
-    in-out property<LayoutAlignment> vbox-alignment: LayoutAlignment.start;
+    in-out property <LayoutAlignment> vbox-alignment: LayoutAlignment.start;
 
     VerticalLayout {
         alignment: root.vbox-alignment;

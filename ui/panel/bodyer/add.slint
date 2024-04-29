@@ -47,6 +47,7 @@ component RssList inherits Rectangle {
             height: root.item-height;
 
             background: data.uuid == root.current-uuid ? root.selected-item-color : Colors.transparent;
+            border-radius: Theme.border-radius;
 
             touch := TouchArea {
                 clicked => {

@@ -1,0 +1,20 @@
+import { Theme } from "../theme.slint";
+import { IconBtn } from "icon-btn.slint";
+
+
+export component ElevatedBtn inherits Rectangle {
+    width: 45px;
+    height: self.width;
+    border-radius: root.width / 2;
+    background: Theme.dark-fill-color;
+    drop-shadow-blur: Theme.padding;
+    drop-shadow-color: Theme.dark-border-color;
+
+    in-out property icon <=> btn.icon;
+
+    callback clicked <=> btn.clicked;
+
+    btn := IconBtn {
+        icon-width: root.width * 0.65;
+    }
+}
