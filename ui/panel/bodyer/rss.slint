@@ -10,6 +10,7 @@ component RHead inherits Head {
     callback scroll-to-top <=> ta.clicked;
 
     icon: Icons.menu;
+    icon-width: Theme.icon-size * 1.2;
     is-show-divider: true;
 
     HorizontalLayout {
@@ -161,7 +162,7 @@ component RssList inherits Rectangle {
         }
 
         x: 0px;
-        width: root.is-show-list ? Math.min(parent.width * 0.7, 500px) : 0;
+        width: root.is-show-list ? Math.min(parent.width * 0.8, 500px) : 0;
         background: Theme.light-fill-color;
         border-top-right-radius: Theme.border-radius * 4;
         border-bottom-right-radius: Theme.border-radius * 4;
@@ -371,13 +372,25 @@ export component EntryList inherits Rectangle {
         }
     }
 
-    ElevatedBtn {
-        x: root.width - self.width - Theme.padding * 4;
-        y: root.height - self.height - Theme.padding * 4;
-        icon: Icons.refresh;
+    VerticalLayout {
+        x: root.width - self.preferred-width - Theme.padding * 4;
+        y: root.height - self.preferred-height - Theme.padding * 4;
+        spacing: Theme.spacing * 2;
 
-        clicked => {
-            Logic.sync-rss(Store.current-rss-uuid, true);
+        ElevatedBtn {
+            icon: Icons.menu;
+
+            clicked => {
+                Store.is-show-side-rsslist = true;
+            }
+        }
+
+        ElevatedBtn {
+            icon: Icons.refresh;
+
+            clicked => {
+                Logic.sync-rss(Store.current-rss-uuid, true);
+            }
         }
     }
 }
