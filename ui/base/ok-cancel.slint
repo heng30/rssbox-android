@@ -50,6 +50,8 @@ export component OkCancelDialogV2 inherits Rectangle {
     in-out property <bool> is-prevent-event-forward: false;
     in-out property <string> title: OkCancelDialogSetting.title-text;
 
+    if is-prevent-event-forward: TouchArea { }
+
     vbox := VerticalLayout {
         alignment: start;
         padding: Theme.padding * 4;
