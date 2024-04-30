@@ -4,12 +4,12 @@ use crate::{
     config,
     db::{self, ComEntry},
     message_info, message_success,
-    util::{http, translator::tr},
+    util::{crypto::md5_hex, http, translator::tr},
 };
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use slint::{ComponentHandle, Model, VecModel, Weak};
-use std::time::Duration;
+use slint::{ComponentHandle, Model, SharedString, VecModel, Weak};
+use std::{cmp::Ordering, time::Duration};
 
 const FIND_UUID: &str = "find-uuid";
 const RSS_ENTRY_URL_CN: &str = "https://heng30.xyz/apisvr/rssbox/rss/list/cn";
@@ -36,6 +36,7 @@ impl From<FindEntry> for UIFindEntry {
         UIFindEntry {
             name: entry.name.into(),
             url: entry.url.into(),
+            is_blacklist: false,
         }
     }
 }
@@ -60,6 +61,27 @@ macro_rules! store_find_entrys_keyword {
             .downcast_ref::<VecModel<UIFindEntry>>()
             .expect("We know we set a VecModel earlier")
     };
+}
+
+fn sort_fn(a: &UIFindEntry, b: &UIFindEntry) -> Ordering {
+    if a.is_blacklist && !b.is_blacklist {
+        Ordering::Greater
+    } else {
+        Ordering::Less
+    }
+}
+
+async fn sort_list(items: &mut Vec<UIFindEntry>) {
+    for item in items.iter_mut() {
+        if db::blacklist::is_exist(&md5_hex(item.url.as_str()))
+            .await
+            .is_ok()
+        {
+            item.is_blacklist = true;
+        }
+    }
+
+    items.sort_by(sort_fn);
 }
 
 fn init_find(ui: &AppWindow) {
@@ -91,6 +113,8 @@ fn init_find(ui: &AppWindow) {
                         unadd_list.push(item);
                     }
                 }
+
+                sort_list(&mut unadd_list).await;
 
                 let ui = ui.clone();
                 let _ = slint::invoke_from_event_loop(move || {
@@ -128,6 +152,48 @@ pub fn init(ui: &AppWindow) {
             store_find_entrys_keyword!(ui).set_vec(keyword_list);
             message_success!(ui, tr("查找完成"));
         });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>()
+        .on_recover_from_find_blacklist(move |index, url| {
+            let ui = ui_handle.unwrap();
+            let mut item = ui
+                .global::<Store>()
+                .get_find_entrys()
+                .row_data(index as usize)
+                .expect("we know find etnrys index is valid");
+
+            item.is_blacklist = false;
+            ui.global::<Store>()
+                .get_find_entrys()
+                .set_row_data(index as usize, item);
+
+            message_success!(ui, tr("成功移除黑名单"));
+
+            _recover_from_find_blacklist(url);
+        });
+
+    let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_add_to_find_blacklist(move |url| {
+        let ui = ui_handle.unwrap();
+
+        for (index, mut item) in ui
+            .global::<Store>()
+            .get_find_entrys()
+            .iter()
+            .enumerate()
+        {
+            if item.url == url {
+                item.is_blacklist = true;
+                ui.global::<Store>()
+                    .get_find_entrys()
+                    .set_row_data(index, item);
+                break;
+            }
+        }
+
+        _add_to_find_blacklist(url);
+    });
 
     let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_find_entrys_counts(move |_flag| {
@@ -195,10 +261,12 @@ fn _fetch_all_find_entrys(ui: Weak<AppWindow>) {
             }
         }
 
-        let ui_items = items
+        let mut ui_items = items
             .into_iter()
             .map(|item| item.into())
             .collect::<Vec<UIFindEntry>>();
+
+        sort_list(&mut ui_items).await;
 
         let ui = ui.clone();
         let _ = slint::invoke_from_event_loop(move || {
@@ -208,5 +276,17 @@ fn _fetch_all_find_entrys(ui: Weak<AppWindow>) {
             ui.global::<Store>()
                 .set_find_entrys_counts_flag(!ui.global::<Store>().get_find_entrys_counts_flag());
         });
+    });
+}
+
+fn _recover_from_find_blacklist(url: SharedString) {
+    tokio::spawn(async move {
+        _ = db::blacklist::delete(&md5_hex(url.as_str())).await;
+    });
+}
+
+fn _add_to_find_blacklist(url: SharedString) {
+    tokio::spawn(async move {
+        _ = db::blacklist::insert(&md5_hex(url.as_str())).await;
     });
 }

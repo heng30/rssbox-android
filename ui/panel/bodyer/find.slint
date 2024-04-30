@@ -42,13 +42,16 @@ component FHead inherits Head {
         }
     }
 
-    IconBtn {
-        icon: root.is-search ? Icons.hide : Icons.search;
-        clicked => {
-            root.is-search = !root.is-search;
-            if (root.is-search) {
-                search-lineedit.text = "";
-                search-lineedit.focus();
+    HorizontalLayout {
+        padding-left: Theme.padding * 2;
+        IconBtn {
+            icon: root.is-search ? Icons.hide : Icons.search;
+            clicked => {
+                root.is-search = !root.is-search;
+                if (root.is-search) {
+                    search-lineedit.text = "";
+                    search-lineedit.focus();
+                }
             }
         }
     }
@@ -90,16 +93,28 @@ component EntryList inherits Rectangle {
             }
 
             CenterLayout {
-                IconBtn {
-                    icon: Icons.add-in-rect;
-                    icon-width: Theme.icon-size * 1.2;
-                    clicked => {
-                        Logic.new-rss({
-                            feed_format: "AUTO",
-                            name: item.name,
-                            url: item.url,
-                            icon-index: Util.rand-int(0, IconsDialogSetting.icons.length),
-                        });
+                HorizontalLayout {
+                    spacing: Theme.spacing * 4;
+
+                    if item.is-blacklist: IconBtn {
+                        icon: Icons.recover-from-trash;
+                        icon-width: Theme.icon-size * 0.85;
+                        clicked => {
+                            Logic.recover-from-find-blacklist(index, item.url);
+                        }
+                    }
+
+                    IconBtn {
+                        icon: Icons.add-in-rect;
+                        icon-width: Theme.icon-size * 1.2;
+                        clicked => {
+                            Logic.new-rss({
+                                feed_format: "AUTO",
+                                name: item.name,
+                                url: item.url,
+                                icon-index: Util.rand-int(0, IconsDialogSetting.icons.length),
+                            });
+                        }
                     }
                 }
             }
