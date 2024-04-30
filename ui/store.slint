@@ -9,6 +9,7 @@ export enum TabIndex {
 export struct FindEntry {
     name: string,
     url: string,
+    is-blacklist: bool,
 }
 
 export struct RssEntry {
@@ -159,12 +160,12 @@ export global Store {
     ];
 
     in-out property <[FindEntry]> find-entrys: [
-        { name: "find name 1", url: "url-1" },
+        { name: "find name 1", url: "url-1", is-blacklist: true },
         { name: "find name 2", url: "url-2" },
     ];
 
     in-out property <[FindEntry]> find-entrys-keyword: [
-        { name: "keyword name 1", url: "url-1" },
+        { name: "keyword name 1", url: "url-1", is-blacklist: true },
         { name: "keyword name 2", url: "url-1" },
     ];
 

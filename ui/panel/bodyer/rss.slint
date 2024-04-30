@@ -183,6 +183,17 @@ component RssList inherits Rectangle {
             }
         }
     }
+
+    if Store.is-show-side-rsslist: ElevatedBtn {
+        x: root.width - self.width - Theme.padding * 4;
+        y: root.height - self.height - Theme.padding * 4;
+
+        icon: Icons.refresh;
+
+        clicked => {
+            Logic.sync-rss-all();
+        }
+    }
 }
 
 export component Entry inherits Rectangle {
@@ -215,7 +226,6 @@ export component Entry inherits Rectangle {
                 if (!self.is-read) {
                     Logic.set-entry-read(Store.current-rss-uuid, root.uuid);
                 }
-
                 Util.open-url(root.url);
 
                 if (Logic.get-setting-reading().is-delete-after-reading) {
@@ -372,7 +382,7 @@ export component EntryList inherits Rectangle {
         }
     }
 
-    VerticalLayout {
+    if !Store.is-show-side-rsslist: VerticalLayout {
         x: root.width - self.preferred-width - Theme.padding * 4;
         y: root.height - self.preferred-height - Theme.padding * 4;
         spacing: Theme.spacing * 2;

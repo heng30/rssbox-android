@@ -368,6 +368,8 @@ pub fn init(ui: &AppWindow) {
                     .invoke_switch_rss(uuid.clone(), EMPTY_UUID.into());
             }
 
+            ui.global::<Logic>().invoke_add_to_find_blacklist(rss.url);
+
             let ui = ui.as_weak();
             tokio::spawn(async move {
                 match _remove_rss(uuid.as_str()).await {

@@ -7,9 +7,10 @@ use sqlx::{
 };
 use std::sync::Mutex;
 
-pub mod entry;
 pub mod rss;
+pub mod entry;
 pub mod trash;
+pub mod blacklist;
 
 const MAX_CONNECTIONS: u32 = 3;
 
@@ -44,6 +45,7 @@ pub async fn init(db_path: &str) {
     create_db(db_path).await.expect("create db");
     rss::new().await.expect("rss table failed");
     trash::new().await.expect("trash table failed");
+    blacklist::new().await.expect("blacklist table failed");
 }
 
 #[allow(dead_code)]

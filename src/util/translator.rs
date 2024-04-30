@@ -119,6 +119,7 @@ pub fn tr(text: &str) -> String {
     items.insert("添加", "Add");
     items.insert("设置", "Setting");
 
+    items.insert("成功移除黑名单", "Remove from blacklist success");
     items.insert("没有数据", "No Data");
     items.insert("没有消息", "No Message");
     items.insert("输入关键字", "Input keyword");
