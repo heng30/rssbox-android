@@ -163,7 +163,7 @@ component RssList inherits Rectangle {
 
         x: 0px;
         width: root.is-show-list ? Math.min(parent.width * 0.8, 500px) : 0;
-        background: Theme.light-fill-color;
+        background: Theme.base-background-light;
         border-top-right-radius: Theme.border-radius * 4;
         border-bottom-right-radius: Theme.border-radius * 4;
 
@@ -207,7 +207,7 @@ export component Entry inherits Rectangle {
     in-out property <string> suuid;
     in-out property <string> url;
 
-    background: Theme.lighter-fill-color;
+    background: Theme.base-background-light;
     border-radius: Theme.border-radius;
     drop-shadow-blur: Theme.padding * 2;
     drop-shadow-color: Theme.dark-fill-color;
