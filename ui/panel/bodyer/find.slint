@@ -69,7 +69,9 @@ component EntryList inherits Rectangle {
         x: 0px;
         width: root.width + Theme.scroll-width + 3px;
 
-        for item[index] in items: HorizontalLayout {
+        for item[index] in items: Rectangle {
+            background: Theme.base-background-light;
+            HorizontalLayout {
             height: root.item-length;
 
             spacing: Theme.spacing * 4;
@@ -116,7 +118,7 @@ component EntryList inherits Rectangle {
                             });
                         }
                     }
-                }
+                }}
             }
         }
     }
