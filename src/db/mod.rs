@@ -28,7 +28,7 @@ fn pool() -> Pool<Sqlite> {
     POOL.lock().unwrap().clone().unwrap()
 }
 
-async fn create_db(db_path: &str) -> Result<(), sqlx::Error> {
+async fn create_db(db_path: &str) -> Result<()> {
     Sqlite::create_database(db_path).await?;
 
     let pool = SqlitePoolOptions::new()

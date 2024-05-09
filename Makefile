@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# build-evn=SLINT_STYLE=fluent
-build-evn=SLINT_STYLE=material
+build-evn=SLINT_STYLE=material-light
 run-evn=RUST_LOG=error,warn,info,debug,sqlx=off,reqwest=off,html2text=off
 
 all: build-release
@@ -69,5 +68,8 @@ clean:
 sweep:
 	cargo sweep --maxsize 10GB
 
-slint-view:
-	slint-viewer --style material --auto-reload -I ui ./ui/appwindow.slint
+slint-view-light:
+	slint-viewer --style material-light --auto-reload -I ui ./ui/appwindow.slint
+
+slint-view-dark:
+	slint-viewer --style material-dark --auto-reload -I ui ./ui/appwindow.slint
