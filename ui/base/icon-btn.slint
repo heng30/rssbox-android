@@ -6,17 +6,19 @@ export component IconBtn inherits Rectangle {
     in-out property colorize <=> img.colorize;
     in-out property icon-width <=> img.width;
     in-out property icon-rotation-angle <=> img.rotation-angle;
-    in-out property<bool> is-ltr: true;
-    in-out property<bool> use-auto-size: false;
 
-    in-out property<string> text;
-    in-out property<length> font-size: Theme.title4-font-size;
-    in-out property<color> text-color: root.colorize;
+    in-out property <bool> is-ltr: true;
+    in-out property <bool> enable-rotation-animation: false;
+    in-out property <bool> use-auto-size: false;
+
+    in-out property <string> text;
+    in-out property <length> font-size: Theme.title4-font-size;
+    in-out property <color> text-color: root.colorize;
 
     callback clicked();
 
-    in-out property<color> bg-color: Colors.transparent;
-    in-out property<color> bg-pressed-color: Colors.transparent;
+    in-out property <color> bg-color: Colors.transparent;
+    in-out property <color> bg-pressed-color: Colors.transparent;
 
     border-radius: Theme.border-radius;
     background: touch.pressed ? bg-pressed-color : bg-color;
@@ -34,7 +36,7 @@ export component IconBtn inherits Rectangle {
         padding-left: root.use-auto-size ? Theme.padding * 4 : 0;
         padding-right: root.use-auto-size ? Theme.padding * 4 : 0;
 
-        if !root.is-ltr && root.text != "" : Label {
+        if !root.is-ltr && root.text != "": Label {
             color: root.text-color;
             font-size: root.font-size;
             text: root.text;
@@ -43,21 +45,34 @@ export component IconBtn inherits Rectangle {
         img := Image {
             width: Theme.icon-size;
             colorize: Theme.icon-color;
+            rotation-angle: 0;
+
+            animate rotation-angle {
+                duration: Theme.default-animate-duration;
+                easing: ease-in-out;
+            }
         }
 
-        if root.is-ltr && root.text != "" : Label {
+        if root.is-ltr && root.text != "": Label {
             color: root.text-color;
             font-size: root.font-size;
             text: root.text;
         }
     }
 
-    fs := FocusScope {}
+    fs := FocusScope { }
 
     touch := TouchArea {
         clicked => {
+            if (enable-rotation-animation) {
+                if (icon-rotation-angle == 0) {
+                    icon-rotation-angle = 360deg;
+                } else {
+                    icon-rotation-angle = 0deg;
+                }
+            }
             fs.focus();
             root.clicked();
         }
-   }
+    }
 }

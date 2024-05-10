@@ -189,6 +189,7 @@ component RssList inherits Rectangle {
         y: root.height - self.height - Theme.padding * 4;
 
         icon: Icons.refresh;
+        enable-rotation-animation: true;
 
         clicked => {
             Logic.sync-rss-all();
@@ -397,6 +398,7 @@ export component EntryList inherits Rectangle {
 
         ElevatedBtn {
             icon: Icons.refresh;
+            enable-rotation-animation: true;
 
             clicked => {
                 Logic.sync-rss(Store.current-rss-uuid, true);

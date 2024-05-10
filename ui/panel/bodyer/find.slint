@@ -149,6 +149,7 @@ component Body inherits Rectangle {
         x: root.width - self.width - Theme.padding * 4;
         y: root.height - self.height - Theme.padding * 4;
         icon: Icons.refresh;
+        enable-rotation-animation: true;
 
         clicked => {
             Logic.fetch-all-find-entrys();
