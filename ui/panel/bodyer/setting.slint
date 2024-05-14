@@ -115,6 +115,7 @@ component UI inherits SettingDetail {
                         checked: !Theme.is-dark;
                         check => {
                             Theme.toggle();
+                            Logic.set-setting-ui(root.get());
                         }
                     }
                 }
@@ -124,6 +125,7 @@ component UI inherits SettingDetail {
                     checked: Theme.is-dark;
                     check => {
                         Theme.toggle();
+                        Logic.set-setting-ui(root.get());
                     }
                 }
             }
