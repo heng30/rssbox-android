@@ -56,7 +56,7 @@ export global Theme {
 
     out property <[color]> tag-colors: is-dark ? [#a3b3cc, #94c2af, #9ac0c4, #b2acca, #cca8a3, #caa6bc, #a8c085, #b0b2b6] : [#CCE0FF, #BAF3DB, #C1F0F5, #DFD8FD, #FFD2CC, #FDD0EC, #D3F1A7, #DCDFE4];
 
-    in-out property <bool> is-dark: true;
+    in-out property <bool> is-dark: false;
     public function set-dark(flag: bool) {
         is-dark = flag;
         Palette.color-scheme = is-dark ? ColorScheme.dark : ColorScheme.light;
