@@ -17,9 +17,11 @@ export component Dialog inherits Rectangle {
 
     width: 800px;
     height: vbox.preferred-height;
-    background: Theme.base-background-light;
+    background: Theme.base-background;
+    border-radius: Theme.border-radius;
+    clip: true;
 
-    if is-prevent-event-forward : TouchArea {}
+    if is-prevent-event-forward: TouchArea { }
 
     vbox := VerticalLayout {
         alignment: space-between;

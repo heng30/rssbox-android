@@ -1,3 +1,4 @@
+import { Palette } from "std-widgets.slint";
 import { Store } from "./store.slint";
 import "./fonts/SourceHanSerifCN.ttf";
 
@@ -25,49 +26,46 @@ export global Theme {
     out property <length> avatar-size: 32px;
     out property <duration> default-animate-duration: 200ms;
 
-    out property <color> brand-color: #0000B8;
-    out property <color> secondary-brand-color: #3F51B5;
-    out property <color> success-color: #67C23A;
-    out property <color> warning-color: #E6A23C;
-    out property <color> danger-color: #F56C6C;
-    out property <color> info-color: #909399;
-    out property <color> discovery-color: #6E5DC6;
+    out property <color> brand-color: is-dark ? #3F51B5 : #0000B8;
+    out property <color> secondary-brand-color: is-dark ? #324090: #3F51B5;
+    out property <color> success-color: is-dark ? #336633 : #67C23A;
+    out property <color> warning-color: is-dark ? #996600 : #E6A23C;
+    out property <color> danger-color: is-dark ? #CC6060 : #F56C6C;
+    out property <color> info-color:is-dark ? #4B4B4B : #909399;
     out property <color> mark-color: Theme.warning-color;
-    out property <color> unmark-color: Theme.dark-fill-color;
+    out property <color> unmark-color: is-dark ? #646464 : #E8F2FD;
 
-    out property <color> basic-black-color: #000000;
-    out property <color> basic-white-color: #FFFFFF;
-    out property <color> base-background-light: #FCFCFC;
-    out property <color> base-background-dark: #1D232A;
+    out property <color> base-color: is-dark ? #000000 : #FFFFFF;
+    out property <color> invert-base-color: is-dark ? #FFFFFF : #000000;
+    out property <color> base-background: is-dark ? Palette.alternate-background : #FCFCFC;
+    out property <color> secondary-background: is-dark ? base-background.brighter(20%) : base-background.darker(10%);
+    out property <color> base-background-drop-shadow: is-dark ? base-background.brighter(60%) : base-background.darker(15%);
+    out property <color> secondary-background-drop-shadow: is-dark ? secondary-background.brighter(5%) : secondary-background.darker(5%);
 
-    out property <color> pressed-color: Colors.lightgray;
-    out property <color> pressed-color-dark: pressed-color.darker(15%);
+    out property <color> primary-text-color: is-dark ? #969696 : #202123;
+    out property <color> secondary-text-color:
+        is-dark ? primary-text-color.darker(50%) : primary-text-color.brighter(50%);
+    out property <color> regular-text-color: is-dark ? primary-text-color.darker(20%) : primary-text-color.brighter(20%);
+    out property <color> placeholder-text-color: is-dark ? #4B4B4B : #A8ABB2;
 
-    out property <color> primary-text-color: #202123;
-    out property <color> regular-text-color: primary-text-color.brighter(50%);
-    out property <color> secondary-text-color: primary-text-color.brighter(100%);
-    out property <color> placeholder-text-color: #A8ABB2;
-    out property <color> disabled-text-color: #C0C4CC;
+    out property <color> icon-color: is-dark ? #AAAAAA : #515151;
+    out property <color> base-border-color: is-dark ? #2a2a2a : #DCDFE6;
 
-    out property <color> icon-color: #515151;
-    out property <color> brand-border-color: #005FB8;
-    out property <color> base-border-color: #DCDFE6;
-    out property <color> darker-border-color: #CDD0D6;
-    out property <color> dark-border-color: #D4D7DE;
-    out property <color> light-border-color: #E4E7ED;
-    out property <color> lighter-border-color: #EBEEF5;
+    out property <color> have-read-text-color: is-dark ? #555555 : #606060;
+    out property <color> link-text-color: is-dark ? #0066AA : #0000B8;
 
-    out property <color> base-fill-color: #E8F2FD;
-    out property <color> dark-fill-color: base-fill-color.darker(5%);
-    out property <color> darker-fill-color: dark-fill-color.darker(5%);
-    out property <color> light-fill-color: base-fill-color.brighter(5%);
-    out property <color> lighter-fill-color: light-fill-color.brighter(10%);
+    out property <[color]> tag-colors: is-dark ? [#a3b3cc, #94c2af, #9ac0c4, #b2acca, #cca8a3, #caa6bc, #a8c085, #b0b2b6] : [#CCE0FF, #BAF3DB, #C1F0F5, #DFD8FD, #FFD2CC, #FDD0EC, #D3F1A7, #DCDFE4];
 
-    out property <color> have-read-text-color: #606060;
-    out property <color> link-text-color: #0000B8;
-    out property <color> avatar-color: primary-text-color.brighter(50%);
+    in-out property <bool> is-dark: true;
+    public function set-dark(flag: bool) {
+        is-dark = flag;
+        Palette.color-scheme = is-dark ? ColorScheme.dark : ColorScheme.light;
+    }
 
-    out property <[color]> tag-colors: [#CCE0FF, #BAF3DB, #C1F0F5, #DFD8FD, #FFD2CC, #FDD0EC, #D3F1A7, #DCDFE4];
+    public function toggle() {
+        is-dark = !is-dark;
+        Palette.color-scheme = is-dark ? ColorScheme.dark : ColorScheme.light;
+    }
 }
 
 export global Icons {

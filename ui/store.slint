@@ -49,6 +49,7 @@ export struct SettingUI {
     font-size: string,
     font-family: string,
     language: string,
+    is-dark: bool,
 }
 
 export struct SettingReading {
@@ -134,6 +135,7 @@ export global Store {
             tags: "slint-ui, rust",
             is-read: true,
             title: "中文测试链接",
+            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation.",
         },
     ];
 

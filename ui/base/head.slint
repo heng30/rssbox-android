@@ -4,7 +4,7 @@ import { Divider } from "./divider.slint";
 
 export component Head inherits Rectangle {
     height: Theme.header-height;
-    background: Theme.base-background-light;
+    background: Theme.base-background;
 
     in-out property <bool> is-show-divider;
     in-out property <string> title;
@@ -32,6 +32,6 @@ export component Head inherits Rectangle {
     if is-show-divider : Divider {
         x: 0;
         y: root.height - self.height;
-        background: Theme.lighter-border-color;
+        background: Theme.base-border-color;
     }
 }

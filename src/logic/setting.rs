@@ -5,7 +5,7 @@ use super::{
 };
 use crate::slint_generatedAppWindow::{
     AppWindow, Logic, SettingBackupRecover, SettingProxy, SettingReading, SettingSync,
-    SettingUpdate, Store,
+    SettingUpdate, Store, Theme,
 };
 use crate::{
     config::{self, Config},
@@ -90,6 +90,7 @@ pub fn init(ui: &AppWindow) {
         all.ui.font_size = font_size.into();
         all.ui.font_family = setting.font_family.into();
         all.ui.language = setting.language.into();
+        all.ui.is_dark = setting.is_dark;
         _ = config::save(all);
     });
 
@@ -237,7 +238,9 @@ fn init_setting(ui: &AppWindow) {
     ui_setting.font_size = slint::format!("{}", font_size);
     ui_setting.font_family = config.font_family.into();
     ui_setting.language = config.language.into();
+    ui_setting.is_dark = config.is_dark;
 
+    ui.global::<Theme>().invoke_set_dark(config.is_dark);
     ui.global::<Store>().set_setting_ui(ui_setting);
 }
 

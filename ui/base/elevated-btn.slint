@@ -6,9 +6,9 @@ export component ElevatedBtn inherits Rectangle {
     width: 45px;
     height: self.width;
     border-radius: root.width / 2;
-    background: Theme.dark-fill-color;
+    background: Theme.secondary-background;
     drop-shadow-blur: Theme.padding;
-    drop-shadow-color: Theme.dark-border-color;
+    drop-shadow-color: Theme.secondary-background-drop-shadow;
 
     in-out property icon <=> btn.icon;
     in-out property enable-rotation-animation <=> btn.enable-rotation-animation;

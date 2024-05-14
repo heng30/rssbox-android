@@ -22,7 +22,7 @@ export component OkCancelDialog inherits Dialog {
     background: rect.background;
 
     rect := Rectangle {
-        background: Theme.base-background-light;
+        background: Theme.base-background;
         Label {
             width: 100%;
             horizontal-alignment: center;
@@ -45,7 +45,8 @@ export component OkCancelDialog inherits Dialog {
 export component OkCancelDialogV2 inherits Rectangle {
     preferred-width: 200px;
     height: vbox.preferred-height;
-    background: Theme.base-background-light;
+    background: Theme.base-background;
+    border-radius: Theme.border-radius;
 
     in-out property <bool> is-prevent-event-forward: false;
     in-out property <string> title: OkCancelDialogSetting.title-text;

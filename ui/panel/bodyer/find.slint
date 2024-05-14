@@ -38,6 +38,7 @@ component FHead inherits Head {
             placeholder-text: Logic.tr(Store.is-cn, "输入关键字");
             accepted => {
                 Logic.update-find-entrylist(self.text);
+                self.force-clear-focus();
             }
         }
     }
@@ -47,6 +48,7 @@ component FHead inherits Head {
         IconBtn {
             icon: root.is-search ? Icons.hide : Icons.search;
             clicked => {
+                search-lineedit.force-clear-focus();
                 root.is-search = !root.is-search;
                 if (root.is-search) {
                     search-lineedit.text = "";
@@ -70,7 +72,7 @@ component EntryList inherits Rectangle {
         width: root.width + Theme.scroll-width + 3px;
 
         for item[index] in items: Rectangle {
-            background: Theme.base-background-light;
+            background: Theme.base-background;
             HorizontalLayout {
             height: root.item-length;
 

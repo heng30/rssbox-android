@@ -24,14 +24,17 @@ component UI inherits SettingDetail {
     in-out property <string> language: "cn";
 
     public function get() -> SettingUI {
+        font-size-lineedit.clear-focus();
+
         return {
             font-size: font-size-lineedit.text,
             font-family: fonts-combox.current-value,
             language: root.language,
+            is-dark: Theme.is-dark,
         };
     }
 
-    public function set(setting :SettingUI){
+    public function set(setting: SettingUI) {
         font-size-lineedit.text = setting.font-size;
         fonts-combox.current-value = setting.font-family;
         root.language = setting.language;
@@ -98,6 +101,33 @@ component UI inherits SettingDetail {
                 }
             }
         }
+
+        SettingDetailInnerVbox {
+            SettingDetailLabel {
+                text: Logic.tr(Store.is-cn, "选择主题");
+            }
+
+            HorizontalLayout {
+                HorizontalLayout {
+                    width: 50%;
+                    RadioBtn {
+                        text: Logic.tr(Store.is-cn, "白天");
+                        checked: !Theme.is-dark;
+                        check => {
+                            Theme.toggle();
+                        }
+                    }
+                }
+
+                RadioBtn {
+                    text: Logic.tr(Store.is-cn, "黑暗");
+                    checked: Theme.is-dark;
+                    check => {
+                        Theme.toggle();
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -111,7 +141,7 @@ component Reading inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingReading){
+    public function set(setting: SettingReading) {
         browser-combox.current-value = setting.browser;
         delete-after-reading-checkbox.checked = setting.is-delete-after-reading;
 
@@ -152,6 +182,9 @@ component Sync inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "同 步");
 
     public function get() -> SettingSync {
+        sync-interval-lineedit.clear-focus();
+        sync-timeout-lineedit.clear-focus();
+
         return {
             sync-interval: sync-interval-lineedit.text,
             sync-timeout: sync-timeout-lineedit.text,
@@ -160,7 +193,7 @@ component Sync inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingSync){
+    public function set(setting: SettingSync) {
         sync-interval-lineedit.text = setting.sync-interval;
         sync-timeout-lineedit.text = setting.sync-timeout;
         sync-auto-checkbox.checked = setting.is-auto-sync;
@@ -206,6 +239,11 @@ component Proxy inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "代 理");
 
     public function get() -> SettingProxy {
+        http-url-lineedit.clear-focus();
+        http-port-lineedit.clear-focus();
+        socks5-url-lineedit.clear-focus();
+        socks5-port-lineedit.clear-focus();
+
         return {
             proxy-type: type-combox.current-value,
             http-url: http-url-lineedit.text,
@@ -215,7 +253,7 @@ component Proxy inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingProxy){
+    public function set(setting: SettingProxy) {
         type-combox.current-value = setting.proxy-type;
         http-url-lineedit.text = setting.http-url;
         http-port-lineedit.text = setting.http-port;
@@ -465,13 +503,13 @@ component Donate inherits SettingDetail {
         Rectangle {
             if root.is-wechat: Image {
                 source: Icons.wechat-pay;
-                width: root.width * 0.6;
+                width: Math.min(root.width * 0.8, root.height * 0.8);
                 height: self.width;
             }
 
             if !root.is-wechat: Image {
                 source: Icons.metamask-pay;
-                width: root.width * 0.6;
+                width: Math.min(root.width * 0.6, root.height * 0.6);
                 height: self.width;
             }
         }
@@ -482,6 +520,8 @@ component BackupRecover inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "备份与恢复");
 
     public function get() -> SettingBackupRecover {
+        token-lineedit.clear-focus();
+
         return {
             api-token: token-lineedit.text,
             rss: rss-checkbox.checked,
@@ -490,7 +530,7 @@ component BackupRecover inherits SettingDetail {
         };
     }
 
-    public function set(setting: SettingBackupRecover){
+    public function set(setting: SettingBackupRecover) {
         token-lineedit.text = setting.api-token;
         rss-checkbox.checked = setting.rss;
         setting-checkbox.checked = setting.setting;
@@ -659,6 +699,7 @@ component Body inherits VerticalLayout {
     alignment: start;
     spacing: Theme.spacing;
 
+    // TODO
     in-out property <SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.UI;
 
     callback switch(SettingDetailIndex);
@@ -799,6 +840,7 @@ component Body inherits VerticalLayout {
 
 export component Setting inherits Rectangle {
     body := Body {
+        // TODO
         // visible: false;
         switch(index) => {
             if (index == SettingDetailIndex.UI) {

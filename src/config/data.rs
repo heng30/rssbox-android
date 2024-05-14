@@ -40,6 +40,9 @@ pub struct UI {
     pub font_size: u32,
     pub font_family: String,
     pub language: String,
+
+    #[serde(default)]
+    pub is_dark: bool,
 }
 
 impl Default for UI {
@@ -48,6 +51,7 @@ impl Default for UI {
             font_size: 16,
             font_family: "SourceHanSerifCN".to_string(),
             language: "cn".to_string(),
+            is_dark: false,
         }
     }
 }

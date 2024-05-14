@@ -37,11 +37,11 @@ export component Entry inherits Rectangle {
     in-out property <string> suuid;
     in-out property <string> url;
 
-    background: Theme.base-background-light;
+    background: Theme.base-background;
     border-radius: Theme.border-radius;
 
     drop-shadow-blur: Theme.padding * 2;
-    drop-shadow-color: Theme.dark-fill-color;
+    drop-shadow-color: Theme.base-background-drop-shadow;
 
     VerticalLayout {
         padding: Theme.padding * 2;

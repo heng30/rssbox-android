@@ -15,6 +15,8 @@ component AHead inherits Head {
     title: Logic.tr(Store.is-cn, "添加");
     hbox-alignment: LayoutAlignment.space-between;
 
+    callback back <=> self.clicked;
+
     CenterLayout {
         IconBtn {
             icon: Icons.refresh;
@@ -29,7 +31,7 @@ component AHead inherits Head {
 
 component RssList inherits Rectangle {
     private property <length> item-height: 40px;
-    private property <color> selected-item-color: Theme.lighter-border-color;
+    private property <color> selected-item-color: Theme.base-border-color;
     out property <string> current-uuid;
 
     if Store.rss-lists.length == 0: Rectangle {
@@ -134,7 +136,7 @@ component RssListBtns inherits HorizontalLayout {
         border-radius: self.height / 2;
         bg-color: Theme.success-color.darker(10%);
         bg-pressed-color: self.bg-color.darker(30%);
-        colorize: Theme.basic-white-color;
+        colorize: Theme.base-color;
 
         clicked => {
             current-btn-index(BtnIndex.New);
@@ -183,7 +185,7 @@ component AddEdit inherits Rectangle {
         };
     }
 
-    public function set(config: RssConfig){
+    public function set(config: RssConfig) {
         line-edit-name.text = config.name;
         line-edit-url.text = config.url;
         use-http-proxy-checkbox.checked = config.use-http-proxy;
@@ -195,6 +197,11 @@ component AddEdit inherits Rectangle {
         if (config.feed-format == "") {
             feed-format-combobox.current-value = feed-format-combobox.model[0];
         }
+    }
+
+    public function force-clear-focus() {
+        line-edit-url.clear-focus();
+        line-edit-name.clear-focus();
     }
 
     SettingDetailInner {
@@ -314,7 +321,11 @@ component Body inherits Rectangle {
     private property <BtnIndex> rss-list-btns-index: BtnIndex.New;
 
     rsslist-vbox := VerticalLayout {
-        AHead { }
+        AHead {
+            back => {
+                ae.force-clear-focus();
+            }
+        }
 
         rsslist := RssList { }
 
@@ -365,6 +376,7 @@ component Body inherits Rectangle {
 
         AddEditBtns {
             cancel-clicked => {
+                ae.force-clear-focus();
                 rsslist-vbox.visible = true;
             }
 
@@ -374,6 +386,7 @@ component Body inherits Rectangle {
                     return;
                 }
                 rsslist-vbox.visible = true;
+                ae.force-clear-focus();
 
                 if (root.rss-list-btns-index == BtnIndex.New) {
                     Logic.new-rss(ae.get());

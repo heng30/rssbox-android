@@ -13,7 +13,7 @@ export component Toast inherits Rectangle {
     width: hbox.preferred-width;
     height: hbox.preferred-height;
     border-radius: Theme.border-radius;
-    border-color: Theme.basic-black-color;
+    border-color: Theme.base-border-color;
     background: Util.text-color(root.type);
 
     hbox := HorizontalLayout {
@@ -33,7 +33,7 @@ export component Toast inherits Rectangle {
         txt := Label {
             max-width: root.inner-max-width;
             font-size: Theme.title4-font-size;
-            color: Theme.basic-white-color;
+            color: img.colorize;
             wrap: word-wrap;
         }
     }

@@ -144,6 +144,9 @@ pub fn tr(text: &str) -> String {
     items.insert("当前版本", "Latest version");
     items.insert("更新信息", "Update detail");
     items.insert("下载最新版本", "Download");
+    items.insert("选择主题", "Choose Theme");
+    items.insert("白天", "Light");
+    items.insert("黑暗", "Dark");
 
     if let Some(txt) = items.get(text) {
         return txt.to_string();

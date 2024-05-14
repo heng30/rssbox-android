@@ -11,6 +11,10 @@ export component InputBar inherits HorizontalLayout {
     callback accepted <=> lineedit.accepted;
     callback clear();
 
+    public function force-clear-focus() {
+        lineedit.clear-focus();
+    }
+
     in-out property text <=> lineedit.text;
     in-out property placeholder-text <=> lineedit.placeholder-text;
 
