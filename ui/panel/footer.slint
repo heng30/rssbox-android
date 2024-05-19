@@ -27,6 +27,10 @@ export component Footer inherits Rectangle {
             clicked => {
                 if (self.checked) {
                     Store.is-show-side-rsslist = !Store.is-show-side-rsslist;
+
+                    if (Store.is-show-side-rsslist && Store.rss-lists.length == 0) {
+                        Logic.load-all-rss();
+                    }
                 }
                 Store.switch-tab(TabIndex.Rss);
             }

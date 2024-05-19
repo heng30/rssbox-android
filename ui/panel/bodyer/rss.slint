@@ -208,7 +208,7 @@ export component Entry inherits Rectangle {
     in-out property <string> suuid;
     in-out property <string> url;
 
-    background:  Theme.base-background;
+    background: Theme.base-background;
     border-radius: Theme.border-radius;
     drop-shadow-blur: Theme.padding * 2;
     drop-shadow-color: Theme.base-background-drop-shadow;
@@ -264,7 +264,7 @@ export component Entry inherits Rectangle {
 export component EntryList inherits Rectangle {
     clip: true;
 
-    public function scroll-to-top(){
+    public function scroll-to-top() {
         lv.viewport-y = 0;
     }
 
@@ -278,13 +278,13 @@ export component EntryList inherits Rectangle {
             private property <bool> is-show-opt: false;
             private property <bool> is-hide-opt: true;
 
-            public function show-opt(){
+            public function show-opt() {
                 rect.x = -opt.width - Theme.padding;
                 rect.is-show-opt = true;
                 rect.is-hide-opt = false;
             }
 
-            public function hide-opt(){
+            public function hide-opt() {
                 rect.x = 0;
                 rect.is-hide-opt = true;
                 rect.is-show-opt = false;
@@ -392,6 +392,9 @@ export component EntryList inherits Rectangle {
             icon: Icons.menu;
 
             clicked => {
+                if (Store.rss-lists.length == 0) {
+                    Logic.load-all-rss();
+                }
                 Store.is-show-side-rsslist = true;
             }
         }
@@ -401,6 +404,9 @@ export component EntryList inherits Rectangle {
             enable-rotation-animation: true;
 
             clicked => {
+                if (Store.rss-lists.length == 0) {
+                    Logic.load-all-rss();
+                }
                 Logic.sync-rss(Store.current-rss-uuid, true);
             }
         }
@@ -410,7 +416,7 @@ export component EntryList inherits Rectangle {
 component Body inherits Rectangle {
     in-out property is-show-rsslist <=> rsslist.is-show-list;
 
-    public function entrylist-scroll-to-top(){
+    public function entrylist-scroll-to-top() {
         entrylist.scroll-to-top();
     }
 
@@ -422,6 +428,9 @@ component Body inherits Rectangle {
 export component Rss inherits VerticalLayout {
     head := RHead {
         clicked => {
+            if (Store.rss-lists.length == 0) {
+                Logic.load-all-rss();
+            }
             body.is-show-rsslist = !body.is-show-rsslist;
         }
         scroll-to-top => {

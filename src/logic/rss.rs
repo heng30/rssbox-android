@@ -261,6 +261,11 @@ pub fn init(ui: &AppWindow) {
     init_rss(ui);
 
     let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_load_all_rss(move || {
+        init_rss(&ui_handle.unwrap());
+    });
+
+    let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_new_rss(move |config| {
         let ui = ui_handle.unwrap();
 
