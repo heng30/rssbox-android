@@ -49,9 +49,6 @@ export component Entry inherits Rectangle {
         alignment: space-between;
 
         title-txt := Link {
-            wrap: no-wrap;
-            overflow: elide;
-
             clicked => {
                 Util.open-url(root.url);
             }
@@ -61,7 +58,7 @@ export component Entry inherits Rectangle {
             font-size: Theme.default-font-size - 1px;
             color: Theme.regular-text-color;
             text: root.summary;
-            overflow: elide;
+            wrap: word-wrap;
         }
 
         HorizontalLayout {
@@ -90,15 +87,28 @@ export component EntryList inherits Rectangle {
         lv.viewport-y = 0;
     }
 
-    lv := ListView {
+    lv := Flickable {
         x: 0px;
-        width: root.width + Theme.scroll-width;
+        width: root.width;
+
+        private property <length> offset-y: 0;
 
         for item[index] in Store.rss-favorite-entrys: rect := Rectangle {
             private property <length> max-move-pixels-up-bound: self.width * 0.04;
             private property <length> max-move-pixels-low-bound: self.width * 0.02;
             private property <bool> is-show-opt: false;
             private property <bool> is-hide-opt: true;
+
+            init => {
+                if (index == 0) {
+                    offset-y = 0;
+                }
+
+                self.y = offset-y;
+                offset-y = offset-y + entry-vbox.preferred-height;
+                self.height = entry-vbox.preferred-height;
+                lv.viewport-height = offset-y;
+            }
 
             public function show-opt(){
                 rect.x = -opt.width - Theme.padding;
@@ -119,8 +129,8 @@ export component EntryList inherits Rectangle {
 
             TouchArea {
                 moved => {
-                    if (lv.enabled && (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound || self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
-                        lv.enabled = false;
+                    if (lv.interactive && (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound || self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
+                        lv.interactive = false;
                     }
                     if (!rect.is-show-opt) {
                         if (self.pressed-x - self.mouse-x > parent.max-move-pixels-up-bound) {
@@ -136,7 +146,7 @@ export component EntryList inherits Rectangle {
 
                 pointer-event(evt) => {
                     if (evt.kind == PointerEventKind.up) {
-                        lv.enabled = true;
+                        lv.interactive = true;
                     }
                 }
             }
@@ -158,8 +168,9 @@ export component EntryList inherits Rectangle {
 
             opt := VerticalLayout {
                 x: entry-vbox.width + Theme.padding;
+                y: 0;
                 width: 50px;
-                height: entry-vbox.height - entry-vbox.padding * 2 - Theme.padding;
+                height: entry-vbox.height;
                 alignment: center;
 
                 Rectangle {
@@ -174,6 +185,7 @@ export component EntryList inherits Rectangle {
                         clicked => {
                             rect.hide-opt();
                             Logic.remove-favorite-entry(item.uuid);
+                            Store.refresh-current-tab();
                         }
                     }
                 }

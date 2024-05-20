@@ -1,4 +1,4 @@
-import { ListView } from "std-widgets.slint";
+import { ListView, ScrollView } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
@@ -216,11 +216,9 @@ export component Entry inherits Rectangle {
     VerticalLayout {
         padding: Theme.padding * 2;
         spacing: Theme.spacing * 2;
-        alignment: space-between;
+        alignment: start;
 
         title-txt := Link {
-            wrap: no-wrap;
-            overflow: elide;
             is-read: root.is-read;
 
             clicked => {
@@ -239,7 +237,7 @@ export component Entry inherits Rectangle {
             font-size: Theme.default-font-size - 1px;
             color: root.is-read ? Theme.have-read-text-color : Theme.regular-text-color;
             text: root.summary;
-            overflow: elide;
+            wrap: word-wrap;
         }
 
         HorizontalLayout {
@@ -262,21 +260,42 @@ export component Entry inherits Rectangle {
 }
 
 export component EntryList inherits Rectangle {
+    private property <int> current-list-index: -1;
+
     clip: true;
 
     public function scroll-to-top() {
         lv.viewport-y = 0;
     }
 
-    lv := ListView {
+    lv := Flickable {
         x: 0px;
-        width: root.width + Theme.scroll-width;
+        viewport-width: root.width;
+
+        private property <length> offset-y: 0;
 
         for item[index] in Store.rss-entrys: rect := Rectangle {
             private property <length> max-move-pixels-up-bound: self.width * 0.04;
             private property <length> max-move-pixels-low-bound: self.width * 0.02;
             private property <bool> is-show-opt: false;
             private property <bool> is-hide-opt: true;
+
+            init => {
+                if (index == 0) {
+                    offset-y = 0;
+                    lv.viewport-y = 0;
+                } else if (index == Store.rss-entrys.length - 1) {
+                    current-list-index = Logic.current-rsslist-index(Store.current-rss-uuid);
+                    if (current-list-index >= 0 && current-list-index < Store.rss-lists.length) {
+                        //  viewport-y from 0 to -infinity
+                        lv.viewport-y = min(0px, max(lv.height - offset-y, Store.rss-lists[current-list-index].current-viewport-y));
+                    }
+                }
+                self.y = offset-y;
+                offset-y = offset-y + entry-vbox.preferred-height;
+                self.height = entry-vbox.preferred-height;
+                lv.viewport-height = offset-y + Theme.padding;
+            }
 
             public function show-opt() {
                 rect.x = -opt.width - Theme.padding;
@@ -297,8 +316,8 @@ export component EntryList inherits Rectangle {
 
             TouchArea {
                 moved => {
-                    if (lv.enabled && (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound || self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
-                        lv.enabled = false;
+                    if (lv.interactive && (self.pressed-x - self.mouse-x > parent.max-move-pixels-low-bound || self.mouse-x - self.pressed-x > parent.max-move-pixels-low-bound)) {
+                        lv.interactive = false;
                     }
                     if (!rect.is-show-opt) {
                         if (self.pressed-x - self.mouse-x > parent.max-move-pixels-up-bound) {
@@ -314,7 +333,7 @@ export component EntryList inherits Rectangle {
 
                 pointer-event(evt) => {
                     if (evt.kind == PointerEventKind.up) {
-                        lv.enabled = true;
+                        lv.interactive = true;
                     }
                 }
             }
@@ -337,8 +356,9 @@ export component EntryList inherits Rectangle {
 
             opt := VerticalLayout {
                 x: entry-vbox.width + Theme.padding;
+                y: 0;
                 width: 50px;
-                height: entry-vbox.height - entry-vbox.padding * 2 - Theme.padding;
+                height: entry-vbox.preferred-height;
                 alignment: center;
 
                 Rectangle {
@@ -367,8 +387,15 @@ export component EntryList inherits Rectangle {
                         colorize: Theme.danger-color;
 
                         clicked => {
+                            current-list-index = Logic.current-rsslist-index(Store.current-rss-uuid);
+                            if (current-list-index >= 0 && current-list-index < Store.rss-lists.length) {
+                                Store.rss-lists[current-list-index].current-viewport-y = lv.viewport-y;
+                            }
                             rect.hide-opt();
                             Logic.remove-entry(Store.current-rss-uuid, item.uuid);
+
+                            // If I don't refresh current tab, the remove entry space will remain on the Flickable
+                            Store.refresh-current-tab();
                         }
                     }
                 }
@@ -407,6 +434,12 @@ export component EntryList inherits Rectangle {
                 if (Store.rss-lists.length == 0) {
                     Logic.load-all-rss();
                 }
+
+                current-list-index = Logic.current-rsslist-index(Store.current-rss-uuid);
+                if (current-list-index >= 0 && current-list-index < Store.rss-lists.length) {
+                    Store.rss-lists[current-list-index].current-viewport-y = 0;
+                }
+
                 Logic.sync-rss(Store.current-rss-uuid, true);
             }
         }

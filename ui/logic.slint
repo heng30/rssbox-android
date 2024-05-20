@@ -4,6 +4,7 @@ export global Logic {
     // when it should be called. The app stay in background for a long time, and  killed by the system. After that, restart the app will not load the rss from the database. so we should call it manually.
     callback load-all-rss();
 
+    callback current-rsslist-index(string) -> int;
     callback new-rss(RssConfig);
     callback update-rss(string, RssConfig);
     callback remove-rss(string); // suuid

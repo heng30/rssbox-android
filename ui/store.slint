@@ -4,6 +4,7 @@ export enum TabIndex {
     Favorite,
     Find,
     Setting,
+    None,
 }
 
 export struct FindEntry {
@@ -38,6 +39,7 @@ export struct RssConfig {
     is-update-failed: bool,
     unread-counts: int,
     entry: [RssEntry],
+    current-viewport-y: length,
 }
 
 export struct MessageItem {
@@ -96,6 +98,8 @@ export struct AboutDialog {
 
 export global Store {
     out property <TabIndex> current-tab-index: TabIndex.Rss;
+    private property <TabIndex> current-tab-index-tmp: TabIndex.None;
+
     in-out property <string> current-rss-uuid;
 
     in-out property <[RssConfig]> rss-lists: [
@@ -125,8 +129,6 @@ export global Store {
             tags: "rust",
             is-read: false,
             author: "hello",
-            summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation.",
-            // title: "Actors ",
             title: "Actors may modify their own private state, but can only affect each other indirectly through messaging (removing the need for lock-based synchronization).",
             summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation.",
         },
@@ -149,7 +151,7 @@ export global Store {
             tags: "rust",
             is-read: false,
             author: "hello",
-            title: "Actors may modify their",
+            title: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation.",
             summary: "The actor model in computer science is a mathematical model of concurrent computation that treats an actor as the basic building block of concurrent computation.",
         },
         {
@@ -212,7 +214,13 @@ export global Store {
           "- Click the top-right list icon of the [RSS] selected card to open the RSS list.\n\n" + "- Swipe right on the [RSS] and [Collection] items to collect or delete items.\n\n" + "- After setting, click the back button in the upper left corner. Save the settings.\n\n" + "- In case of don't show the same articles, It will cache the articles after syncing. You can enter the [Setting] selected card to clear cache.\n\n",
     };
 
-    public function switch-tab(tab-index: TabIndex){
+    public function switch-tab(tab-index: TabIndex) {
         current-tab-index = tab-index;
+    }
+
+    public function refresh-current-tab() {
+        current-tab-index-tmp = current-tab-index;
+        current-tab-index = TabIndex.None;
+        current-tab-index = current-tab-index-tmp;
     }
 }

@@ -266,6 +266,21 @@ pub fn init(ui: &AppWindow) {
     });
 
     let ui_handle = ui.as_weak();
+    ui.global::<Logic>().on_current_rsslist_index(move |uuid| {
+        let ui = ui_handle.unwrap();
+
+        for (index, rss) in ui.global::<Store>().get_rss_lists().iter().enumerate() {
+            if rss.uuid != uuid {
+                continue;
+            }
+
+            return index as i32;
+        }
+
+        return -1;
+    });
+
+    let ui_handle = ui.as_weak();
     ui.global::<Logic>().on_new_rss(move |config| {
         let ui = ui_handle.unwrap();
 
@@ -785,6 +800,8 @@ async fn sync_rss(ui: Weak<AppWindow>, items: Vec<SyncItem>) -> Vec<ErrorMsg> {
                 let _ = slint::invoke_from_event_loop(move || {
                     let ui = ui.unwrap();
                     super::entry::update_new_entrys(&ui, suuid.as_str(), entrys);
+                    ui.global::<Store>().invoke_refresh_current_tab();
+
                     if suuid.as_str() == ui.global::<Store>().get_current_rss_uuid().as_str() {
                         notify_ui_update_unread_counts(&ui);
                     }
