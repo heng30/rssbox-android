@@ -2,6 +2,7 @@
 
 build-evn=SLINT_STYLE=material
 run-evn=RUST_LOG=error,warn,info,debug,sqlx=off,reqwest=off,html2text=off
+version=`git describe --tags --abbrev=0`
 
 all: build-release
 
@@ -10,6 +11,7 @@ build:
 
 build-release:
 	$(build-evn) cargo apk build --lib --release
+	cp -f target/release/apk/rssbox.apk target/rssbox-${version}.apk
 
 # not work well
 xbuild:
