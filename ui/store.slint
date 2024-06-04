@@ -7,6 +7,20 @@ export enum TabIndex {
     None,
 }
 
+export enum SettingDetailIndex {
+    Home,
+    UI,
+    Reading,
+    Sync,
+    Proxy,
+    About,
+    Help,
+    Feedback,
+    Donate,
+    BackupRecover,
+    Update,
+}
+
 export struct FindEntry {
     name: string,
     url: string,
@@ -99,6 +113,7 @@ export struct AboutDialog {
 export global Store {
     out property <TabIndex> current-tab-index: TabIndex.Rss;
     private property <TabIndex> current-tab-index-tmp: TabIndex.None;
+    in-out property <SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.Home;
 
     in-out property <string> current-rss-uuid;
 
@@ -187,7 +202,7 @@ export global Store {
     in-out property <bool> is-cn: setting-ui.language == "cn";
     in-out property <SettingUI> setting-ui: {
         font-size: "16",
-        font-family: "SourceHanSerifCN",
+        font-family: "Source Han Serif CN",
         language: "cn",
     };
 

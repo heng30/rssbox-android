@@ -78,3 +78,7 @@ slint-view-light:
 
 slint-view-dark:
 	slint-viewer --style material-dark --auto-reload -I ui ./ui/appwindow.slint
+
+get-font-name:
+	fc-scan ./ui/fonts/SourceHanSerifCN.ttf | grep fullname
+	fc-scan ./ui/fonts/Plaster-Regular.ttf | grep fullname

@@ -2,21 +2,9 @@ import { LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
 import { Theme, Icons } from "../../theme.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover, SettingUpdate } from "../../store.slint";
+import { Store,  SettingUI, SettingSync, SettingProxy, SettingReading, SettingBackupRecover, SettingUpdate, SettingDetailIndex } from "../../store.slint";
 import { CenterLayout, OkCancelDialogSetting, Divider, Link, Brand, IconBtn, Label, Head, SettingEntry, SettingDetail, SettingDetailInner, TabBtn, SettingDetailInnerVbox, SettingDetailLabel, TxtEdit, CancelBtn, ConfirmBtn, NoDataImg, Tag, RadioBtn} from "../../base/widgets.slint";
 
-enum SettingDetailIndex {
-    UI,
-    Reading,
-    Sync,
-    Proxy,
-    About,
-    Help,
-    Feedback,
-    Donate,
-    BackupRecover,
-    Update,
-}
 
 component UI inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "界 面");
@@ -40,7 +28,7 @@ component UI inherits SettingDetail {
         root.language = setting.language;
 
         if (setting.font-family == "") {
-            fonts-combox.current-value = "SystemDefault";
+            fonts-combox.current-value = "Default";
         }
         if (root.language == "") {
             root.language = "cn";
@@ -57,6 +45,7 @@ component UI inherits SettingDetail {
                 input-type: number;
                 height: font-size-txt.preferred-height * 1.6;
                 placeholder-text: Logic.tr(Store.is-cn, "10 ~ 50");
+                text: Store.setting-ui.font-size;
             }
         }
 
@@ -67,9 +56,8 @@ component UI inherits SettingDetail {
 
             fonts-combox := ComboBox {
                 height: fonts-label.preferred-height * 1.6;
-                model: ["SystemDefault", "SourceHanSerifCN"];
-                current-value: self.model[0];
-                current-index: 0;
+                model: ["Default", "Source Han Serif CN", "Plaster"];
+                current-value: Store.setting-ui.font-family;
             }
         }
 
@@ -701,8 +689,7 @@ component Body inherits VerticalLayout {
     alignment: start;
     spacing: Theme.spacing;
 
-    // TODO
-    in-out property <SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.UI;
+    in-out property current-setting-detail-index <=> Store.current-setting-detail-index;
 
     callback switch(SettingDetailIndex);
 
@@ -723,7 +710,6 @@ component Body inherits VerticalLayout {
                 icon: Icons.ui;
 
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.UI;
                     root.switch(SettingDetailIndex.UI);
                 }
@@ -734,7 +720,6 @@ component Body inherits VerticalLayout {
                 icon: Icons.reading;
 
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Reading;
                     root.switch(SettingDetailIndex.Reading);
                 }
@@ -744,7 +729,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "同 步");
                 icon: Icons.sync;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Sync;
                     root.switch(SettingDetailIndex.Sync);
                 }
@@ -754,7 +738,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "代 理");
                 icon: Icons.proxy-light;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Proxy;
                     root.switch(SettingDetailIndex.Proxy);
                 }
@@ -776,7 +759,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "关 于");
                 icon: Icons.about-light;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.About;
                 }
             }
@@ -785,7 +767,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "帮 助");
                 icon: Icons.help-light;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Help;
                 }
             }
@@ -794,7 +775,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "反 馈");
                 icon: Icons.feedback;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Feedback;
                     root.switch(SettingDetailIndex.Feedback);
                 }
@@ -804,7 +784,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "捐 赠");
                 icon: Icons.donate;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Donate;
                 }
             }
@@ -821,7 +800,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "备份与恢复");
                 icon: Icons.backup-recover;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.BackupRecover;
                     root.switch(SettingDetailIndex.BackupRecover);
                 }
@@ -831,7 +809,6 @@ component Body inherits VerticalLayout {
                 text: Logic.tr(Store.is-cn, "获取最新版本");
                 icon: Icons.version;
                 clicked => {
-                    root.visible = false;
                     root.current-setting-detail-index = SettingDetailIndex.Update;
                     root.switch(SettingDetailIndex.Update);
                 }
@@ -842,8 +819,8 @@ component Body inherits VerticalLayout {
 
 export component Setting inherits Rectangle {
     body := Body {
-        // TODO
-        // visible: false;
+        visible: self.current-setting-detail-index == SettingDetailIndex.Home;
+
         switch(index) => {
             if (index == SettingDetailIndex.UI) {
                 ui.set(Logic.get-setting-ui());
@@ -873,7 +850,7 @@ export component Setting inherits Rectangle {
                     Logic.show-message(Logic.tr(Store.is-cn, "非法输入，输入不能为空"), "warning");
                     return;
                 }
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
                 Logic.set-setting-ui(self.get());
             }
         }
@@ -881,7 +858,7 @@ export component Setting inherits Rectangle {
         reading := Reading {
             visible: body.current-setting-detail-index == SettingDetailIndex.Reading;
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
                 Logic.set-setting-reading(self.get());
             }
         }
@@ -893,7 +870,7 @@ export component Setting inherits Rectangle {
                     Logic.show-message(Logic.tr(Store.is-cn, "非法输入，输入不能为空"), "warning");
                     return;
                 }
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
                 Logic.set-setting-sync(self.get());
             }
         }
@@ -901,7 +878,7 @@ export component Setting inherits Rectangle {
         proxy := Proxy {
             visible: body.current-setting-detail-index == SettingDetailIndex.Proxy;
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
                 Logic.set-setting-proxy(self.get());
             }
         }
@@ -909,14 +886,14 @@ export component Setting inherits Rectangle {
         feedback := Feedback {
             visible: body.current-setting-detail-index == SettingDetailIndex.Feedback;
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
 
         backup-recover := BackupRecover {
             visible: body.current-setting-detail-index == SettingDetailIndex.BackupRecover;
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
                 Logic.set-setting-backup-recover(self.get());
             }
         }
@@ -924,7 +901,7 @@ export component Setting inherits Rectangle {
         update := Update {
             visible: body.current-setting-detail-index == SettingDetailIndex.Update;
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
     }
@@ -932,19 +909,19 @@ export component Setting inherits Rectangle {
     if !body.visible: Rectangle {
         if body.current-setting-detail-index == SettingDetailIndex.About: About {
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
 
         if body.current-setting-detail-index == SettingDetailIndex.Help: Help {
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
 
         if body.current-setting-detail-index == SettingDetailIndex.Donate: Donate {
             back => {
-                body.visible = true;
+                body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
     }

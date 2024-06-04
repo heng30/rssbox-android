@@ -49,7 +49,7 @@ impl Default for UI {
     fn default() -> Self {
         Self {
             font_size: 16,
-            font_family: "SourceHanSerifCN".to_string(),
+            font_family: "Default".to_string(),
             language: "cn".to_string(),
             is_dark: false,
         }
