@@ -27,6 +27,10 @@ component UI inherits SettingDetail {
         fonts-combox.current-value = setting.font-family;
         root.language = setting.language;
 
+        if (setting.font-size == "") {
+            font-size-lineedit.text = Store.setting-ui.font-size;
+        }
+
         if (setting.font-family == "") {
             fonts-combox.current-value = "Default";
         }
