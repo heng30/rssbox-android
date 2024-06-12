@@ -111,7 +111,7 @@ export struct AboutDialog {
 }
 
 export global Store {
-    out property <TabIndex> current-tab-index: TabIndex.Rss;
+    in-out property <TabIndex> current-tab-index: TabIndex.Rss;
     private property <TabIndex> current-tab-index-tmp: TabIndex.None;
     in-out property <SettingDetailIndex> current-setting-detail-index: SettingDetailIndex.Home;
 
@@ -194,6 +194,7 @@ export global Store {
 
     in-out property <int> icon-index: 0;
     in-out property <bool> is-first-run;
+    in-out property <bool> is-show-landing-page;
     in-out property <bool> rss-update-time-flag;
     in-out property <bool> rss-unread-counts-flag;
     in-out property <bool> find-entrys-counts-flag;

@@ -1,0 +1,98 @@
+import { Theme } from "../theme.slint";
+import { Logic } from "../logic.slint";
+import { TextBtn } from "./btn.slint";
+import { CenterLayout } from "center-layout.slint";
+import { Label} from "label.slint";
+import { Store} from "../store.slint";
+
+export struct LandingDetail {
+    picture: image,
+    description: string,
+}
+
+export component LandingPage inherits Rectangle {
+    background: Theme.base-background;
+
+    callback skipped <=> skip-btn.clicked;
+
+    private property <int> current-index: 0;
+    in property <[LandingDetail]> details;
+
+    init => {
+        if (details.length > 0) {
+            pic.source = details[0].picture;
+            descriptionLabel.text = details[0].description;
+        }
+    }
+
+    VerticalLayout {
+        padding: Theme.padding * 5;
+        padding-left: Theme.padding * 2;
+        padding-right: Theme.padding * 2;
+        spacing: Theme.spacing * 2;
+
+        HorizontalLayout {
+            alignment: LayoutAlignment.end;
+            skip-btn := TextBtn {
+                text: Logic.tr(Store.is-cn, "跳过");
+                colorize: Theme.have-read-text-color;
+                font-size: Theme.default-font-size - 2px;
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            VerticalLayout {
+                spacing: Theme.spacing * 2;
+                Rectangle {
+                    pic := Image {
+                        width: min(root.height, root.width) * 0.8;
+                        height: self.width;
+                    }
+                }
+
+                descriptionLabel := Label {
+                    horizontal-stretch: 1;
+                    horizontal-alignment: TextHorizontalAlignment.center;
+                    color: Theme.secondary-brand-color;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            alignment: current-index == 0 ? LayoutAlignment.end : LayoutAlignment.space-between;
+
+            if current-index > 0: TextBtn {
+                text: Logic.tr(Store.is-cn, "返回");
+                colorize: Theme.have-read-text-color;
+                font-size: Theme.default-font-size - 2px;
+                clicked => {
+                    current-index -= 1;
+
+                    if (details.length > 0 && current-index >= 0) {
+                        pic.source = details[current-index].picture;
+                        descriptionLabel.text = details[current-index].description;
+                    }
+                }
+            }
+
+            TextBtn {
+                font-size: Theme.default-font-size - 2px;
+                text: Logic.tr(Store.is-cn,
+                            details.length == current-index + 1 ? "完成" : "下一步");
+                clicked => {
+                    current-index += 1;
+
+                    if (details.length == current-index) {
+                        root.skipped();
+                        return;
+                    }
+                    if (details.length > 0 && current-index >= 0) {
+                        pic.source = details[current-index].picture;
+                        descriptionLabel.text = details[current-index].description;
+                    }
+                }
+            }
+        }
+    }
+}

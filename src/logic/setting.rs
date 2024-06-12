@@ -63,6 +63,8 @@ pub fn init(ui: &AppWindow) {
 
     ui.global::<Store>()
         .set_is_first_run(config::is_first_run());
+    ui.global::<Store>()
+        .set_is_show_landing_page(config::is_first_run());
 
     ui.global::<Store>().set_setting_update(SettingUpdate {
         current_version: version::VERSION.into(),

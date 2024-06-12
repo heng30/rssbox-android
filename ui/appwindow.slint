@@ -3,7 +3,7 @@ import { Logic } from "./logic.slint";
 import { Store } from "./store.slint";
 import { Util } from "./util.slint";
 import { Panel } from "./panel/panel.slint";
-import { Toast, IconsDialog, IconsDialogSetting, OkCancelDialogV2, Blanket, LanguageDialog, InputBar, OkCancelDialogSetting } from "./base/widgets.slint";
+import { Toast, IconsDialog, IconsDialogSetting, OkCancelDialogV2, Blanket, LanguageDialog, InputBar, OkCancelDialogSetting, LandingPage } from "./base/widgets.slint";
 
 export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
@@ -51,6 +51,26 @@ export component AppWindow inherits Window {
         type: Store.message.text-type;
         clicked => {
             Logic.copy-to-clipboard(self.text);
+        }
+    }
+
+    if Store.is-show-landing-page: LandingPage {
+        details: [
+            {
+                picture: Icons.landing-subscription,
+                description: Logic.tr(Store.is-cn, "订阅、搜索和预览RSS消息"),
+            },
+            {
+                picture: Icons.landing-reading,
+                description: Logic.tr(Store.is-cn, "收藏喜欢的文章，以便以后重新阅读"),
+            },
+            {
+                picture: Icons.landing-welcome,
+                description: Logic.tr(Store.is-cn, "欢迎使用，享受你的阅读之旅"),
+            }
+        ];
+        skipped => {
+            Store.is-show-landing-page = false;
         }
     }
 }

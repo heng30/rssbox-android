@@ -248,7 +248,7 @@ export component Entry inherits Rectangle {
                 visible: root.author != "";
                 font-size: Theme.default-font-size - 4px;
                 color: Theme.placeholder-text-color;
-                text: Logic.tr(Store.is-cn, "作者") + ": " + root.author;
+                text: root.author;
             }
 
             pub-date-txt := Text {

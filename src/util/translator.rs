@@ -147,6 +147,10 @@ pub fn tr(text: &str) -> String {
     items.insert("选择主题", "Choose Theme");
     items.insert("白天", "Light");
     items.insert("黑暗", "Dark");
+    items.insert("跳过", "Skip");
+    items.insert("下一步", "Next step");
+    items.insert("完成", "Finish");
+    items.insert("返回", "Back");
 
     if let Some(txt) = items.get(text) {
         return txt.to_string();
