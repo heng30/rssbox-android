@@ -17,7 +17,7 @@ export component AppWindow inherits Window {
 
     Panel { }
 
-    if IconsDialogSetting.show || OkCancelDialogSetting.body-text != "" || Store.is-first-run: Blanket {
+    if IconsDialogSetting.show || OkCancelDialogSetting.body-text != "" : Blanket {
         TouchArea {
             clicked => {
                 IconsDialogSetting.show = false;
@@ -36,11 +36,6 @@ export component AppWindow inherits Window {
     if OkCancelDialogSetting.body-text != "": OkCancelDialogV2 {
         is-prevent-event-forward: true;
         width: Math.min(root.width * 0.9, 380px);
-    }
-
-    if Store.is-first-run: LanguageDialog {
-        is-hide-close-btns: true;
-        width: Math.min(300px, root.width * 0.8);
     }
 
     if Store.message.text != "": Toast {
