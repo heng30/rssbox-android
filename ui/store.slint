@@ -193,8 +193,8 @@ export global Store {
     in-out property <MessageItem> message;
 
     in-out property <int> icon-index: 0;
-    in-out property <bool> is-first-run: true;
-    in-out property <bool> is-show-landing-page: true;
+    in-out property <bool> is-first-run;
+    in-out property <bool> is-show-landing-page;
     in-out property <bool> rss-update-time-flag;
     in-out property <bool> rss-unread-counts-flag;
     in-out property <bool> find-entrys-counts-flag;
@@ -235,6 +235,9 @@ export global Store {
     }
 
     public function refresh-current-tab() {
+        if (current-tab-index == TabIndex.Add || current-tab-index == TabIndex.Setting || current-tab-index == TabIndex.Find) {
+            return;
+        }
         current-tab-index-tmp = current-tab-index;
         current-tab-index = TabIndex.None;
         current-tab-index = current-tab-index-tmp;

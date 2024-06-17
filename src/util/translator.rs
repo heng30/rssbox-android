@@ -151,9 +151,18 @@ pub fn tr(text: &str) -> String {
     items.insert("下一步", "Next");
     items.insert("完成", "Finish");
     items.insert("返回", "Back");
-    items.insert("订阅、搜索和预览RSS消息", "Subscribe, search and review RSS message.");
-    items.insert("收藏喜欢的文章，以便以后重新阅读", "Collecting the articals you like. You can read it latter.");
-    items.insert("欢迎使用，享受你的阅读之旅", "Welcome! Enjoying you journey of reading.");
+    items.insert(
+        "订阅、搜索和预览RSS消息",
+        "Subscribe, search and review RSS message.",
+    );
+    items.insert(
+        "收藏喜欢的文章，以便以后重新阅读",
+        "Collecting the articals you like. You can read it latter.",
+    );
+    items.insert(
+        "欢迎使用，享受你的阅读之旅",
+        "Welcome! Enjoying you journey of reading.",
+    );
     items.insert("请选择语言", "Please select language");
 
     if let Some(txt) = items.get(text) {

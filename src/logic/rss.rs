@@ -665,7 +665,7 @@ fn parse_rss(suuid: &str, content: Vec<u8>) -> Result<Vec<RssEntry>> {
             _ => match item.content() {
                 Some(s) => parse_summary(s, false),
                 _ => String::default(),
-            }
+            },
         };
 
         let tags = item

@@ -7,10 +7,10 @@ use sqlx::{
 };
 use std::sync::Mutex;
 
-pub mod rss;
-pub mod entry;
-pub mod trash;
 pub mod blacklist;
+pub mod entry;
+pub mod rss;
+pub mod trash;
 
 const MAX_CONNECTIONS: u32 = 3;
 

@@ -177,12 +177,7 @@ pub fn init(ui: &AppWindow) {
     ui.global::<Logic>().on_add_to_find_blacklist(move |url| {
         let ui = ui_handle.unwrap();
 
-        for (index, mut item) in ui
-            .global::<Store>()
-            .get_find_entrys()
-            .iter()
-            .enumerate()
-        {
+        for (index, mut item) in ui.global::<Store>().get_find_entrys().iter().enumerate() {
             if item.url == url {
                 item.is_blacklist = true;
                 ui.global::<Store>()
