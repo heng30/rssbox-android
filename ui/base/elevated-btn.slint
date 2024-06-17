@@ -6,7 +6,7 @@ export component ElevatedBtn inherits Rectangle {
     width: 45px;
     height: self.width;
     border-radius: root.width / 2;
-    background: Theme.secondary-background;
+    background: btn.has-hover ? Theme.secondary-background.darker(10%) : Theme.secondary-background;
     drop-shadow-blur: Theme.padding;
     drop-shadow-color: Theme.secondary-background-drop-shadow;
 
@@ -17,5 +17,6 @@ export component ElevatedBtn inherits Rectangle {
 
     btn := IconBtn {
         icon-width: root.width * 0.65;
+        show-icon-hover-background: false;
     }
 }

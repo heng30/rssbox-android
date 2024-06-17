@@ -1,3 +1,4 @@
+import { Palette } from "std-widgets.slint";
 import { Theme } from "../theme.slint";
 import { Label } from "./label.slint";
 
@@ -6,7 +7,10 @@ export component IconBtn inherits Rectangle {
     in-out property colorize <=> img.colorize;
     in-out property icon-width <=> img.width;
     in-out property icon-rotation-angle <=> img.rotation-angle;
+    in-out property mouse-cursor <=> touch.mouse-cursor;
+    out property has-hover <=> touch.has-hover;
 
+    in-out property <bool> show-icon-hover-background: true;
     in-out property <bool> is-ltr: true;
     in-out property <bool> enable-rotation-animation: false;
     in-out property <bool> use-auto-size: false;
@@ -21,11 +25,20 @@ export component IconBtn inherits Rectangle {
     in-out property <color> bg-pressed-color: Colors.transparent;
 
     border-radius: Theme.border-radius;
-    background: touch.pressed ? bg-pressed-color : bg-color;
+    background: touch.has-hover ? bg-color.darker(10%) : (touch.pressed ? bg-pressed-color : bg-color);
 
     animate background {
         duration: Theme.default-animate-duration;
         easing: ease-in-out;
+    }
+
+    // only is a icon showing this hover color
+    if (text == "" && show-icon-hover-background): Rectangle {
+        x: hbox.x - Theme.spacing * 2 - (Theme.icon-size - img.width) / 2;
+        width: Theme.icon-size + Theme.spacing * 4;
+        height: self.width;
+        border-radius: self.width / 2;
+        background: touch.has-hover ? Palette.background : Colors.transparent;
     }
 
     hbox := HorizontalLayout {
@@ -63,6 +76,7 @@ export component IconBtn inherits Rectangle {
     fs := FocusScope { }
 
     touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
         clicked => {
             if (enable-rotation-animation) {
                 if (icon-rotation-angle == 0) {
@@ -72,7 +86,6 @@ export component IconBtn inherits Rectangle {
                 }
             }
             fs.focus();
-            fs.clear-focus();
             root.clicked();
         }
     }

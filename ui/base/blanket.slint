@@ -6,5 +6,7 @@ export component Blanket inherits Rectangle {
 
     callback clicked <=> ta.clicked;
 
-    ta := TouchArea { }
+    ta := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+    }
 }

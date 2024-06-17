@@ -52,6 +52,7 @@ component RssList inherits Rectangle {
             border-radius: Theme.border-radius;
 
             touch := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
                 clicked => {
                     root.current-uuid = data.uuid;
                 }
@@ -69,6 +70,8 @@ component RssList inherits Rectangle {
                             icon: IconsDialogSetting.icons[Math.max(0, Math.min(data.icon-index, IconsDialogSetting.icons.length - 1))];
                             width: Theme.icon-size * 1.2;
                             background: Colors.transparent;
+                            show-icon-hover-background: false;
+                            mouse-cursor: MouseCursor.default;
                         }
                     }
 

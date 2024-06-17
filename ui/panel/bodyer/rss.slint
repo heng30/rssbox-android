@@ -59,6 +59,7 @@ component RssListItems inherits Rectangle {
 
             Rectangle {
                 touch := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
                     clicked => {
                         Logic.switch-rss(Store.current-rss-uuid, data.uuid);
                         root.switch-rss();
@@ -434,12 +435,10 @@ export component EntryList inherits Rectangle {
                 if (Store.rss-lists.length == 0) {
                     Logic.load-all-rss();
                 }
-
                 current-list-index = Logic.current-rsslist-index(Store.current-rss-uuid);
                 if (current-list-index >= 0 && current-list-index < Store.rss-lists.length) {
                     Store.rss-lists[current-list-index].current-viewport-y = 0;
                 }
-
                 Logic.sync-rss(Store.current-rss-uuid, true);
             }
         }

@@ -230,6 +230,10 @@ export global Store {
           "- Click the top-right list icon of the [RSS] selected card to open the RSS list.\n\n" + "- Swipe right on the [RSS] and [Collection] items to collect or delete items.\n\n" + "- After setting, click the back button in the upper left corner. Save the settings.\n\n" + "- In case of don't show the same articles, It will cache the articles after syncing. You can enter the [Setting] selected card to clear cache.\n\n",
     };
 
+    in-out property <{show: bool, pos: string, text: string, parent-width: length, parent-height: length}> tool-tip:{
+        show: false,
+    };
+
     public function switch-tab(tab-index: TabIndex) {
         current-tab-index = tab-index;
     }
