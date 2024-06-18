@@ -9,5 +9,7 @@ export component Link inherits Text {
     font-size: Theme.title5-font-size;
     color: root.is-read ? Theme.have-read-text-color : Theme.link-text-color;
 
-    touch := TouchArea { }
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+    }
 }

@@ -9,34 +9,20 @@ import { CenterLayout, OkCancelDialogSetting, Divider, Link, Brand, IconBtn, Lab
 component UI inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "界 面");
 
-    in-out property <string> language: "cn";
-
     public function get() -> SettingUI {
         font-size-lineedit.clear-focus();
 
         return {
             font-size: font-size-lineedit.text,
             font-family: fonts-combox.current-value,
-            language: root.language,
-            is-dark: Theme.is-dark,
+            language: Store.setting-ui.language,
+            is-dark: Store.setting-ui.is-dark,
         };
     }
 
-    public function set(setting: SettingUI) {
-        font-size-lineedit.text = setting.font-size;
-        fonts-combox.current-value = setting.font-family;
-        root.language = setting.language;
-
-        if (setting.font-size == "") {
-            font-size-lineedit.text = Store.setting-ui.font-size;
-        }
-
-        if (setting.font-family == "") {
-            fonts-combox.current-value = "Default";
-        }
-        if (root.language == "") {
-            root.language = "cn";
-        }
+    public function set() {
+        font-size-lineedit.text = Store.setting-ui.font-size;
+        fonts-combox.current-value = Store.setting-ui.font-family;
     }
 
     SettingDetailInner {
@@ -75,20 +61,18 @@ component UI inherits SettingDetail {
                     width: 50%;
                     cn-radio := RadioBtn {
                         text: "中文";
-                        checked: root.language == "cn";
+                        checked: Store.setting-ui.language == "cn";
                         check => {
-                            root.language = "cn";
-                            Logic.set-setting-ui(root.get());
+                            Store.setting-ui.language = "cn";
                         }
                     }
                 }
 
                 en-radio := RadioBtn {
                     text: "English";
-                    checked: root.language == "en";
+                    checked: Store.setting-ui.language == "en";
                     check => {
-                        root.language = "en";
-                        Logic.set-setting-ui(root.get());
+                        Store.setting-ui.language = "en";
                     }
                 }
             }
@@ -107,7 +91,6 @@ component UI inherits SettingDetail {
                         checked: !Theme.is-dark;
                         check => {
                             Theme.toggle();
-                            Logic.set-setting-ui(root.get());
                         }
                     }
                 }
@@ -117,7 +100,6 @@ component UI inherits SettingDetail {
                     checked: Theme.is-dark;
                     check => {
                         Theme.toggle();
-                        Logic.set-setting-ui(root.get());
                     }
                 }
             }
@@ -827,7 +809,7 @@ export component Setting inherits Rectangle {
 
         switch(index) => {
             if (index == SettingDetailIndex.UI) {
-                ui.set(Logic.get-setting-ui());
+                ui.set();
             } else if (index == SettingDetailIndex.Reading) {
                 reading.set(Logic.get-setting-reading());
             } else if (index == SettingDetailIndex.Sync) {

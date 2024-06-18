@@ -33,7 +33,7 @@ export component RadioBtn inherits Rectangle {
                 border-radius: self.width / 2;
                 border-color: root.checked ? Palette.accent-background : Theme.secondary-text-color;
 
-                if root.checked : Rectangle {
+                if root.checked: Rectangle {
                     width: 60%;
                     height: self.width;
                     background: parent.border-color;
@@ -44,11 +44,12 @@ export component RadioBtn inherits Rectangle {
 
         VerticalLayout {
             alignment: center;
-            txt := Label {}
+            txt := Label { }
         }
     }
 
     ta := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
         clicked => {
             if (!root.checked) {
                 root.check();

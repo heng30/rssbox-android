@@ -8,6 +8,7 @@ export component IconBtn inherits Rectangle {
     in-out property icon-width <=> img.width;
     in-out property icon-rotation-angle <=> img.rotation-angle;
     in-out property mouse-cursor <=> touch.mouse-cursor;
+    in-out property enabled-toucharea<=> touch.enabled;
     out property has-hover <=> touch.has-hover;
 
     in-out property <bool> show-icon-hover-background: true;
@@ -34,7 +35,7 @@ export component IconBtn inherits Rectangle {
 
     // only is a icon showing this hover color
     if (text == "" && show-icon-hover-background): Rectangle {
-        x: hbox.x - Theme.spacing * 2 - (Theme.icon-size - img.width) / 2;
+        x: img.x - Theme.spacing * 2 - (Theme.icon-size - img.width) / 2;
         width: Theme.icon-size + Theme.spacing * 4;
         height: self.width;
         border-radius: self.width / 2;

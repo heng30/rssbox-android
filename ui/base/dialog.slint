@@ -43,6 +43,7 @@ export component Dialog inherits Rectangle {
                         width: Theme.icon-size;
                         icon: Icons.close;
                         colorize: txt.color;
+                        show-icon-hover-background: false;
                         clicked => {
                             root.cancel-clicked();
                         }
