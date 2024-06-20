@@ -1,0 +1,100 @@
+import { Theme, Icons } from "../theme.slint";
+import { CenterLayout } from "./center-layout.slint";
+import { Label } from "./label.slint";
+import { Logic } from "../logic.slint";
+
+export component ListTile inherits Rectangle {
+    height: vbox.preferred-height;
+
+    callback left-clicked();
+    callback right-clicked();
+    callback tap <=> tap-area.clicked;
+
+    in property <bool> is-show-left-icon: false;
+    in property <length> left-icon-size: Theme.icon-size;
+    in property <color> left-colorize: Colors.transparent;
+    in property <image> left-icon: Icons.empty-image;
+
+    in property <bool> is-show-right-icon: false;
+    in property <length> right-icon-size: Theme.icon-size;
+    in property <color> right-colorize: Colors.transparent;
+    in property <image> right-icon: Icons.empty-image;
+
+    in property <length> title-font-size: Theme.title3-font-size;
+    in property <string> title-text;
+
+    in property <length> subtitle-font-size: Theme.default-font-size;
+    in property <string> subtitle-text;
+
+    in property tap-mouse-cursor <=> tap-area.mouse-cursor;
+
+    private property <LayoutAlignment> horizontal-alignment: is-show-right-icon ? LayoutAlignment.space-between : LayoutAlignment.start;
+
+    tap-area := TouchArea { }
+
+    hbox := HorizontalLayout {
+        padding: Theme.padding;
+        alignment: root.horizontal-alignment;
+
+        HorizontalLayout {
+            horizontal-stretch: 1;
+            alignment: LayoutAlignment.start;
+            spacing: Theme.spacing * 2;
+
+            if is-show-left-icon: Rectangle {
+                width: root.left-icon-size + Theme.padding * 4;
+
+                img := Image {
+                    height: root.left-icon-size;
+                    width: self.height;
+                    source: root.left-icon;
+                    colorize: root.left-colorize;
+                }
+
+                TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        root.left-clicked();
+                    }
+                }
+            }
+
+            vbox := VerticalLayout {
+                alignment: LayoutAlignment.start;
+                spacing: Theme.spacing * 2;
+                padding: Theme.padding * 2;
+                horizontal-stretch: 1;
+
+                if root.title-text != "": Label {
+                    font-size: root.title-font-size;
+                    text: root.title-text;
+                    wrap: word-wrap;
+                    font-weight: 0.5;
+                }
+
+                if root.subtitle-text != "": Label {
+                    font-size: root.subtitle-font-size;
+                    text: root.subtitle-text;
+                    wrap: word-wrap;
+                }
+            }
+        }
+
+        if is-show-right-icon: Rectangle {
+            width: root.right-icon-size + Theme.padding * 4;
+            Image {
+                height: root.right-icon-size;
+                width: self.height;
+                source: root.right-icon;
+                colorize: root.right-colorize;
+            }
+
+            TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    root.right-clicked();
+                }
+            }
+        }
+    }
+}
