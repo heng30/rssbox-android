@@ -5,7 +5,7 @@ import { Util } from "./util.slint";
 import { Panel } from "./panel/panel.slint";
 import { Toast, IconsDialog, IconsDialogSetting, OkCancelDialogV2, Blanket, LanguageDialog, InputBar, OkCancelDialogSetting, LandingPage } from "./base/widgets.slint";
 
-import { SlideCard } from "./base/widgets.slint";
+// import { Drawer, DrawerPosition, TextBtn } from "./base/widgets.slint";
 
 export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
@@ -70,10 +70,10 @@ export component AppWindow inherits Window {
         }
     }
 
-    Rectangle {
+    // Rectangle {
         // visible: false;
         // background: red;
-    }
+    // }
 }
 
 export { Util, Logic, Store, Theme }
