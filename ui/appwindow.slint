@@ -5,6 +5,8 @@ import { Util } from "./util.slint";
 import { Panel } from "./panel/panel.slint";
 import { Toast, IconsDialog, IconsDialogSetting, OkCancelDialogV2, Blanket, LanguageDialog, InputBar, OkCancelDialogSetting, LandingPage } from "./base/widgets.slint";
 
+import { SlideCard } from "./base/widgets.slint";
+
 export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
     default-font-family: Theme.default-font-family;
@@ -66,6 +68,11 @@ export component AppWindow inherits Window {
         skipped => {
             Store.is-show-landing-page = false;
         }
+    }
+
+    Rectangle {
+        // visible: false;
+        // background: red;
     }
 }
 

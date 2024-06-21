@@ -1,48 +1,52 @@
 import { Theme, Icons } from "../theme.slint";
-import { CenterLayout } from "./center-layout.slint";
+import { IconBtn } from "./icon-btn.slint";
 import { Label } from "./label.slint";
-import { Logic } from "../logic.slint";
 
 export component ListTile inherits Rectangle {
     height: vbox.preferred-height;
 
     callback left-clicked();
     callback right-clicked();
-    callback tap <=> tap-area.clicked;
+    callback middle-clicked();
 
-    in property <bool> is-show-left-icon: false;
+    in property <bool> is-show-left-icon;
     in property <length> left-icon-size: Theme.icon-size;
-    in property <color> left-colorize: Colors.transparent;
-    in property <image> left-icon: Icons.empty-image;
+    in property <color> left-colorize;
+    in property <image> left-icon;
+    in property <color> left-icon-background;
+    in property <color> left-icon-hover-background;
 
-    in property <bool> is-show-right-icon: false;
+    in property <color> middle-background;
+    in property <color> middle-hover-background;
+
+    in property <bool> is-show-right-icon;
     in property <length> right-icon-size: Theme.icon-size;
-    in property <color> right-colorize: Colors.transparent;
-    in property <image> right-icon: Icons.empty-image;
+    in property <color> right-colorize;
+    in property <image> right-icon;
 
-    in property <length> title-font-size: Theme.title3-font-size;
     in property <string> title-text;
+    in property <length> title-font-size: Theme.title3-font-size;
 
-    in property <length> subtitle-font-size: Theme.default-font-size;
     in property <string> subtitle-text;
+    in property <length> subtitle-font-size: Theme.default-font-size;
 
-    in property tap-mouse-cursor <=> tap-area.mouse-cursor;
+    in property middle-mouse-cursor <=> middle-area.mouse-cursor;
 
-    private property <LayoutAlignment> horizontal-alignment: is-show-right-icon ? LayoutAlignment.space-between : LayoutAlignment.start;
-
-    tap-area := TouchArea { }
+    private property <LayoutAlignment> horizontal-alignment: is-show-right-icon ? LayoutAlignment.space-between : is-show-left-icon ? LayoutAlignment.start : LayoutAlignment.stretch;
 
     hbox := HorizontalLayout {
         padding: Theme.padding;
+        spacing: Theme.spacing * 2;
         alignment: root.horizontal-alignment;
 
         HorizontalLayout {
             horizontal-stretch: 1;
-            alignment: LayoutAlignment.start;
             spacing: Theme.spacing * 2;
 
             if is-show-left-icon: Rectangle {
                 width: root.left-icon-size + Theme.padding * 4;
+                border-radius: Theme.border-radius;
+                background: img-area.has-hover ? root.left-icon-hover-background : root.left-icon-background;
 
                 img := Image {
                     height: root.left-icon-size;
@@ -51,7 +55,7 @@ export component ListTile inherits Rectangle {
                     colorize: root.left-colorize;
                 }
 
-                TouchArea {
+                img-area := TouchArea {
                     mouse-cursor: MouseCursor.pointer;
                     clicked => {
                         root.left-clicked();
@@ -59,38 +63,44 @@ export component ListTile inherits Rectangle {
                 }
             }
 
-            vbox := VerticalLayout {
-                alignment: LayoutAlignment.start;
-                spacing: Theme.spacing * 2;
-                padding: Theme.padding * 2;
-                horizontal-stretch: 1;
+            Rectangle {
+                clip: true;
+                border-radius: Theme.border-radius;
+                background: middle-area.has-hover ? root.middle-hover-background : root.middle-background;
 
-                if root.title-text != "": Label {
-                    font-size: root.title-font-size;
-                    text: root.title-text;
-                    wrap: word-wrap;
-                    font-weight: 0.5;
+                middle-area := TouchArea {
+                    clicked => {
+                        root.middle-clicked();
+                    }
                 }
 
-                if root.subtitle-text != "": Label {
-                    font-size: root.subtitle-font-size;
-                    text: root.subtitle-text;
-                    wrap: word-wrap;
+                vbox := VerticalLayout {
+                    alignment: LayoutAlignment.start;
+                    spacing: Theme.spacing * 2;
+                    padding: Theme.padding * 2;
+
+                    if root.title-text != "": Label {
+                        font-size: root.title-font-size;
+                        text: root.title-text;
+                        wrap: word-wrap;
+                        font-weight: 0.5;
+                    }
+
+                    if root.subtitle-text != "": Label {
+                        font-size: root.subtitle-font-size;
+                        text: root.subtitle-text;
+                        wrap: word-wrap;
+                    }
                 }
             }
         }
 
         if is-show-right-icon: Rectangle {
             width: root.right-icon-size + Theme.padding * 4;
-            Image {
-                height: root.right-icon-size;
-                width: self.height;
-                source: root.right-icon;
-                colorize: root.right-colorize;
-            }
 
-            TouchArea {
-                mouse-cursor: MouseCursor.pointer;
+            IconBtn {
+                icon-size: root.right-icon-size;
+                icon: root.right-icon;
                 clicked => {
                     root.right-clicked();
                 }
