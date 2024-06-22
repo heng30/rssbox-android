@@ -3,11 +3,11 @@ import { Theme, Icons } from "../../theme.slint";
 import { Store } from "../../store.slint";
 import { Logic } from "../../logic.slint";
 import { Util } from "../../util.slint";
-import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, ElevatedBtn, NoMessageImg, CenterLayout , Blanket, OkCancelDialogSetting} from "../../base/widgets.slint";
-import { Theme } from "../../theme.slint";
+import { IconBtn, Head, Label, IconsDialogSetting, Tag, Link, Label, NoDataImg, ElevatedBtn, NoMessageImg, CenterLayout, Loading, Blanket, OkCancelDialogSetting} from "../../base/widgets.slint";
 
 component RHead inherits Head {
     callback scroll-to-top <=> ta.clicked;
+    callback hide-loading-indicator();
 
     icon: Icons.menu;
     icon-width: Theme.icon-size * 1.2;
@@ -35,6 +35,8 @@ component RHead inherits Head {
         icon: Icons.delete;
 
         clicked => {
+            root.hide-loading-indicator();
+
             OkCancelDialogSetting.title-type = "warning";
             OkCancelDialogSetting.title-text = Logic.tr(Store.is-cn, "警告");
             OkCancelDialogSetting.body-text = Logic.tr(Store.is-cn, "是否删除全部？");
@@ -263,6 +265,7 @@ export component Entry inherits Rectangle {
 
 export component EntryList inherits Rectangle {
     private property <int> current-list-index: -1;
+    in-out property <bool> is-loading;
 
     clip: true;
 
@@ -389,6 +392,7 @@ export component EntryList inherits Rectangle {
                         colorize: Theme.danger-color;
 
                         clicked => {
+                            root.is-loading = false;
                             current-list-index = Logic.current-rsslist-index(Store.current-rss-uuid);
                             if (current-list-index >= 0 && current-list-index < Store.rss-lists.length) {
                                 Store.rss-lists[current-list-index].current-viewport-y = lv.viewport-y;
@@ -405,11 +409,17 @@ export component EntryList inherits Rectangle {
         }
     }
 
-    if Store.rss-entrys.length == 0: CenterLayout {
+    if !is-loading && Store.rss-entrys.length == 0: CenterLayout {
         NoDataImg {
             width: root.width * 0.6;
             text: Logic.tr(Store.is-cn, "没有消息");
         }
+    }
+
+    if is-loading && Store.rss-entrys.length == 0: Loading {
+        icon-size: Theme.icon-size * 2;
+        colorize: Theme.brand-color;
+        loading-text: Logic.tr(Store.is-cn, "正在同步...");
     }
 
     if !Store.is-show-side-rsslist: VerticalLayout {
@@ -433,6 +443,7 @@ export component EntryList inherits Rectangle {
             enable-rotation-animation: true;
 
             clicked => {
+                root.is-loading = true;
                 if (Store.rss-lists.length == 0) {
                     Logic.load-all-rss();
                 }
@@ -448,6 +459,7 @@ export component EntryList inherits Rectangle {
 
 component Body inherits Rectangle {
     in-out property is-show-rsslist <=> rsslist.is-show-list;
+    in-out property is-loading <=> entrylist.is-loading;
 
     public function entrylist-scroll-to-top() {
         entrylist.scroll-to-top();
@@ -468,6 +480,9 @@ export component Rss inherits VerticalLayout {
         }
         scroll-to-top => {
             body.entrylist-scroll-to-top();
+        }
+        hide-loading-indicator => {
+            body.is-loading = false;
         }
     }
 

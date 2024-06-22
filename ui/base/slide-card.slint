@@ -11,13 +11,14 @@ import { Label } from "./label.slint";
 //         {
 //             icon: Icons.delete,
 //             text: "Delete",
+//             colorize: Colors.red,
 //         },
 //         {
 //             icon: Icons.edit,
 //             text: "Edit",
+//             colorize: Colors.red,
 //         },
 //     ];
-
 //     Rectangle {
 //         height: 80px;
 //         background: pink;
@@ -29,9 +30,10 @@ export component SlideCard inherits Rectangle {
 
     callback icon-clicked(int);
 
-    in property <[{icon: image, text: string}]> icons;
+    in property <[{icon: image, text: string, colorize: color}]> icons;
     in property <color> icons-background;
     in property <bool> hide-icons-after-clicked: true;
+    in property <length> gap: 0px;
 
     private property <length> max-move-pixels-up-bound: self.width * 0.04;
     private property <length> max-move-pixels-low-bound: self.width * 0.02;
@@ -39,7 +41,7 @@ export component SlideCard inherits Rectangle {
     private property <bool> is-hide-icons: true;
 
     public function show-icons() {
-        root.x = -icons-scope.width;
+        root.x = -icons-scope.width - gap;
         root.is-show-icons = true;
         root.is-hide-icons = false;
     }
@@ -75,9 +77,10 @@ export component SlideCard inherits Rectangle {
     }
 
     icons-scope := Rectangle {
-        x: root.width;
+        x: root.width + gap;
         background: root.icons-background;
         width: Math.max(root.width * 0.15, Theme.icon-size * 2) * icons.length;
+
         HorizontalLayout {
             spacing: Theme.spacing;
             for item[index] in root.icons: Rectangle {
@@ -87,12 +90,14 @@ export component SlideCard inherits Rectangle {
 
                     IconBtn {
                         icon: item.icon;
+                        colorize: item.colorize;
                     }
 
                     if item.text != "": HorizontalLayout {
                         alignment: LayoutAlignment.center;
                         Label {
                             text: item.text;
+                            color: item.colorize;
                         }
                     }
                 }
