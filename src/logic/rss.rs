@@ -803,10 +803,10 @@ async fn sync_rss(ui: Weak<AppWindow>, items: Vec<SyncItem>) -> Vec<ErrorMsg> {
                 let _ = slint::invoke_from_event_loop(move || {
                     let ui = ui.unwrap();
                     super::entry::update_new_entrys(&ui, suuid.as_str(), entrys);
-                    ui.global::<Store>().invoke_refresh_current_tab();
 
                     if suuid.as_str() == ui.global::<Store>().get_current_rss_uuid().as_str() {
                         notify_ui_update_unread_counts(&ui);
+                        ui.global::<Store>().invoke_refresh_current_tab();
                     }
                 });
             }

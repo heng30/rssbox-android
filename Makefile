@@ -1,6 +1,7 @@
 #!/bin/bash
 
-build-evn=SLINT_STYLE=material
+pwd=${shell pwd}
+build-evn=SLINT_STYLE=material RUSTFLAGS="--remap-path-prefix $(HOME)=/home --remap-path-prefix $(pwd)=/build"
 run-evn=RUST_LOG=error,warn,info,debug,sqlx=off,reqwest=off,html2text=off
 version=`git describe --tags --abbrev=0`
 
@@ -11,6 +12,10 @@ build:
 
 build-release:
 	$(build-evn) cargo apk build --lib --release
+	cp -f target/release/apk/rssbox.apk target/rssbox-${version}.apk
+
+build-release-mold:
+	$(build-evn) mold --run cargo apk build --lib --release
 	cp -f target/release/apk/rssbox.apk target/rssbox-${version}.apk
 
 # not work well
@@ -27,11 +32,17 @@ run:
 run-release:
 	RUST_BACKTRACE=1 $(run-evn) cargo apk run --lib --release
 
+run-release-mold:
+	RUST_BACKTRACE=1 $(run-evn) mold --run cargo apk run --lib --release
+
 install:
 	$(build-evn) $(run-evn) cargo apk run --lib --release
 
 debug:
 	$(build-evn) $(run-evn) cargo run --bin rssbox-desktop --features=desktop
+
+debug-mold:
+	$(build-evn) $(run-evn) mold --run cargo run --bin rssbox-desktop --features=desktop
 
 debug-local:
 	$(run-evn) ./target/debug/rssbox-desktop
@@ -69,6 +80,9 @@ clippy:
 clean-incremental:
 	rm -rf ./target/debug/incremental/*
 	rm -rf ./target/aarch64-linux-android/debug/incremental
+
+clean-unused-dependences:
+	cargo machete
 
 clean:
 	cargo clean
