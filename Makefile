@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pwd=${shell pwd}
-build-evn=SLINT_STYLE=material RUSTFLAGS="--remap-path-prefix $(HOME)=/home --remap-path-prefix $(pwd)=/build"
+build-evn=SLINT_STYLE=material
 run-evn=RUST_LOG=error,warn,info,debug,sqlx=off,reqwest=off,html2text=off
 version=`git describe --tags --abbrev=0`
 
@@ -46,6 +46,9 @@ debug-mold:
 
 debug-local:
 	$(run-evn) ./target/debug/rssbox-desktop
+
+release-local:
+	$(run-evn) ./target/release/rssbox-desktop
 
 build-desktop-release:
 	$(build-evn) $(run-evn) cargo build --release --bin rssbox-desktop --features=desktop

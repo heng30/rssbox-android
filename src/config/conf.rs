@@ -1,11 +1,10 @@
 use super::data::{self, Config};
 use anyhow::Result;
 use log::debug;
+use once_cell::sync::Lazy;
 use std::{fs, path::PathBuf, sync::Mutex};
 
-lazy_static! {
-    pub static ref CONFIG: Mutex<Config> = Mutex::new(Config::default());
-}
+pub static CONFIG: Lazy<Mutex<Config>> = Lazy::new(|| Mutex::new(Config::default()));
 
 #[cfg(not(target_os = "android"))]
 use platform_dirs::AppDirs;

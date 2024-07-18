@@ -1,4 +1,5 @@
 use anyhow::Result;
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use sqlx::migrate::MigrateDatabase;
 use sqlx::{
@@ -20,9 +21,7 @@ pub struct ComEntry {
     pub data: String,
 }
 
-lazy_static! {
-    static ref POOL: Mutex<Option<Pool<Sqlite>>> = Mutex::new(None);
-}
+static POOL: Lazy<Mutex<Option<Pool<Sqlite>>>> = Lazy::new(|| Mutex::new(None));
 
 fn pool() -> Pool<Sqlite> {
     POOL.lock().unwrap().clone().unwrap()

@@ -378,12 +378,10 @@ component About inherits SettingDetail {
 component Help inherits SettingDetail {
     title: Logic.tr(Store.is-cn, "帮 助");
 
-    Flickable {
-        SettingDetailInner {
-            Label {
-                text: Store.is-cn ? Store.help-dialog.text-cn : Store.help-dialog.text-en;
-                wrap: word-wrap;
-            }
+    SettingDetailInner {
+        Label {
+            text: Store.is-cn ? Store.help-dialog.text-cn : Store.help-dialog.text-en;
+            wrap: word-wrap;
         }
     }
 }
@@ -890,22 +888,23 @@ export component Setting inherits Rectangle {
                 body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
-    }
 
-    if !body.visible: Rectangle {
-        if body.current-setting-detail-index == SettingDetailIndex.About: About {
+        About {
+            visible: body.current-setting-detail-index == SettingDetailIndex.About;
             back => {
                 body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
 
-        if body.current-setting-detail-index == SettingDetailIndex.Help: Help {
+        Help {
+            visible: body.current-setting-detail-index == SettingDetailIndex.Help;
             back => {
                 body.current-setting-detail-index = SettingDetailIndex.Home;
             }
         }
 
-        if body.current-setting-detail-index == SettingDetailIndex.Donate: Donate {
+        Donate {
+            visible: body.current-setting-detail-index == SettingDetailIndex.Donate;
             back => {
                 body.current-setting-detail-index = SettingDetailIndex.Home;
             }

@@ -8,9 +8,8 @@ import { Toast, IconsDialog, IconsDialogSetting, OkCancelDialogV2, Blanket, Lang
 export component AppWindow inherits Window {
     default-font-size: Theme.default-font-size;
     default-font-family: Theme.default-font-family;
-
-    // uncomment when building desktop app
-    // height: Theme.default-height;
+    preferred-width: Theme.default-height;
+    preferred-height: Theme.default-height;
 
     background: Theme.base-background;
     icon: Icons.brand;
