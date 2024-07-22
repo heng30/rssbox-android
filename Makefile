@@ -53,6 +53,9 @@ release-local:
 build-desktop-release:
 	$(build-evn) $(run-evn) cargo build --release --bin rssbox-desktop --features=desktop
 
+build-desktop-release-nixos:
+	nix-shell --run "$(build-evn) $(run-evn) cargo build --release --bin rssbox-desktop --features=desktop"
+
 install-desktop:
 	cp -f target/release/rssbox-desktop ~/bin/rssbox-desktop
 
