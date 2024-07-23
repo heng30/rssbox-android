@@ -14,6 +14,10 @@ build-release:
 	$(build-evn) cargo apk build --lib --release
 	cp -f target/release/apk/rssbox.apk target/rssbox-${version}.apk
 
+build-release-nixos:
+	nix-shell -p steam-run --run "$(build-evn) steam-run cargo apk build --lib --release"
+	cp -f target/release/apk/rssbox.apk target/rssbox-${version}.apk
+
 build-release-mold:
 	$(build-evn) mold --run cargo apk build --lib --release
 	cp -f target/release/apk/rssbox.apk target/rssbox-${version}.apk
