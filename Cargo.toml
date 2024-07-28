@@ -53,7 +53,7 @@ crate-type = ["cdylib", "lib"]
 
 [[bin]]
 path = "src/desktop.rs"
-name = "rssbox-desktop"
+name = "rssbox"
 required-features = ["desktop"]
 
 [[bin]]
