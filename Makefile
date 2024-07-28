@@ -57,6 +57,9 @@ release-local:
 build-desktop-release:
 	$(build-evn) $(run-evn) cargo build --release --features=desktop
 
+build-desktop-release-qt-backend:
+	SLINT_BACKEND=qt $(build-evn) $(run-evn) cargo build --release --features=desktop
+
 build-desktop-release-nixos:
 	nix-shell --run "$(build-evn) $(run-evn) cargo build --release --features=desktop"
 
