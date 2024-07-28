@@ -43,25 +43,25 @@ install:
 	$(build-evn) $(run-evn) cargo apk run --lib --release
 
 debug:
-	$(build-evn) $(run-evn) cargo run --bin rssbox-desktop --features=desktop
+	$(build-evn) $(run-evn) cargo run --features=desktop
 
 debug-mold:
-	$(build-evn) $(run-evn) mold --run cargo run --bin rssbox-desktop --features=desktop
+	$(build-evn) $(run-evn) mold --run cargo run --features=desktop
 
 debug-local:
-	$(run-evn) ./target/debug/rssbox-desktop
+	$(run-evn) ./target/debug/rssbox
 
 release-local:
-	$(run-evn) ./target/release/rssbox-desktop
+	$(run-evn) ./target/release/rssbox
 
 build-desktop-release:
-	$(build-evn) $(run-evn) cargo build --release --bin rssbox-desktop --features=desktop
+	$(build-evn) $(run-evn) cargo build --release --features=desktop
 
 build-desktop-release-nixos:
-	nix-shell --run "$(build-evn) $(run-evn) cargo build --release --bin rssbox-desktop --features=desktop"
+	nix-shell --run "$(build-evn) $(run-evn) cargo build --release --features=desktop"
 
 install-desktop:
-	cp -f target/release/rssbox-desktop ~/bin/rssbox-desktop
+	cp -f target/release/rssbox ~/bin/rssbox
 
 tool-gen-rss-build:
 	cargo build --bin tool-gen-rss --features=tool-gen-rss
